@@ -6,6 +6,7 @@ export class InMemoryDbSet<T> implements IDbSet<T> {
 
   private readonly _changeTracker = new EntityChangeTracker<T>();
   private readonly _inMemoryData = new Map<number, T>();
+  private _nextId: number = 1;
 
   public constructor(tableName: string) {
     this.tableName = tableName;
@@ -36,7 +37,12 @@ export class InMemoryDbSet<T> implements IDbSet<T> {
 
     for(let i = 0; i < this._changeTracker.additions.length; i++) {
       //Insert into DB.
-      this._inMemoryData.set(this._inMemoryData.size + 1, this._changeTracker.additions[i]);
+      const entity: T = this._changeTracker.additions[i];
+      (entity as any).$ID = this._nextId;
+
+      this._inMemoryData.set(this._nextId, entity);
+      this._nextId++;
+
       changes++;
     }
 

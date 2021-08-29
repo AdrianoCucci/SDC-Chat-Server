@@ -22,17 +22,28 @@ export class MessagesController implements IApiController {
     });
 
     expressApp.put(`${this._route}/:id`, async (request, response) => {
-      const messageId: number = Number(request.params.id);
-      const message: Message = request.body;
+      try {
+        const messageId: number = Number(request.params.id);
+        const message: Message = await context.messages.getById(messageId);
 
-      context.messages.update(message, messageId);
-      await context.messages.commit();
+        if(message == null) {
+          throw `Message with ID does not exist: ${messageId}`;
+        }
 
-      response.status(200).json(message);
+        Object.assign(message, request.body);
+
+        context.messages.update(message, messageId);
+        await context.messages.commit();
+
+        response.status(200).json(message);
+      }
+      catch(error) {
+        response.status(500).json({ error: error });
+      }
     });
 
-    expressApp.delete(this._route, async (request, response) => {
+    // expressApp.delete(this._route, async (request, response) => {
 
-    });
+    // });
   }
 }
