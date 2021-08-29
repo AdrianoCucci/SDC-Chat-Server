@@ -21,8 +21,14 @@ export class MessagesController implements IApiController {
       response.status(201).json(message);
     });
 
-    expressApp.put(this._route, async (request, response) => {
+    expressApp.put(`${this._route}/:id`, async (request, response) => {
+      const messageId: number = Number(request.params.id);
+      const message: Message = request.body;
 
+      context.messages.update(message, messageId);
+      await context.messages.commit();
+
+      response.status(200).json(message);
     });
 
     expressApp.delete(this._route, async (request, response) => {
