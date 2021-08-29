@@ -15,5 +15,6 @@ export class ChatController implements IChatController {
 
   onMessage(message: string): void {
     console.log("MESSAGE:\n", message);
+    this._server.send(message);
   }
 }
