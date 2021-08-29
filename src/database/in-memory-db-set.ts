@@ -1,8 +1,9 @@
 import { EntityChangeTracker } from "./entity-change-tracker";
+import { IDbSet } from "./interfaces/db-set";
 
-export class DbSet<T> {
+export class InMemoryDbSet<T> implements IDbSet<T> {
   public readonly tableName: string;
-  
+
   private readonly _changeTracker = new EntityChangeTracker<T>();
   private readonly _inMemoryData = new Map<number, T>();
 
@@ -18,38 +19,40 @@ export class DbSet<T> {
     return this._inMemoryData.has(entityId) ? this._inMemoryData.get(entityId) : null;
   }
 
-  public add(entity: T): DbSet<T> {
+  public add(entity: T): void {
     this._changeTracker.setAdd(entity);
-    return this;
   }
 
-  public update(newEntity: T, updateID: number): DbSet<T> {
+  public update(newEntity: T, updateID: number): void {
     this._changeTracker.setUpdate(newEntity, updateID);
-    return this;
   }
 
-  public delete(entity: T, deleteID: number): DbSet<T> {
+  public delete(entity: T, deleteID: number): void {
     this._changeTracker.setDelete(entity, deleteID);
-    return this;
   }
 
-  public async commit(): Promise<DbSet<T>> {
+  public async commit(): Promise<number> {
+    let changes: number = 0;
+
     for(let i = 0; i < this._changeTracker.additions.length; i++) {
       //Insert into DB.
       this._inMemoryData.set(this._inMemoryData.size + 1, this._changeTracker.additions[i]);
+      changes++;
     }
 
     this._changeTracker.updates.forEach((id: number, entity: T) => {
       //Update entity in DB on ID.
       this._inMemoryData.set(id, entity);
+      changes++;
     });
 
     this._changeTracker.deletions.forEach((id: number) => {
       //Delete entity in DB on ID.
       this._inMemoryData.delete(id);
+      changes++;
     });
 
     this._changeTracker.clear();
-    return this;
+    return changes;
   }
 }
