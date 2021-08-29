@@ -1,24 +1,35 @@
 import { Server, Socket } from "socket.io";
+import { ChatController } from "../controllers/chat-controller";
 import { IChatController } from "../controllers/interfaces/chat-controller";
 
 export class SocketService {
   private readonly _server: Server;
-  private readonly _chatController: IChatController;
+  private readonly _chatControllers: IChatController[];
 
-  constructor(server: Server, chatController: IChatController) {
+  constructor(server: Server) {
     this._server = server;
-    this._chatController = chatController;
+    this._chatControllers = [];
 
-    this.configureCallbacks(this._server, this._chatController);
+    this.configureCallbacks(this._server);
   }
 
-  private configureCallbacks(server: Server, chatController: IChatController) {
+  private configureCallbacks(server: Server) {
     server.on("connection", (socket: Socket) => {
-      chatController.onConnect(server, socket);
+      const chatController: IChatController = new ChatController(server, socket);
 
       socket.on("message", (message: string) => chatController.onMessage(message));
 
-      socket.on("disconnect", (reason: string) => chatController.onDisconnect(reason));
+      socket.on("disconnect", (reason: string) => {
+        chatController.onDisconnect(reason);
+
+        const index: number = this._chatControllers.indexOf(chatController);
+        if(index !== -1) {
+          this._chatControllers.splice(index, 1);
+        }
+      });
+
+      this._chatControllers.push(chatController);
+      chatController.onConnect();
     });
   }
 }

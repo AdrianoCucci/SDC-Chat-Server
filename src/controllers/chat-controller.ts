@@ -2,19 +2,24 @@ import { IChatController } from "./interfaces/chat-controller";
 import { Server, Socket } from "socket.io";
 
 export class ChatController implements IChatController {
-  private _server: Server = null;
+  private readonly _server: Server;
+  private readonly _socket: Socket;
 
-  onConnect(server: Server, socket: Socket): void {
+  constructor(server: Server, socket: Socket) {
     this._server = server;
+    this._socket = socket;
+  }
+
+  onConnect(): void {
     console.log("New web socket connection...");
   }
 
   onDisconnect(reason: string): void {
-    console.log("Socket disconnected...\nReason: ", reason)
+    console.log("Socket disconnected...\nReason: ", reason);
   }
 
   onMessage(message: string): void {
     console.log("MESSAGE:\n", message);
-    this._server.send(message);
+    this._socket.broadcast.emit(message);
   }
 }
