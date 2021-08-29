@@ -1,5 +1,6 @@
 import { Application } from "express";
 import { IApiController } from "../controllers/interfaces/api-controller";
+import { MessagesController } from "../controllers/messages-controller";
 import { UsersController } from "../controllers/users-controller";
 import { IDbContext } from "../database/interfaces/db-context";
 
@@ -17,7 +18,8 @@ export class ApiService {
 
   private configureControllers(): IApiController[] {
     const controllers: IApiController[] = [
-      new UsersController()
+      new UsersController(),
+      new MessagesController()
     ];
 
     for (let i = 0; i < controllers.length; i++) {
