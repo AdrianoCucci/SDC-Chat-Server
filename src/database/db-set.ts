@@ -1,8 +1,14 @@
 import { EntityChangeTracker } from "./entity-change-tracker";
 
 export class DbSet<T> {
+  public readonly tableName: string;
+  
   private readonly _changeTracker = new EntityChangeTracker<T>();
   private readonly _inMemoryData = new Map<number, T>();
+
+  public constructor(tableName: string) {
+    this.tableName = tableName;
+  }
 
   public async getAll(): Promise<T[]> {
     return Array.from(this._inMemoryData.values());
