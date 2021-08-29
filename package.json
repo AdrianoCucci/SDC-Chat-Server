@@ -1,0 +1,19 @@
+{
+  "name": "sdc-chat-server",
+  "version": "1.0.0",
+  "description": "Server software for Sorriso Dental Care live-chat application.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdrianoCucci/SDC-Chat-Server.git"
+  },
+  "author": "Adriano Cucci",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AdrianoCucci/SDC-Chat-Server/issues"
+  },
+  "homepage": "https://github.com/AdrianoCucci/SDC-Chat-Server#readme"
+}
