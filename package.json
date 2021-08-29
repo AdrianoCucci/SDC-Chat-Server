@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/AdrianoCucci/SDC-Chat-Server/issues"
   },
-  "homepage": "https://github.com/AdrianoCucci/SDC-Chat-Server#readme"
+  "homepage": "https://github.com/AdrianoCucci/SDC-Chat-Server#readme",
+  "dependencies": {
+    "typescript": "^4.4.2"
+  }
 }
