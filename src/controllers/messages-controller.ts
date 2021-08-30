@@ -32,7 +32,7 @@ export class MessagesController implements IApiController {
 
         Object.assign(message, request.body);
 
-        context.messages.update(message, messageId);
+        context.messages.update(messageId, message);
         await context.messages.commit();
 
         response.status(200).json(message);

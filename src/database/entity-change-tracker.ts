@@ -1,77 +1,56 @@
-import { EntityTrackState } from "./entity-track-state";
+import { DbEntity } from "./models/db-entity";
+import { DbEntityState } from "./models/db-entity-state";
 
 export class EntityChangeTracker<T> {
-  public readonly additions: T[] = [];
-  public readonly updates = new Map<T, number>();
-  public readonly deletions = new Map<T, number>();
+  public readonly changes: DbEntity<T>[] = [];
 
-  public setAdd(entity: T): void {
-    if(!this.additions.includes(entity)) {
-      const existingState: EntityTrackState = this.getTrackedState(entity);
+  public trackAdd(entity: T): void {
+    const existingEntity: DbEntity<T> = this.changes.find(c => c.model === entity);
 
-      if(existingState === EntityTrackState.Update) {
-        this.updates.delete(entity);
-      }
-      else if(existingState === EntityTrackState.Delete) {
-        this.deletions.delete(entity);
-      }
-
-      this.additions.push(entity);
-    }
-  }
-
-  public setUpdate(entity: T, updateID: number): void {
-    if(!this.updates.has(entity)) {
-      const existingState: EntityTrackState = this.getTrackedState(entity);
-
-      if(existingState === EntityTrackState.Add) {
-        this.additions.splice(this.additions.indexOf(entity), 1);
-      }
-      else if(existingState === EntityTrackState.Delete) {
-        this.deletions.delete(entity);
-      }
-
-      this.updates.set(entity, updateID);
-    }
-  }
-
-  public setDelete(entity: T, deleteID: number): void {
-    if(!this.deletions.has(entity)) {
-      const existingState: EntityTrackState = this.getTrackedState(entity);
-
-      if(existingState === EntityTrackState.Add) {
-        this.additions.splice(this.additions.indexOf(entity), 1);
-      }
-      if(existingState === EntityTrackState.Update) {
-        this.updates.delete(entity);
-      }
-
-      this.deletions.set(entity, deleteID);
-    }
-  }
-
-  public clear(): void {
-    this.additions.splice(0, this.additions.length);
-    this.updates.clear();
-    this.deletions.clear();
-  }
-
-  private getTrackedState(entity: T): EntityTrackState {
-    let state: EntityTrackState;
-
-    if(this.additions.includes(entity)) {
-      state = EntityTrackState.Add;
-    }
-    else if(this.updates.has(entity)) {
-      state = EntityTrackState.Update;
-    }
-    else if(this.deletions.has(entity)) {
-      state = EntityTrackState.Delete;
+    if(existingEntity == null) {
+      this.changes.push({
+        id: null,
+        model: entity,
+        state: DbEntityState.Add
+      });
     }
     else {
-      state = null;
+      existingEntity.id = null;
+      existingEntity.state = DbEntityState.Add;
     }
+  }
 
-    return state;
+  public trackUpdate(entityId: number, entity: T): void {
+    const existingEntity: DbEntity<T> = this.changes.find(c => c.id === entityId);
+
+    if(existingEntity == null) {
+      this.changes.push({
+        id: entityId,
+        model: entity,
+        state: DbEntityState.Update
+      });
+    }
+    else {
+      existingEntity.model = entity;
+      existingEntity.state = DbEntityState.Update;
+    }
+  }
+
+  public trackDelete(entityId: number): void {
+    const existingEntity: DbEntity<T> = this.changes.find(c => c.id === entityId);
+
+    if(existingEntity == null) {
+      this.changes.push({
+        id: entityId,
+        state: DbEntityState.Delete
+      });
+    }
+    else {
+      existingEntity.state = DbEntityState.Delete;
+    }
+  }
+
+  public clear() {
+    this.changes.splice(0, this.changes.length);
   }
 }

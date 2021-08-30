@@ -1,5 +1,7 @@
 import { EntityChangeTracker } from "./entity-change-tracker";
+import { DbEntityState } from "./models/db-entity-state";
 import { IDbSet } from "./interfaces/db-set";
+import { DbEntity } from "./models/db-entity";
 
 export class InMemoryDbSet<T> implements IDbSet<T> {
   public readonly tableName: string;
@@ -21,43 +23,45 @@ export class InMemoryDbSet<T> implements IDbSet<T> {
   }
 
   public add(entity: T): void {
-    this._changeTracker.setAdd(entity);
+    this._changeTracker.trackAdd(entity);
   }
 
-  public update(newEntity: T, updateID: number): void {
-    this._changeTracker.setUpdate(newEntity, updateID);
+  public update(entityId: number, newEntity: T): void {
+    this._changeTracker.trackUpdate(entityId, newEntity);
   }
 
-  public delete(entity: T, deleteID: number): void {
-    this._changeTracker.setDelete(entity, deleteID);
+  public delete(entityId: number): void {
+    this._changeTracker.trackDelete(entityId);
   }
 
   public async commit(): Promise<number> {
     let changes: number = 0;
 
-    for(let i = 0; i < this._changeTracker.additions.length; i++) {
-      //Insert into DB.
-      const entity: T = this._changeTracker.additions[i];
-      (entity as any).$ID = this._nextId;
+    for(let i = 0; i < this._changeTracker.changes.length; i++) {
+      const dbEntity: DbEntity<T> = this._changeTracker.changes[i];
 
-      this._inMemoryData.set(this._nextId, entity);
-      this._nextId++;
+      switch(dbEntity.state) {
+        case DbEntityState.Add: {
+          (dbEntity.model as any).$ID = this._nextId;
+          this._inMemoryData.set(this._nextId, dbEntity.model);
 
-      changes++;
+          this._nextId++;
+          changes++;
+          break;
+        }
+        case DbEntityState.Update: {
+          this._inMemoryData.set(dbEntity.id, dbEntity.model);
+          changes++;
+          break;
+        }
+        case DbEntityState.Delete: {
+          this._inMemoryData.delete(dbEntity.id);
+          changes++;
+          break;
+        }
+      }
     }
-
-    this._changeTracker.updates.forEach((id: number, entity: T) => {
-      //Update entity in DB on ID.
-      this._inMemoryData.set(id, entity);
-      changes++;
-    });
-
-    this._changeTracker.deletions.forEach((id: number) => {
-      //Delete entity in DB on ID.
-      this._inMemoryData.delete(id);
-      changes++;
-    });
-
+    
     this._changeTracker.clear();
     return changes;
   }

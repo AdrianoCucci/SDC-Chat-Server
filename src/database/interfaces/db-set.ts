@@ -7,9 +7,9 @@ export interface IDbSet<T> {
 
   add(entity: T): void;
 
-  update(newEntity: T, updateID: number): void;
+  update(entityId: number, newEntity: T): void;
   
-  delete(entity: T, deleteID: number): void;
+  delete(entityId: number): void;
 
   commit(): Promise<number>
 }
