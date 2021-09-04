@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { ChatController } from "../controllers/chat-controller";
 import { IChatController } from "../controllers/interfaces/chat-controller";
+import { Message } from "../models/messages/message";
 
 export class SocketService {
   private readonly _server: Server;
@@ -17,7 +18,7 @@ export class SocketService {
     server.on("connection", (socket: Socket) => {
       const chatController: IChatController = new ChatController(server, socket);
 
-      socket.on("message", (message: string) => chatController.onMessage(message));
+      socket.on("message", (message: Message) => chatController.onMessage(message));
 
       socket.on("disconnect", (reason: string) => {
         chatController.onDisconnect(reason);
