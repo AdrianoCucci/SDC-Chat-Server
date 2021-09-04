@@ -4,7 +4,7 @@ import { Message } from "../models/messages/message";
 import { IApiController } from "./interfaces/api-controller";
 
 export class MessagesController implements IApiController {
-  private readonly _route: string = "/messages";
+  private readonly _route: string = "/api/messages";
 
   public configure(expressApp: Application, context: IDbContext) {
     expressApp.get(this._route, async (request, response) => {

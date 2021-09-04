@@ -4,7 +4,7 @@ import { User } from "../models/user";
 import { IApiController } from "./interfaces/api-controller";
 
 export class UsersController implements IApiController {
-  private readonly _route: string = "/users";
+  private readonly _route: string = "/api/users";
 
   public configure(expressApp: Application, context: IDbContext) {
     expressApp.get(this._route, async (request, response) => {
