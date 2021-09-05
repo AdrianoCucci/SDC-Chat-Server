@@ -7,15 +7,18 @@ import { IApiController } from "./interfaces/api-controller";
 
 export class UsersController implements IApiController {
   private readonly _route: string = "/api/users";
-  private readonly _mapper: MapperService
 
-  public constructor(mapper: MapperService) { 
+  private readonly _context: IDbContext;
+  private readonly _mapper: MapperService;
+
+  public constructor(context: IDbContext, mapper: MapperService) { 
+    this._context = context;
     this._mapper = mapper;
   }
 
-  public configure(expressApp: Application, context: IDbContext) {
+  public configure(expressApp: Application) {
     expressApp.get(this._route, async (request, response) => {
-      const users: User[] = await context.users.getAll();
+      const users: User[] = await this._context.users.getAll();
       const dtos: UserDto[] = this._mapper.users.toDtoArray(users);
 
       response.status(200).json(dtos);

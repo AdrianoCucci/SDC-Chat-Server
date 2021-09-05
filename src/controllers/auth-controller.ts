@@ -11,13 +11,16 @@ import { IApiController } from "./interfaces/api-controller";
 
 export class AuthController implements IApiController {
   private readonly _route: string = "/api/authentication";
+
+  private readonly _context: IDbContext;
   private readonly _mapper: MapperService;
 
-  public constructor(mapper: MapperService) {
+  public constructor(context: IDbContext, mapper: MapperService) {
+    this._context = context;
     this._mapper = mapper;
   }
 
-  public configure(expressApp: Application, context: IDbContext): void {
+  public configure(expressApp: Application): void {
     expressApp.post(`${this._route}/login`, async (request, response) => {
       try {
         const authRequest: AuthRequest = request.body;
@@ -25,14 +28,14 @@ export class AuthController implements IApiController {
           throw new ApiControllerError(400, { isSuccess: false, message: "Authentication request body is missing" } as AuthResponse);
         }
 
-        const user: User = await context.users.find(u => u.username === authRequest.username && u.password === authRequest.password);
+        const user: User = await this._context.users.find(u => u.username === authRequest.username && u.password === authRequest.password);
         if(user == null) {
           throw new ApiControllerError(401, { isSuccess: false, message: "Login credentials are invalid" } as AuthResponse);
         }
         else {
           user.isOnline = true;
-          context.users.update(user.userId, user);
-          await context.users.commit();
+          this._context.users.update(user.userId, user);
+          await this._context.users.commit();
 
           const userDto: UserDto = this._mapper.users.toDto(user);
           const jwt: string = new JwtProvider().generateToken(userDto);

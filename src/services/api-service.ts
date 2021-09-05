@@ -23,13 +23,13 @@ export class ApiService {
 
   private configureControllers(): IApiController[] {
     const controllers: IApiController[] = [
-      new AuthController(this._mapper),
-      new UsersController(this._mapper),
-      new MessagesController()
+      new AuthController(this._context, this._mapper),
+      new UsersController(this._context, this._mapper),
+      new MessagesController(this._context)
     ];
 
     for (let i = 0; i < controllers.length; i++) {
-      controllers[i].configure(this._expressApp, this._context);      
+      controllers[i].configure(this._expressApp);      
     }
 
     return controllers;
