@@ -1,8 +1,9 @@
 import { Response, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
 import { ExpressAuthRequest } from "../models/auth/express-auth-request";
+import { RoleType } from "../models/auth/role-type";
 
-export const authorizeRequest = (request: ExpressAuthRequest, response: Response, next: NextFunction) => {
+export const requireAuth = (request: ExpressAuthRequest, response: Response, next: NextFunction) => {
   const authHeader: string = request.headers["authorization"];
   const token: string = authHeader?.replace(/[Bb]earer\s*/, '') ?? null;
 
@@ -22,4 +23,17 @@ export const authorizeRequest = (request: ExpressAuthRequest, response: Response
       }
     });
   }
+}
+
+export const requireAdministrator = (request: ExpressAuthRequest, response: Response, next: NextFunction) => {
+  requireAuth(request, response, () => {
+    const userRole: RoleType = request.user?.role ?? null;
+
+    if(userRole !== RoleType.Administrator) {
+      response.sendStatus(403);
+    }
+    else {
+      next();
+    }
+  });
 }
