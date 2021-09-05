@@ -2,9 +2,9 @@ import { RoleType } from "../auth/role-type";
 
 export interface User {
   userId?: number;
+  role: RoleType;
   username: string;
   password: string;
-  role: RoleType;
   displayName?: string;
   isOnline: boolean;
 }
