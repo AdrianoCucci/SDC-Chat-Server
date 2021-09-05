@@ -34,8 +34,8 @@ export class AuthController implements IApiController {
           context.users.update(user.userId, user);
           await context.users.commit();
 
-          const jwt: string = new JwtProvider().generateToken(user.username);
           const userDto: UserDto = this._mapper.users.toDto(user);
+          const jwt: string = new JwtProvider().generateToken(userDto);
 
           const authResponse: AuthResponse = {
             isSuccess: true,
