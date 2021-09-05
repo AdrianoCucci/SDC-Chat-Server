@@ -12,11 +12,11 @@ export class ApiService {
   private readonly _mapper: MapperService;
   private readonly _controllers: IApiController[];
 
-  public constructor(expressApp: Application, context: IDbContext) {
+  public constructor(expressApp: Application, context: IDbContext, mapper: MapperService) {
     this._expressApp = expressApp;
     this._context = context;
 
-    this._mapper = new MapperService();
+    this._mapper = mapper;
     this._controllers = this.configureControllers();
   }
 

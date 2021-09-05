@@ -2,15 +2,19 @@ import { IChatController } from "./interfaces/chat-controller";
 import { Server, Socket } from "socket.io";
 import { Message } from "../models/messages/message";
 import { IDbContext } from "../database/interfaces/db-context";
+import { MapperService } from "../services/mapper-service";
+import { User } from "../models/users/user";
 
 export class ChatController implements IChatController {
   private readonly _context: IDbContext;
+  private readonly _mapper: MapperService;
 
   private _server: Server;
   private _socket: Socket;
 
-  constructor(context: IDbContext) {
+  constructor(context: IDbContext, mapper: MapperService) {
     this._context = context;
+    this._mapper = mapper;
   }
 
   public onConnect(server: Server, socket: Socket): void {
@@ -24,7 +28,8 @@ export class ChatController implements IChatController {
   }
 
   public async onMessage(message: Message): Promise<void> {
-    message.sender = await this._context.users.getById(message.senderUserId);
+    const user: User = await this._context.users.getById(message.senderUserId);
+    message.sender = this._mapper.users.toDto(user);
 
     console.log("MESSAGE:\n", message);
     this._socket.broadcast.emit("message", message);

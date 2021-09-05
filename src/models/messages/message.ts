@@ -1,4 +1,4 @@
-import { User } from "../users/user";
+import { UserDto } from "../users/user-dto";
 
 export interface Message {
   messageId: number;
@@ -6,5 +6,5 @@ export interface Message {
   datePosted: Date | string;
   senderUserId: number;
 
-  sender?: User;
+  sender?: UserDto;
 }
