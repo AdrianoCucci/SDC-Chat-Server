@@ -1,7 +1,7 @@
 import { Application } from "express";
-import { IDbContext } from "../database/interfaces/db-context";
-import { Message } from "../models/messages/message";
-import { IApiController } from "./interfaces/api-controller";
+import { IDbContext } from "../../database/interfaces/db-context";
+import { Message } from "../../models/messages/message";
+import { IApiController } from "../interfaces/api-controller";
 
 export class MessagesController implements IApiController {
   private readonly _route: string = "/api/messages";
