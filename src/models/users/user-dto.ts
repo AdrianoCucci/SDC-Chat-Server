@@ -1,7 +1,6 @@
-export interface User {
+export interface UserDto {
   userId?: number;
   username: string;
-  password: string;
   displayName?: string;
   isOnline: boolean;
 }
