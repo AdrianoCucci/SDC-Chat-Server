@@ -1,8 +1,8 @@
 import { Application } from "express";
-import { AuthController } from "../controllers/auth-controller";
+import { AuthController } from "../controllers/api/auth-controller";
+import { MessagesController } from "../controllers/api/messages-controller";
+import { UsersController } from "../controllers/api/users-controller";
 import { IApiController } from "../controllers/interfaces/api-controller";
-import { MessagesController } from "../controllers/messages-controller";
-import { UsersController } from "../controllers/users-controller";
 import { IDbContext } from "../database/interfaces/db-context";
 import { MapperService } from "./mapper-service";
 

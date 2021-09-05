@@ -1,13 +1,13 @@
 import { Application } from "express";
-import { IDbContext } from "../database/interfaces/db-context";
-import { AuthRequest } from "../models/auth/auth-request";
-import { AuthResponse } from "../models/auth/auth-response";
-import { User } from "../models/users/user";
-import { UserDto } from "../models/users/user-dto";
-import { MapperService } from "../services/mapper-service";
-import { ApiControllerError } from "../utils/api-controller-error";
-import { JwtProvider } from "../utils/jwt-provider";
-import { IApiController } from "./interfaces/api-controller";
+import { IDbContext } from "../../database/interfaces/db-context";
+import { AuthRequest } from "../../models/auth/auth-request";
+import { AuthResponse } from "../../models/auth/auth-response";
+import { User } from "../../models/users/user";
+import { UserDto } from "../../models/users/user-dto";
+import { MapperService } from "../../services/mapper-service";
+import { ApiControllerError } from "../../utils/api-controller-error";
+import { JwtProvider } from "../../utils/jwt-provider";
+import { IApiController } from "../interfaces/api-controller";
 
 export class AuthController implements IApiController {
   private readonly _route: string = "/api/authentication";
