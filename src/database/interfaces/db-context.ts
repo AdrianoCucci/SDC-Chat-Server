@@ -1,6 +1,6 @@
 import { Message } from "../../models/messages/message";
 import { UserMessage } from "../../models/messages/user-message";
-import { User } from "../../models/user";
+import { User } from "../../models/users/user";
 import { IDbSet } from "./db-set";
 
 export interface IDbContext {

@@ -1,4 +1,4 @@
-import { User } from "../user";
+import { User } from "../users/user";
 
 export interface Message {
   messageId: number;
