@@ -1,4 +1,5 @@
 import { Application } from "express";
+import { AuthController } from "../controllers/auth-controller";
 import { IApiController } from "../controllers/interfaces/api-controller";
 import { MessagesController } from "../controllers/messages-controller";
 import { UsersController } from "../controllers/users-controller";
@@ -22,6 +23,7 @@ export class ApiService {
 
   private configureControllers(): IApiController[] {
     const controllers: IApiController[] = [
+      new AuthController(this._mapper),
       new UsersController(this._mapper),
       new MessagesController()
     ];
