@@ -22,7 +22,7 @@ export class InMemoryDbSet<T> implements IDbSet<T> {
     return this._inMemoryData.has(entityId) ? this._inMemoryData.get(entityId) : null;
   }
 
-  public async getFirstWhere(predicate: (entity: T) => boolean): Promise<T> {
+  public async find(predicate: (entity: T) => boolean): Promise<T> {
     let result: T = null;
 
     this._inMemoryData.forEach((value: T) => {
@@ -35,7 +35,7 @@ export class InMemoryDbSet<T> implements IDbSet<T> {
     return result;
   }
 
-  public async getAllWhere(predicate: (entity: T) => boolean): Promise<T[]> {
+  public async findAll(predicate: (entity: T) => boolean): Promise<T[]> {
     const results: T[] = [];
 
     this._inMemoryData.forEach((value: T) => {

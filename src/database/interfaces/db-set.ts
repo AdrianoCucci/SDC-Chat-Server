@@ -5,9 +5,9 @@ export interface IDbSet<T> {
 
   getById(entityId: number): Promise<T>;
 
-  getFirstWhere(predicate: (entity: T) => boolean): Promise<T>;
+  find(predicate: (entity: T) => boolean): Promise<T>;
 
-  getAllWhere(predicate: (entity: T) => boolean): Promise<T[]>;
+  findAll(predicate: (entity: T) => boolean): Promise<T[]>;
 
   add(entity: T): void;
 
