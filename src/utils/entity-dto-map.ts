@@ -1,7 +1,7 @@
-export class EntityMapper<TEntity, TDto> {
-  private readonly _handlers: EntityMapperHandlers<TEntity, TDto>;
+export class EntityDtoMap<TEntity, TDto> {
+  private readonly _handlers: EntityDtoMapHandlers<TEntity, TDto>;
 
-  public constructor(handlers: EntityMapperHandlers<TEntity, TDto>) {
+  public constructor(handlers: EntityDtoMapHandlers<TEntity, TDto>) {
     this._handlers = handlers ?? {};
   }
 
@@ -50,7 +50,7 @@ export class EntityMapper<TEntity, TDto> {
   }
 }
 
-interface EntityMapperHandlers<TEntity, TDto> {
+interface EntityDtoMapHandlers<TEntity, TDto> {
   toDto?: (entity: TEntity) => TDto;
   toEntity?: (dto: TDto) => TEntity;
 }
