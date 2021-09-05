@@ -22,6 +22,31 @@ export class InMemoryDbSet<T> implements IDbSet<T> {
     return this._inMemoryData.has(entityId) ? this._inMemoryData.get(entityId) : null;
   }
 
+  public async find(predicate: (entity: T) => boolean): Promise<T> {
+    let result: T = null;
+
+    this._inMemoryData.forEach((value: T) => {
+      if(predicate(value)) {
+        result = value;
+        return;
+      }
+    });
+
+    return result;
+  }
+
+  public async findAll(predicate: (entity: T) => boolean): Promise<T[]> {
+    const results: T[] = [];
+
+    this._inMemoryData.forEach((value: T) => {
+      if(predicate(value)) {
+        results.push(value);
+      }
+    });
+
+    return results;
+  }
+
   public add(entity: T): void {
     this._changeTracker.trackAdd(entity);
   }
