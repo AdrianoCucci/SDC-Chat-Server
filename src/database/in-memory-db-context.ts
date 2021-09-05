@@ -10,10 +10,10 @@ export class InMemoryDbContext implements IDbContext {
   public readonly usersMessages = new InMemoryDbSet<UserMessage>("UsersMessages");
 
   public constructor() {
-    this.users.add({ userId: 1, username: "admin", firstName: "First", lastName: "Last", isOnline: true });
-    this.users.add({ userId: 2, username: "user123", firstName: "First123", lastName: "Last456", isOnline: false });
-    this.users.add({ userId: 3, username: "user456", firstName: "First456", lastName: "Last456", isOnline: true });
-    this.users.add({ userId: 4, username: "user789", firstName: "First789", lastName: "Last789", isOnline: false });
+    this.users.add({ userId: 1, username: "admin", displayName: "Admin", isOnline: true });
+    this.users.add({ userId: 2, username: "user123", displayName: "Display Name", isOnline: false });
+    this.users.add({ userId: 3, username: "user456", displayName: "Display Name", isOnline: true });
+    this.users.add({ userId: 4, username: "user789", displayName: "Display Name", isOnline: false });
     this.users.commit();
   }
 }
