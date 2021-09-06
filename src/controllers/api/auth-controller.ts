@@ -33,10 +33,6 @@ export class AuthController implements IApiController {
           throw new ApiControllerError(401, { isSuccess: false, message: "Login credentials are invalid" } as AuthResponse);
         }
         else {
-          user.isOnline = true;
-          this._context.users.update(user.userId, user);
-          await this._context.users.commit();
-
           const userDto: UserDto = this._mapper.users.toDto(user);
           const jwt: string = new JwtProvider().generateToken(userDto);
 

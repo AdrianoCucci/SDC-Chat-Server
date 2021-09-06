@@ -40,7 +40,6 @@ export class ChatController implements IChatController {
     if(message.sender == null) {
       message.sender = {
         username: "[Unknown]",
-        isOnline: true,
         role: RoleType.User
       }
     }
