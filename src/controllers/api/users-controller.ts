@@ -3,6 +3,7 @@ import { IDbContext } from "../../database/interfaces/db-context";
 import { User } from "../../models/users/user";
 import { UserDto } from "../../models/users/user-dto";
 import { MapperService } from "../../services/mapper-service";
+import { requireAuth } from "../../utils/request-authorizations";
 import { IApiController } from "../interfaces/api-controller";
 
 export class UsersController implements IApiController {
@@ -17,7 +18,7 @@ export class UsersController implements IApiController {
   }
 
   public configure(expressApp: Application) {
-    expressApp.get(this._route, async (request, response) => {
+    expressApp.get(this._route, requireAuth, async (request, response) => {
       const users: User[] = await this._context.users.getAll();
       const dtos: UserDto[] = this._mapper.users.toDtoArray(users);
 

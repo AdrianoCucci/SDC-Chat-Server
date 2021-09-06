@@ -6,6 +6,7 @@ import { User } from "../../models/users/user";
 import { UserDto } from "../../models/users/user-dto";
 import { MapperService } from "../../services/mapper-service";
 import { ApiControllerError } from "../../utils/api-controller-error";
+import { handleApiControllerError } from "../../utils/handle-api-controller-error";
 import { JwtProvider } from "../../utils/jwt-provider";
 import { IApiController } from "../interfaces/api-controller";
 
@@ -46,12 +47,7 @@ export class AuthController implements IApiController {
         }
       }
       catch(error) {
-        if(error instanceof ApiControllerError) {
-          response.status(error.status).send(error.response);
-        }
-        else {
-          response.status(500).send(error);
-        }
+        handleApiControllerError(error, response);
       }
     });
   }
