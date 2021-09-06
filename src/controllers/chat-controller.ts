@@ -3,7 +3,7 @@ import { Server, Socket } from "socket.io";
 import { Message } from "../models/messages/message";
 import { IDbContext } from "../database/interfaces/db-context";
 import { MapperService } from "../services/mapper-service";
-import { User } from "../models/users/user";
+import { RoleType } from "../models/auth/role-type";
 
 export class ChatController implements IChatController {
   private readonly _context: IDbContext;
@@ -28,8 +28,13 @@ export class ChatController implements IChatController {
   }
 
   public async onMessage(message: Message): Promise<void> {
-    const user: User = await this._context.users.getById(message.senderUserId);
-    message.sender = this._mapper.users.toDto(user);
+    if(message.sender == null) {
+      message.sender = {
+        username: "[Unknown]",
+        isOnline: true,
+        role: RoleType.User
+      }
+    }
 
     console.log("MESSAGE:\n", message);
     this._socket.broadcast.emit("message", message);
