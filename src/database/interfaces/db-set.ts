@@ -5,6 +5,8 @@ export interface IDbSet<T> {
 
   getById(entityId: number): Promise<T>;
 
+  hasEntity(entityId: number): Promise<boolean>;
+
   find(predicate: (entity: T) => boolean): Promise<T>;
 
   findAll(predicate: (entity: T) => boolean): Promise<T[]>;

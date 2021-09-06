@@ -1,7 +1,6 @@
 import { IChatController } from "./interfaces/chat-controller";
 import { Server, Socket } from "socket.io";
 import { ChatMessage } from "../models/messages/chat-message";
-import { RoleType } from "../models/auth/role-type";
 import { UserDto } from "../models/users/user-dto";
 import { SOCKET_EVENTS } from "../utils/socket-events";
 import { IDbContext } from "../database/interfaces/db-context";
@@ -62,9 +61,13 @@ export class ChatController implements IChatController {
   }
 
   public async onMessage(message: ChatMessage): Promise<void> {
-    if(message.sender != null) {
+    if(message.senderUserId != null) {
+      if(await this._context.users.hasEntity(message.senderUserId)) {
+        this._context.messages.add(message);
+        await this._context.messages.commit();
 
-      this._socket.broadcast.emit(SOCKET_EVENTS.message, message);
+        this._socket.broadcast.emit(SOCKET_EVENTS.message, message);
+      }
     }
   }
 }

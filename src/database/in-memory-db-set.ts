@@ -22,6 +22,10 @@ export class InMemoryDbSet<T> implements IDbSet<T> {
     return this._inMemoryData.has(entityId) ? this._inMemoryData.get(entityId) : null;
   }
 
+  public async hasEntity(entityId: number): Promise<boolean> {
+    return this._inMemoryData.has(entityId);
+  }
+
   public async find(predicate: (entity: T) => boolean): Promise<T> {
     let result: T = null;
 
