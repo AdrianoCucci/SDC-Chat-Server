@@ -1,30 +1,30 @@
 import { IChatController } from "./interfaces/chat-controller";
 import { Server, Socket } from "socket.io";
 import { Message } from "../models/messages/message";
-import { IDbContext } from "../database/interfaces/db-context";
-import { MapperService } from "../services/mapper-service";
 import { RoleType } from "../models/auth/role-type";
+import { UserDto } from "../models/users/user-dto";
+import { SOCKET_EVENTS } from "../utils/socket-events";
 
 export class ChatController implements IChatController {
-  private readonly _context: IDbContext;
-  private readonly _mapper: MapperService;
-
   private _server: Server;
   private _socket: Socket;
 
-  constructor(context: IDbContext, mapper: MapperService) {
-    this._context = context;
-    this._mapper = mapper;
-  }
-
   public onConnect(server: Server, socket: Socket): void {
-    console.log("New web socket connection...");
+    console.log("New web socket connection...", socket);
     this._server = server;
     this._socket = socket;
   }
 
   public onDisconnect(reason: string): void {
     console.log("Socket disconnected...\nReason: ", reason);
+  }
+
+  public onUserJoin(user: UserDto): void {
+    this._socket.broadcast.emit(SOCKET_EVENTS.userJoin, user);
+  }
+
+  public onUserLeave(user: UserDto): void {
+    this._socket.broadcast.emit(SOCKET_EVENTS.userLeave, user);
   }
 
   public async onMessage(message: Message): Promise<void> {
@@ -37,6 +37,6 @@ export class ChatController implements IChatController {
     }
 
     console.log("MESSAGE:\n", message);
-    this._socket.broadcast.emit("message", message);
+    this._socket.broadcast.emit(SOCKET_EVENTS.message, message);
   }
 }

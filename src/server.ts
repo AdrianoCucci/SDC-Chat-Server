@@ -26,7 +26,7 @@ const socketServer = new SocketServer(httpServer, { cors: corsOptions });
 const dbContext: IDbContext = new InMemoryDbContext();
 const mapper = new MapperService();
 
-new SocketService(socketServer, dbContext, mapper);
+new SocketService(socketServer);
 new ApiService(expressApp, dbContext, mapper);
 
 const port: string | number = process.env.PORT || 3000;
