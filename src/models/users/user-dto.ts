@@ -5,4 +5,5 @@ export interface UserDto {
   role: RoleType;
   username: string;
   displayName?: string;
+  isOnline: boolean;
 }
