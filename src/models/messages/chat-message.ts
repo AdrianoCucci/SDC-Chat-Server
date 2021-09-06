@@ -1,6 +1,6 @@
 import { UserDto } from "../users/user-dto";
 
-export interface Message {
+export interface ChatMessage {
   messageId: number;
   contents: string;
   datePosted: Date | string;

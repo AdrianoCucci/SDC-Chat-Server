@@ -1,6 +1,6 @@
 import { Application } from "express";
 import { IDbContext } from "../../database/interfaces/db-context";
-import { Message } from "../../models/messages/message";
+import { ChatMessage } from "../../models/messages/chat-message";
 import { IApiController } from "../interfaces/api-controller";
 
 export class MessagesController implements IApiController {
@@ -13,12 +13,12 @@ export class MessagesController implements IApiController {
 
   public configure(expressApp: Application) {
     expressApp.get(this._route, async (request, response) => {
-      const messages: Message[] = await this._context.messages.getAll();
+      const messages: ChatMessage[] = await this._context.messages.getAll();
       response.status(200).json(messages);
     });
 
     expressApp.post(this._route, async (request, response) => {
-      const message: Message = request.body;
+      const message: ChatMessage = request.body;
 
       this._context.messages.add(message);
       await this._context.messages.commit();
@@ -29,7 +29,7 @@ export class MessagesController implements IApiController {
     expressApp.put(`${this._route}/:id`, async (request, response) => {
       try {
         const messageId: number = Number(request.params.id);
-        const message: Message = await this._context.messages.getById(messageId);
+        const message: ChatMessage = await this._context.messages.getById(messageId);
 
         if(message == null) {
           throw `Message with ID does not exist: ${messageId}`;

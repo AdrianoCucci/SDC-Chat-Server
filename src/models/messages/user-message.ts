@@ -1,5 +1,5 @@
 import { User } from "../users/user";
-import { Message } from "./message";
+import { ChatMessage } from "./chat-message";
 
 export interface UserMessage {
   userMessageId: number;
@@ -7,6 +7,6 @@ export interface UserMessage {
   messageId: number;
   isRead: boolean;
 
-  message?: Message;
+  message?: ChatMessage;
   user?: User;
 }

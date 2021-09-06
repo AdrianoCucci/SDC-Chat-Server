@@ -1,6 +1,6 @@
 import { IChatController } from "./interfaces/chat-controller";
 import { Server, Socket } from "socket.io";
-import { Message } from "../models/messages/message";
+import { ChatMessage } from "../models/messages/chat-message";
 import { RoleType } from "../models/auth/role-type";
 import { UserDto } from "../models/users/user-dto";
 import { SOCKET_EVENTS } from "../utils/socket-events";
@@ -61,15 +61,10 @@ export class ChatController implements IChatController {
     }
   }
 
-  public async onMessage(message: Message): Promise<void> {
-    if(message.sender == null) {
-      message.sender = {
-        username: "[Unknown]",
-        role: RoleType.User,
-        isOnline: true
-      }
-    }
+  public async onMessage(message: ChatMessage): Promise<void> {
+    if(message.sender != null) {
 
-    this._socket.broadcast.emit(SOCKET_EVENTS.message, message);
+      this._socket.broadcast.emit(SOCKET_EVENTS.message, message);
+    }
   }
 }

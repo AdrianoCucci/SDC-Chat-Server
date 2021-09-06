@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { Message } from "../../models/messages/message";
+import { ChatMessage } from "../../models/messages/chat-message";
 import { UserDto } from "../../models/users/user-dto";
 
 export interface IChatController {
@@ -11,5 +11,5 @@ export interface IChatController {
 
   onUserLeave(user: UserDto): void;
 
-  onMessage(message: Message): void;
+  onMessage(message: ChatMessage): void;
 }

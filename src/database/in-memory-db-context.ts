@@ -1,5 +1,5 @@
 import { RoleType } from "../models/auth/role-type";
-import { Message } from "../models/messages/message";
+import { ChatMessage } from "../models/messages/chat-message";
 import { UserMessage } from "../models/messages/user-message";
 import { User } from "../models/users/user";
 import { InMemoryDbSet } from "./in-memory-db-set";
@@ -7,7 +7,7 @@ import { IDbContext } from "./interfaces/db-context";
 
 export class InMemoryDbContext implements IDbContext {
   public readonly users = new InMemoryDbSet<User>("Users");
-  public readonly messages = new InMemoryDbSet<Message>("Messages");
+  public readonly messages = new InMemoryDbSet<ChatMessage>("Messages");
   public readonly usersMessages = new InMemoryDbSet<UserMessage>("UsersMessages");
 
   public constructor() {
