@@ -17,6 +17,11 @@ export class ChatMessagesController implements IApiController {
   public configure(expressApp: Application) {
     expressApp.get(this._route, requireAuth, async (request, response) => {
       const messages: ChatMessage[] = await this._context.messages.getAll();
+      
+      for (let i = 0; i < messages.length; i++) {
+        messages[i].sender = await this._context.users.getById(messages[i].senderUserId);
+      }
+
       response.status(200).json(messages);
     });
 
