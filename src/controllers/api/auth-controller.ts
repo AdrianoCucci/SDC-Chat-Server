@@ -29,7 +29,7 @@ export class AuthController implements IApiController {
         const user: User = await this._context.users.find(u => u.username === authRequest.username && u.password === authRequest.password);
 
         if(user == null) {
-          throw new ApiControllerError(401, { isSuccess: false, message: "Login credentials are invalid" } as AuthResponse);
+          throw new ApiControllerError(401, "Login credentials are invalid");
         }
         
         const userDto: UserDto = this._mapper.users.toDto(user);
@@ -41,7 +41,7 @@ export class AuthController implements IApiController {
           user: userDto
         };
 
-        response.status(200).send(authResponse);
+        response.status(200).json(authResponse);
       }
       catch(error) {
         handleApiControllerError(error, response);
