@@ -5,6 +5,7 @@ import { ApiControllerError } from "../../utils/api-controller-error";
 import { handleApiControllerError } from "../../utils/handle-api-controller-error";
 import { requireAuth } from "../middlewares/require-authorizations";
 import { IApiController } from "../interfaces/api-controller";
+import { requireBody } from "../middlewares/require-body";
 
 export class ChatMessagesController implements IApiController {
   private readonly _route: string = "/api/chat-messages";
@@ -25,7 +26,7 @@ export class ChatMessagesController implements IApiController {
       response.status(200).json(messages);
     });
 
-    expressApp.post(this._route, requireAuth, async (request, response) => {
+    expressApp.post(this._route, requireAuth, requireBody, async (request, response) => {
       const message: ChatMessage = request.body;
 
       this._context.messages.add(message);
@@ -34,7 +35,7 @@ export class ChatMessagesController implements IApiController {
       response.status(201).json(message);
     });
 
-    expressApp.put(`${this._route}/:id`, requireAuth, async (request, response) => {
+    expressApp.put(`${this._route}/:id`, requireAuth, requireBody, async (request, response) => {
       try {
         const messageId: number = Number(request.params.id);
         const message: ChatMessage = await this._context.messages.getById(messageId);
