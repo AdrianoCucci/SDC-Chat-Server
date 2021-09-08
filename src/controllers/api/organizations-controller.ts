@@ -28,15 +28,20 @@ export class OrganizationsController implements IApiController {
     });
 
     expressApp.get(`${this._route}/:id`, requireAuth, async (request, response) => {
-      const id: number = Number(request.params.id);
-      const organization: Organization = await this._context.organizations.getById(id);
+      try {
+        const id: number = Number(request.params.id);
+        const organization: Organization = await this._context.organizations.getById(id);
 
-      if(organization == null) {
-        throw new ApiControllerError(404, `Organization with ID does not exist: ${id}`);
+        if(organization == null) {
+          throw new ApiControllerError(404, `Organization with ID does not exist: ${id}`);
+        }
+
+        const dtoResponse: OrganizationDto = this._mapper.organizations.toDto(organization);
+        response.status(200).json(dtoResponse);
       }
-
-      const dtoResponse: OrganizationDto = this._mapper.organizations.toDto(organization);
-      response.status(200).json(dtoResponse);
+      catch(error) {
+        handleApiControllerError(error, response);
+      }
     });
 
     expressApp.post(this._route, requireAdministrator, requireBody, async (request, response) => {

@@ -28,15 +28,20 @@ export class RoomsController implements IApiController {
     });
 
     expressApp.get(`${this._route}/:id`, requireAuth, async (request, response) => {
-      const id: number = Number(request.params.id);
-      const room: Room = await this._context.rooms.getById(id);
-
-      if(room == null) {
-        throw new ApiControllerError(404, `Room with ID does not exist: ${id}`);
+      try {
+        const id: number = Number(request.params.id);
+        const room: Room = await this._context.rooms.getById(id);
+  
+        if(room == null) {
+          throw new ApiControllerError(404, `Room with ID does not exist: ${id}`);
+        }
+  
+        const dtoResponse: RoomDto = this._mapper.rooms.toDto(room);
+        response.status(200).send(dtoResponse);
       }
-
-      const dtoResponse: RoomDto = this._mapper.rooms.toDto(room);
-      response.status(200).send(dtoResponse);
+      catch(error) {
+        handleApiControllerError(error, response);
+      }
     });
 
     expressApp.post(this._route, requireAdministrator, requireBody, async (request, response) => {
