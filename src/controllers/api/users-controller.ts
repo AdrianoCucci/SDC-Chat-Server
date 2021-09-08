@@ -3,7 +3,7 @@ import { IDbContext } from "../../database/interfaces/db-context";
 import { User } from "../../models/users/user";
 import { UserDto } from "../../models/users/user-dto";
 import { MapperService } from "../../services/mapper-service";
-import { requireAuth } from "../../utils/request-authorizations";
+import { requireAuth } from "../middlewares/require-authorizations";
 import { IApiController } from "../interfaces/api-controller";
 
 export class UsersController implements IApiController {

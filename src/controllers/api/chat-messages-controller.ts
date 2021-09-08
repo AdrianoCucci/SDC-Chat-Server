@@ -3,7 +3,7 @@ import { IDbContext } from "../../database/interfaces/db-context";
 import { ChatMessage } from "../../models/messages/chat-message";
 import { ApiControllerError } from "../../utils/api-controller-error";
 import { handleApiControllerError } from "../../utils/handle-api-controller-error";
-import { requireAuth } from "../../utils/request-authorizations";
+import { requireAuth } from "../middlewares/require-authorizations";
 import { IApiController } from "../interfaces/api-controller";
 
 export class ChatMessagesController implements IApiController {

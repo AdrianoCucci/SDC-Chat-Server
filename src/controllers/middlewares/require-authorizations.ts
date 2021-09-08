@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
-import { ExpressAuthRequest } from "../models/auth/express-auth-request";
-import { RoleType } from "../models/auth/role-type";
+import { ExpressAuthRequest } from "../../models/auth/express-auth-request";
+import { RoleType } from "../../models/auth/role-type";
 
 export const requireAuth = (request: ExpressAuthRequest, response: Response, next: NextFunction) => {
   const authHeader: string = request.headers["authorization"];
