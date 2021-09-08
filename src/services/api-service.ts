@@ -1,6 +1,7 @@
 import { Application } from "express";
 import { AuthController } from "../controllers/api/auth-controller";
 import { ChatMessagesController } from "../controllers/api/chat-messages-controller";
+import { OrganizationsController } from "../controllers/api/organizations-controller";
 import { UsersController } from "../controllers/api/users-controller";
 import { IApiController } from "../controllers/interfaces/api-controller";
 import { IDbContext } from "../database/interfaces/db-context";
@@ -25,7 +26,8 @@ export class ApiService {
     const controllers: IApiController[] = [
       new AuthController(this._context, this._mapper),
       new UsersController(this._context, this._mapper),
-      new ChatMessagesController(this._context)
+      new ChatMessagesController(this._context),
+      new OrganizationsController(this._context, this._mapper)
     ];
 
     for (let i = 0; i < controllers.length; i++) {
