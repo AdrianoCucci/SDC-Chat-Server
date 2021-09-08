@@ -30,11 +30,11 @@ export class ChatController implements IChatController {
   }
 
   public async onUserJoin(user: UserDto): Promise<void> {
-    const entity: User = await this._context.users.getById(user.userId);
+    const entity: User = await this._context.users.getById(user.id);
 
     if(entity !== null) {
       entity.isOnline = true;
-      this._context.users.update(entity.userId, entity);
+      this._context.users.update(entity.id, entity);
       await this._context.users.commit();
 
       user = this._mapper.users.toDto(entity);
@@ -44,12 +44,12 @@ export class ChatController implements IChatController {
   }
 
   public async onUserLeave(user: UserDto): Promise<void> {
-    if(this._joinedUser != null && this._joinedUser.userId === user.userId) {
-      const entity: User = await this._context.users.getById(user.userId);
+    if(this._joinedUser != null && this._joinedUser.id === user.id) {
+      const entity: User = await this._context.users.getById(user.id);
 
       if(entity !== null) {
         entity.isOnline = false;
-        this._context.users.update(entity.userId, entity);
+        this._context.users.update(entity.id, entity);
         await this._context.users.commit();
 
         user = this._mapper.users.toDto(entity);

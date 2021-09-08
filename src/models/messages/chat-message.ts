@@ -1,7 +1,7 @@
 import { UserDto } from "../users/user-dto";
 
 export interface ChatMessage {
-  messageId: number;
+  id: number;
   contents: string;
   datePosted: Date | string;
   senderUserId: number;
