@@ -25,6 +25,16 @@ export class UsersService {
     return this._users.find((u: User) => u.id === id);
   }
 
+  public async tryGetById(id: number): Promise<User> {
+    const user: User = await this.getById(id);
+
+    if(user == null) {
+      throw this.idNotFoundException(id);
+    }
+
+    return user;
+  }
+
   public async getByUsername(username: string): Promise<User> {
     return this._users.find((u: User) => u.username === username);
   }
@@ -54,10 +64,7 @@ export class UsersService {
   }
 
   public async update(id: number, user: User): Promise<User> {
-    const existingUser: User = await this.getById(id);
-    if(existingUser == null) {
-      throw this.idNotFoundException(id);
-    }
+    const existingUser: User = await this.tryGetById(id);
 
     const userByUsername: User = await this.getByUsername(user.username);
     if(userByUsername != null && userByUsername.id !== id) {
@@ -71,11 +78,8 @@ export class UsersService {
   }
 
   public async delete(id: number): Promise<boolean> {
-    const user: User = await this.getById(id);
-    if(user == null) {
-      throw this.idNotFoundException(id);
-    }
-
+    const user: User = await this.tryGetById(id);
+    
     const index: number = this._users.indexOf(user);
     this._users.splice(index, 1);
 
