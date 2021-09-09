@@ -2,13 +2,13 @@ import { Role } from "../auth/role";
 import { Organization } from "../organizations/organization";
 
 export class User {
-  public id: number = null;
+  public id: number;
   public role: Role = Role.User;
-  public username: string = null;
-  public password: string = null;
-  public displayName?: string = null;
+  public username: string;
+  public password: string;
+  public displayName?: string;
   public isOnline?: boolean = false;
-  public organizationId?: number = null;
+  public organizationId?: number;
   
-  public organization?: Organization = null;
+  public organization?: Organization;
 }

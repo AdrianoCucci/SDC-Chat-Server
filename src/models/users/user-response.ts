@@ -9,5 +9,5 @@ export class UserResponse {
   public isOnline: boolean = false;
   public organizationId?: number = null;
 
-  public organization?: Organization = null;
+  public organization?: Organization;
 }

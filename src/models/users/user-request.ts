@@ -10,17 +10,17 @@ export class UserRequest {
 
   @IsString()
   @IsOptional()
-  public password?: string = null;
+  public password?: string;
 
   @IsString()
   @IsOptional()
-  public displayName?: string = null;
+  public displayName?: string;
 
   @IsBoolean()
   @IsOptional()
-  public isOnline?: boolean = false;
+  public isOnline?: boolean;
 
   @IsInt()
   @IsOptional()
-  public organizationId?: number = null;
+  public organizationId?: number;
 }
