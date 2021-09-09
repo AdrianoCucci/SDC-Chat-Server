@@ -1,15 +1,26 @@
-import { IsNotEmpty } from "class-validator";
+import { IsBoolean, IsEnum, IsInt, IsOptional, IsString } from "class-validator";
 import { Role } from "../auth/role";
 
 export class UserRequest {
-  @IsNotEmpty()
+  @IsEnum(Role)
   public role: Role;
 
-  @IsNotEmpty()
+  @IsString()
   public username: string;
 
-  public password?: string;
-  public displayName?: string;
-  public isOnline?: boolean;
-  public organizationId?: number;
+  @IsString()
+  @IsOptional()
+  public password?: string = null;
+
+  @IsString()
+  @IsOptional()
+  public displayName?: string = null;
+
+  @IsBoolean()
+  @IsOptional()
+  public isOnline?: boolean = false;
+
+  @IsInt()
+  @IsOptional()
+  public organizationId?: number = null;
 }
