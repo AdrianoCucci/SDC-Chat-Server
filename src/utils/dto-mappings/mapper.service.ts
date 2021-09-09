@@ -8,15 +8,19 @@ import { EntityDtoMap } from "./entity-dto-map";
 export class MapperService {
   public readonly users = new EntityDtoMap<User, UserRequest, UserResponse>({
     toEntity: (request: UserRequest): User => {
-      const user: User = request as any;
-      user.isOnline = request.isOnline == null ? false : request.isOnline;
+      const user = new User();
+      Object.assign(user, request);
 
       return user;
     },
 
     toResponse: (entity: User): UserResponse => {
       delete entity.password;
-      return entity;
+      
+      const dto = new UserResponse();
+      Object.assign(dto, entity);
+
+      return dto;
     }
   });
 }
