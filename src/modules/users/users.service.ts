@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Role } from 'src/models/auth/role';
 import { User } from 'src/models/users/user';
-import { ServiceError } from 'src/utils/service-error';
 
 @Injectable()
 export class UsersService {
@@ -23,7 +22,13 @@ export class UsersService {
   }
 
   public async getById(id: number): Promise<User> {
-    return this._users.find((u: User) => u.id === id);
+    const user: User = this._users.find((u: User) => u.id === id);
+
+    if(user == null) {
+      throw this.idNotFound(id);
+    }
+
+    return user;
   }
 
   public async idExists(id: number): Promise<boolean> {
@@ -43,9 +48,9 @@ export class UsersService {
     const existingUser: User = await this.getById(id);
 
     if(existingUser == null) {
-      throw new ServiceError(404, `User with ID does not exist: ${id}`);
+      throw this.idNotFound(id);
     }
-    
+
     const index: number = this._users.indexOf(existingUser);
     this._users[index] = Object.assign(existingUser, user);
 
@@ -56,12 +61,16 @@ export class UsersService {
     const user: User = await this.getById(id);
 
     if(user == null) {
-      throw new ServiceError(404, `User with ID does not exist: ${id}`);
+      throw this.idNotFound(id);
     }
 
     const index: number = this._users.indexOf(user);
     this._users.splice(index, 1);
 
     return true;
+  }
+
+  private idNotFound(id: number): NotFoundException {
+    return new NotFoundException(`User with ID does not exist: ${id}`);
   }
 }
