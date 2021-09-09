@@ -82,11 +82,11 @@ export class UsersService {
     return true;
   }
 
-  private idNotFoundException(id: number): NotFoundException {
+  public idNotFoundException(id: number): NotFoundException {
     return new NotFoundException(`User with ID does not exist: ${id}`);
   }
 
-  private usernameConflictException(username: string): ConflictException {
+  public usernameConflictException(username: string): ConflictException {
     return new ConflictException(`Username already exists: ${username}`);
   }
 }
