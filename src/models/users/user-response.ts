@@ -1,7 +1,7 @@
 import { Role } from "../auth/role";
 import { Organization } from "../organizations/organization";
 
-export interface UserResponse {
+export class UserResponse {
   id: number;
   role: Role;
   username: string;
