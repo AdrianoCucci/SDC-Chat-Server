@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Role } from 'src/models/auth/role';
 import { User } from 'src/models/users/user';
-import { UserRequest } from 'src/models/users/user-request';
 import { ServiceError } from 'src/utils/service-error';
 
 @Injectable()
@@ -20,21 +19,19 @@ export class UsersService {
   }
 
   public async getAll(): Promise<User[]> {
-    return this._users;
+    return this._users || [];
   }
 
   public async getById(id: number): Promise<User> {
     return this._users.find((u: User) => u.id === id);
   }
 
-  public async hasWithId(id: number): Promise<boolean> {
+  public async idExists(id: number): Promise<boolean> {
     return this._users.findIndex((u: User) => u.id === id) !== -1;
   }
 
-  public async add(request: UserRequest): Promise<User> {
-    const user: User = { ...request } as any;
+  public async add(user: User): Promise<User> {
     user.id = this._nextId;
-    user.isOnline = request.isOnline == null ? false : request.isOnline;
 
     this._users.push(user);
     this._nextId++;
@@ -42,17 +39,17 @@ export class UsersService {
     return user;
   }
 
-  public async update(id: number, request: UserRequest): Promise<User> {
-    const user: User = await this.getById(id);
+  public async update(id: number, user: User): Promise<User> {
+    const existingUser: User = await this.getById(id);
 
-    if(user == null) {
+    if(existingUser == null) {
       throw new ServiceError(404, `User with ID does not exist: ${id}`);
     }
     
-    const index: number = this._users.indexOf(user);
-    this._users[index] = Object.assign(user, request);
+    const index: number = this._users.indexOf(existingUser);
+    this._users[index] = Object.assign(existingUser, user);
 
-    return user;
+    return existingUser;
   }
 
   public async delete(id: number): Promise<boolean> {
