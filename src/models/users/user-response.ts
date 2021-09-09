@@ -1,11 +1,10 @@
 import { Role } from "../auth/role";
 import { Organization } from "../organizations/organization";
 
-export interface User {
+export interface UserResponse {
   id: number;
   role: Role;
   username: string;
-  password: string;
   displayName?: string;
   isOnline: boolean;
   organizationId?: number;
