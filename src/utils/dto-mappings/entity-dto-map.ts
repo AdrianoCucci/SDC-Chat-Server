@@ -6,11 +6,23 @@ export class EntityDtoMap<TEntity, TRequest, TResponse> {
   }
 
   public toEntity(request: TRequest): TEntity {
-    return this._handlers.toEntity ? this._handlers.toEntity({ ...request }) : null;
+    let result: TEntity = null;
+
+    if(request != null && this._handlers.toEntity != null) {
+      result = this._handlers.toEntity({ ...request });
+    }
+
+    return result;
   }
 
   public toResponse(entity: TEntity): TResponse {
-    return this._handlers.toResponse ? this._handlers.toResponse({ ...entity }) : null;
+    let result: TResponse = null;
+
+    if(entity != null && this._handlers.toResponse != null) {
+      result = this._handlers.toResponse({ ...entity });
+    }
+
+    return result;
   }
 
   public toEntities(requests: TRequest[]): TEntity[] {
