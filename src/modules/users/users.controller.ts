@@ -1,4 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import { AuthorizeRoles } from 'src/decorators/authorize-roles.decorator';
+import { Role } from 'src/models/auth/role';
 import { User } from 'src/models/users/user';
 import { UserRequest } from 'src/models/users/user-request';
 import { UserResponse } from 'src/models/users/user-response';
@@ -28,6 +30,7 @@ export class UsersController {
   }
 
   @Post()
+  @AuthorizeRoles(Role.Administrator)
   public async postUser(@Body() request: UserRequest): Promise<UserResponse> {
     const user: User = this._mapper.users.toEntity(request);
     await this._usersService.add(user);
@@ -46,6 +49,7 @@ export class UsersController {
   }
 
   @Delete(":id")
+  @AuthorizeRoles(Role.Administrator)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async deleteUser(@Param("id", ParseIntPipe) id: number): Promise<void> {
     await this._usersService.delete(id);
