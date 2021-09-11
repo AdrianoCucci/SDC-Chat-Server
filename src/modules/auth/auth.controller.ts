@@ -11,7 +11,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   public async login(@Body() request: AuthRequest): Promise<AuthResponse> {
     const response: AuthResponse = await this._authService.login(request);
-
+    
     if(!response.isSuccess) {
       throw new UnauthorizedException(response.message);
     }
