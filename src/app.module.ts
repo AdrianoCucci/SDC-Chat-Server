@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
-import { AuthorizeGuard } from './guards/authorize.guard';
+import { AuthorizeRolesGuard } from './guards/authorize-roles.guard';
 
 @Module({
   imports: [
@@ -12,7 +12,7 @@ import { AuthorizeGuard } from './guards/authorize.guard';
     UsersModule
   ],
   providers: [
-    { provide: APP_GUARD, useClass: AuthorizeGuard }
+    { provide: APP_GUARD, useClass: AuthorizeRolesGuard }
   ]
 })
 export class AppModule { }
