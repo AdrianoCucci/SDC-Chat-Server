@@ -6,6 +6,7 @@ import { ROLES_META_KEY } from "src/decorators/authorize-roles.decorator";
 import { Role } from "src/models/auth/role";
 import { UserResponse } from "src/models/users/user-response";
 import appConfig from "src/app.config";
+import { parseAuthToken } from "src/utils/parse-auth-header";
 
 @Injectable()
 export class AuthorizeRolesGuard implements CanActivate {
@@ -21,25 +22,22 @@ export class AuthorizeRolesGuard implements CanActivate {
 
     if(requiredRoles?.length > 0 ?? false) {
       const request: Request = context.switchToHttp().getRequest();
-      result = this.validateAuthRole(request.header("authorization"), requiredRoles);
+      const token: string = parseAuthToken(request);
+      result = this.validateAuthRole(token, requiredRoles);
     }
 
     return result;
   }
 
-  private validateAuthRole(authHeader: string, requiredRoles: Role[]): boolean {
+  private validateAuthRole(authToken: string, requiredRoles: Role[]) {
     let authorized: boolean = false;
 
-    if(authHeader != null) {
-      const token: string = authHeader.replace("Bearer", "").trim();
+    if(authToken) {
+      const payload: any = this._jwtService.verify(authToken, { secret: appConfig().jwtSecret });
 
-      if(token) {
-        const payload: any = this._jwtService.verify(token, { secret: appConfig().jwtSecret });
-
-        if(payload) {
-          const role: Role = (payload.user as UserResponse).role;
-          authorized = requiredRoles.includes(role);
-        }
+      if(payload) {
+        const role: Role = (payload.user as UserResponse).role;
+        authorized = requiredRoles.includes(role);
       }
     }
 
