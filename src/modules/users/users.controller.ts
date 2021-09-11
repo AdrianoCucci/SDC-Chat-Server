@@ -3,7 +3,7 @@ import { User } from 'src/models/users/user';
 import { UserRequest } from 'src/models/users/user-request';
 import { UserResponse } from 'src/models/users/user-response';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
-import { JwtAuthGuard } from '../auth/jwt.auth-guard';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { UsersService } from './users.service';
 
 @Controller('users')
