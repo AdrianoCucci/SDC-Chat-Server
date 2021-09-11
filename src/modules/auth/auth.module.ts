@@ -1,10 +1,19 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { UsersService } from '../users/users.service';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
+import { UsersService } from '../users/users.service';
+import { PassportModule } from '@nestjs/passport/dist';
+import { JwtModule } from '@nestjs/jwt';
+import appConfig from 'src/app.config';
 
 @Module({
+  imports: [
+    PassportModule,
+    JwtModule.register({
+      secret: appConfig().jwtSecret
+    })
+  ],
   providers: [
     AuthService,
     UsersService,
