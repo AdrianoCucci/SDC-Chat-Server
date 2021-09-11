@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { AuthRequest } from 'src/models/auth/auth-request';
 import { AuthResponse } from 'src/models/auth/auth-response';
 import { User } from 'src/models/users/user';
+import { UserResponse } from 'src/models/users/user-response';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
 import { UsersService } from '../users/users.service';
+import appConfig from 'src/app.config';
 
 @Injectable()
 export class AuthService {
-  constructor(private _usersService: UsersService, private _mapper: MapperService) { }
+  constructor(private _usersService: UsersService, private _jwtService: JwtService, private _mapper: MapperService) { }
 
   public async login(request: AuthRequest): Promise<AuthResponse> {
     let response: AuthResponse;
@@ -20,10 +23,14 @@ export class AuthService {
       user.isOnline = true;
       await this._usersService.update(user.id, user);
 
+      const userResponse: UserResponse = this._mapper.users.toResponse(user);
+      const jwtSecret: string = appConfig().jwtSecret;
+      const jwt: string = this._jwtService.sign({userResponse}, { secret: jwtSecret });
+
       response = {
         isSuccess: true,
-        user: this._mapper.users.toResponse(user),
-        token: "ABC123"
+        user: userResponse,
+        token: jwt
       };
     }
 
