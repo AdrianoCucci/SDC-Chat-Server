@@ -25,7 +25,7 @@ export class AuthService {
 
       const userResponse: UserResponse = this._mapper.users.toResponse(user);
       const jwtSecret: string = appConfig().jwtSecret;
-      const jwt: string = this._jwtService.sign({userResponse}, { secret: jwtSecret });
+      const jwt: string = this._jwtService.sign({ user: userResponse }, { secret: jwtSecret });
 
       response = {
         isSuccess: true,
