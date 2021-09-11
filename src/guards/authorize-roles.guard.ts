@@ -1,16 +1,14 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
 import { ROLES_META_KEY } from "src/decorators/authorize-roles.decorator";
 import { Role } from "src/models/auth/role";
 import { UserResponse } from "src/models/users/user-response";
-import appConfig from "src/app.config";
-import { parseAuthToken } from "src/utils/parse-auth-header";
+import { AuthService } from "src/modules/auth/auth.service";
 
 @Injectable()
 export class AuthorizeRolesGuard implements CanActivate {
-  constructor(private _reflector: Reflector, private _jwtService: JwtService) { }
+  constructor(private _authService: AuthService, private _reflector: Reflector) { }
 
   public canActivate(context: ExecutionContext): boolean {
     let result: boolean = true;
@@ -22,25 +20,11 @@ export class AuthorizeRolesGuard implements CanActivate {
 
     if(requiredRoles?.length > 0 ?? false) {
       const request: Request = context.switchToHttp().getRequest();
-      const token: string = parseAuthToken(request);
-      result = this.validateAuthRole(token, requiredRoles);
+      const user: UserResponse = this._authService.getRequestUser(request);
+
+      result = requiredRoles.includes(user.role);
     }
 
     return result;
-  }
-
-  private validateAuthRole(authToken: string, requiredRoles: Role[]) {
-    let authorized: boolean = false;
-
-    if(authToken) {
-      const payload: any = this._jwtService.verify(authToken, { secret: appConfig().jwtSecret });
-
-      if(payload) {
-        const role: Role = (payload.user as UserResponse).role;
-        authorized = requiredRoles.includes(role);
-      }
-    }
-
-    return authorized;
   }
 }

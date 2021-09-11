@@ -10,7 +10,7 @@ const jwtRegisterModule: DynamicModule = JwtModule.register({});
 
 @Module({
   imports: [jwtRegisterModule],
-  exports: [jwtRegisterModule],
+  exports: [jwtRegisterModule, AuthService],
   providers: [
     AuthService,
     JwtStrategy,

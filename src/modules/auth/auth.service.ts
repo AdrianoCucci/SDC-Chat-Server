@@ -6,6 +6,7 @@ import { User } from 'src/models/users/user';
 import { UserResponse } from 'src/models/users/user-response';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
 import { UsersService } from '../users/users.service';
+import { Request } from 'express';
 import appConfig from 'src/app.config';
 
 @Injectable()
@@ -35,5 +36,27 @@ export class AuthService {
     }
 
     return response;
+  }
+
+  public getRequestUser(request: Request): UserResponse {
+    let user: UserResponse = null;
+
+    if(request != null) {
+      const header: string = request.header("authorization");
+
+      if(header) {
+        const token: string = header.replace("Bearer", "").trim();
+
+        if(token) {
+          const payload: any = this._jwtService.verify(token, { secret: appConfig().jwtSecret });
+
+          if(payload) {
+            user = payload.user;
+          }
+        }
+      }
+    }
+
+    return user;
   }
 }
