@@ -17,6 +17,9 @@ export class AuthService {
       response = { isSuccess: false, message: "Login credentials are invalid" };
     }
     else {
+      user.isOnline = true;
+      await this._usersService.update(user.id, user);
+
       response = {
         isSuccess: true,
         user: this._mapper.users.toResponse(user),
