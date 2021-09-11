@@ -1,11 +1,13 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { User } from 'src/models/users/user';
 import { UserRequest } from 'src/models/users/user-request';
 import { UserResponse } from 'src/models/users/user-response';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
+import { JwtAuthGuard } from '../auth/jwt.auth-guard';
 import { UsersService } from './users.service';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private _usersService: UsersService, private _mapper: MapperService) { }
 
