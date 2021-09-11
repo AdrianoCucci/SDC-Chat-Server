@@ -2,13 +2,13 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
-import { ROLES_META_KEY } from "src/decorators/roles.decorator";
+import { ROLES_META_KEY } from "src/decorators/authorize.decorator";
 import { Role } from "src/models/auth/role";
 import { UserResponse } from "src/models/users/user-response";
 import appConfig from "src/app.config";
 
 @Injectable()
-export class RolesGuard implements CanActivate {
+export class AuthorizeGuard implements CanActivate {
   constructor(private _reflector: Reflector, private _jwtService: JwtService) { }
 
   public canActivate(context: ExecutionContext): boolean {
