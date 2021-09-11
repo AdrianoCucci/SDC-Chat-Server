@@ -32,10 +32,15 @@ export class AuthorizeRolesGuard implements CanActivate {
 
     if(authHeader != null) {
       const token: string = authHeader.replace("Bearer", "").trim();
-      const payload: any = this._jwtService.verify(token, { secret: appConfig().jwtSecret });
-      const role: Role = (payload.user as UserResponse).role;
 
-      authorized = requiredRoles.includes(role);
+      if(token) {
+        const payload: any = this._jwtService.verify(token, { secret: appConfig().jwtSecret });
+
+        if(payload) {
+          const role: Role = (payload.user as UserResponse).role;
+          authorized = requiredRoles.includes(role);
+        }
+      }
     }
 
     return authorized;
