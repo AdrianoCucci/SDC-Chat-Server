@@ -1,6 +1,4 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
-import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from 'src/models/auth/role';
 import { User } from 'src/models/users/user';
 import { UserRequest } from 'src/models/users/user-request';
 import { UserResponse } from 'src/models/users/user-response';
@@ -14,7 +12,6 @@ export class UsersController {
   constructor(private _usersService: UsersService, private _mapper: MapperService) { }
 
   @Get()
-  @Roles(Role.User)
   public async getAllUsers(): Promise<UserResponse[]> {
     const users: User[] = await this._usersService.getAll();
     const dtos: UserResponse[] = this._mapper.users.toResponses(users);
