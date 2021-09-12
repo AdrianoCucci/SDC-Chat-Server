@@ -17,8 +17,6 @@ export class UsersController {
 
   @Get()
   public async getAllUsers(@Query() params: UserParams): Promise<UserResponse[]> {
-    console.log(params);
-    
     const users: User[] = await this._usersService.getAll(params);
     const dtos: UserResponse[] = this._mapper.users.mapResponses(users);
 
