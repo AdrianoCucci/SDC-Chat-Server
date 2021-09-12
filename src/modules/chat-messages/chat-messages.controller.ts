@@ -11,7 +11,7 @@ import { MapperService } from 'src/utils/dto-mappings/mapper.service';
 import { UsersService } from '../users/users.service';
 import { ChatMessagesService } from './chat-messages.service';
 
-@Controller('chat-messages')
+@Controller("api/chat-messages")
 @UseGuards(AuthorizeGuard)
 export class ChatMessagesController {
   constructor(private _messagesService: ChatMessagesService, private _usersService: UsersService, private _mapper: MapperService) { }

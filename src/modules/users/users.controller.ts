@@ -10,7 +10,7 @@ import { UserResponse } from 'src/models/users/user-response';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
 import { UsersService } from './users.service';
 
-@Controller('users')
+@Controller("api/users")
 @UseGuards(AuthorizeGuard)
 export class UsersController {
   constructor(private _usersService: UsersService, private _mapper: MapperService) { }

@@ -3,7 +3,7 @@ import { AuthRequest } from 'src/models/auth/auth-request';
 import { AuthResponse } from 'src/models/auth/auth-response';
 import { AuthService } from './auth.service';
 
-@Controller('auth')
+@Controller("api/auth")
 export class AuthController {
   constructor(private _authService: AuthService) { }
 
