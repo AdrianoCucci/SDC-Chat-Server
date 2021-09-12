@@ -99,7 +99,7 @@ export abstract class ServiceBase<T> {
     return deleteCount;
   }
 
-  protected findEntity(predicate: (entity: T) => boolean) {
+  protected findEntity(predicate: (entity: T) => boolean): T {
     let result: T = this._entities.find(predicate);
 
     if(result != null) {
@@ -107,6 +107,10 @@ export abstract class ServiceBase<T> {
     }
 
     return result;
+  }
+
+  protected findEntities(predicate: (entity: T) => boolean): T[] {
+    return [...this._entities.filter(predicate)];
   }
 
   protected findEntityIndex(predicate: (entity: T) => boolean): number {
