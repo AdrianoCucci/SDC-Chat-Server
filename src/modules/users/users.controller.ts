@@ -18,7 +18,7 @@ export class UsersController {
   @Get()
   public async getAllUsers(): Promise<UserResponse[]> {
     const users: User[] = await this._usersService.getAll();
-    const dtos: UserResponse[] = this._mapper.users.toResponses(users);
+    const dtos: UserResponse[] = this._mapper.users.mapResponses(users);
 
     return dtos;
   }
@@ -26,7 +26,7 @@ export class UsersController {
   @Get(":id")
   public async getUserById(@Param("id", ParseIntPipe) id: number): Promise<UserResponse> {
     const user: User = await this.tryGetUserById(id);
-    const dto: UserResponse = this._mapper.users.toResponse(user);
+    const dto: UserResponse = this._mapper.users.mapResponse(user);
 
     return dto;
   }
@@ -36,10 +36,10 @@ export class UsersController {
   public async postUser(@Body() request: UserRequest): Promise<UserResponse> {
     await this.validatePostModel(request);
 
-    const user: User = this._mapper.users.toEntity(request);
+    const user: User = this._mapper.users.mapEntity(request);
     await this._usersService.add(user);
 
-    const dto: UserResponse = this._mapper.users.toResponse(user);
+    const dto: UserResponse = this._mapper.users.mapResponse(user);
     return dto;
   }
 
@@ -50,7 +50,7 @@ export class UsersController {
 
     await this.validatePutModel(requestUser, user, request);
 
-    this._mapper.users.toEntity(request, user);
+    this._mapper.users.mapEntity(request, user);
 
     delete user.password;
     if(requestUser.role !== Role.Administrator) {
@@ -59,7 +59,7 @@ export class UsersController {
 
     await this._usersService.update(user);
 
-    const dto: UserResponse = this._mapper.users.toResponse(user);
+    const dto: UserResponse = this._mapper.users.mapResponse(user);
     return dto;
   }
 

@@ -5,34 +5,34 @@ export class EntityDtoMap<TEntity, TRequest, TResponse> {
     this._handlers = handlers ?? {};
   }
 
-  public toEntity(request: TRequest, target?: TEntity): TEntity {
+  public mapEntity(request: TRequest, target?: TEntity): TEntity {
     let result: TEntity = null;
 
-    if(request != null && this._handlers.toEntity != null) {
-      result = this._handlers.toEntity({ ...request }, target);
+    if(request != null && this._handlers.mapEntity != null) {
+      result = this._handlers.mapEntity({ ...request }, target);
     }
 
     return result;
   }
 
-  public toResponse(entity: TEntity): TResponse {
+  public mapResponse(entity: TEntity): TResponse {
     let result: TResponse = null;
 
-    if(entity != null && this._handlers.toResponse != null) {
-      result = this._handlers.toResponse({ ...entity });
+    if(entity != null && this._handlers.mapResponse != null) {
+      result = this._handlers.mapResponse({ ...entity });
     }
 
     return result;
   }
 
-  public toEntities(requests: TRequest[]): TEntity[] {
+  public mapEntities(requests: TRequest[]): TEntity[] {
     const entities: TEntity[] = [];
 
     if(requests != null) {
       const length: number = requests.length;
 
       for(let i = 0; i < length; i++) {
-        const entity: TEntity = this.toEntity(requests[i]);
+        const entity: TEntity = this.mapEntity(requests[i]);
 
         if(entity != null) {
           entities.push(entity);
@@ -43,14 +43,14 @@ export class EntityDtoMap<TEntity, TRequest, TResponse> {
     return entities;
   }
 
-  public toResponses(entities: TEntity[]): TResponse[] {
+  public mapResponses(entities: TEntity[]): TResponse[] {
     const responses: TResponse[] = [];
 
     if(entities != null) {
       const length: number = entities.length;
 
       for(let i = 0; i < length; i++) {
-        const response: TResponse = this.toResponse(entities[i]);
+        const response: TResponse = this.mapResponse(entities[i]);
 
         if(response != null) {
           responses.push(response);
@@ -63,6 +63,6 @@ export class EntityDtoMap<TEntity, TRequest, TResponse> {
 }
 
 interface EntityDtoMapHandlers<TEntity, TRequest, TResponse> {
-  toEntity?: (request: TRequest, target?: TEntity) => TEntity;
-  toResponse?: (entity: TEntity) => TResponse;
+  mapEntity?: (request: TRequest, target?: TEntity) => TEntity;
+  mapResponse?: (entity: TEntity) => TResponse;
 }
