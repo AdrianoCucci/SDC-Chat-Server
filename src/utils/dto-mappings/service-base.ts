@@ -1,6 +1,6 @@
 export abstract class ServiceBase<T> {
-  private readonly _entities: T[];
-  private readonly _idField: string;
+  protected readonly _entities: T[];
+  protected readonly _idField: string;
 
   private _nextId: number = 1;
 
