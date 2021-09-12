@@ -2,11 +2,13 @@ import { IsBoolean, IsEnum, IsInt, IsOptional, IsString } from "class-validator"
 import { Role } from "../auth/role";
 
 export class UserRequest {
-  @IsEnum(Role)
-  public role: Role;
-
   @IsString()
-  public username: string;
+  @IsOptional()
+  public username?: string;
+
+  @IsEnum(Role)
+  @IsOptional()
+  public role?: Role;
 
   @IsString()
   @IsOptional()

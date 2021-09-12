@@ -48,13 +48,6 @@ export class UsersService {
   }
 
   public async add(user: User): Promise<User> {
-    if(!user.password) {
-      throw new BadRequestException("Password is required");
-    }
-    if(await this.usernameExists(user.username)) {
-      throw this.usernameConflictException(user.username);
-    }
-
     user.id = this._nextId;
 
     this._users.push(user);
@@ -65,11 +58,6 @@ export class UsersService {
 
   public async update(id: number, user: User): Promise<User> {
     const existingUser: User = await this.tryGetById(id);
-
-    const userByUsername: User = await this.getByUsername(user.username);
-    if(userByUsername != null && userByUsername.id !== id) {
-      throw this.usernameConflictException(user.username);
-    }
 
     const index: number = this._users.indexOf(existingUser);
     this._users[index] = Object.assign(existingUser, user);
@@ -88,9 +76,5 @@ export class UsersService {
 
   public idNotFoundException(id: number): NotFoundException {
     return new NotFoundException(`User with ID does not exist: ${id}`);
-  }
-
-  public usernameConflictException(username: string): ConflictException {
-    return new ConflictException(`Username already exists: ${username}`);
   }
 }
