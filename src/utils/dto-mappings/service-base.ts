@@ -51,7 +51,7 @@ export abstract class ServiceBase<T> {
 
   public async update(entity: T): Promise<T> {
     let result: T = null;
-    const index: number = this.findEntityIndex(entity[this._idField]);
+    const index: number = this.findEntityIndex((e: T) => e[this._idField] === entity[this._idField]);
 
     if(index !== -1) {
       result = { ...Object.assign(this._entities[index], entity) };
