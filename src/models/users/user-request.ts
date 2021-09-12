@@ -1,4 +1,4 @@
-import { IsBoolean, IsEnum, IsInt, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsEnum, IsInt, IsOptional, IsPositive, IsString } from "class-validator";
 import { Role } from "../auth/role";
 
 export class UserRequest {
@@ -23,6 +23,7 @@ export class UserRequest {
   public isOnline?: boolean;
 
   @IsInt()
+  @IsPositive()
   @IsOptional()
   public organizationId?: number;
 }
