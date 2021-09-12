@@ -1,19 +1,18 @@
 import { BadRequestException, Body, ConflictException, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Req, UseGuards } from '@nestjs/common';
-import { Request } from 'express';
-import { AuthorizeRoles } from 'src/decorators/authorize-roles.decorator';
+import { RequestUser } from 'src/decorators/request-user.decorator';
+import { Roles } from 'src/decorators/roles.decorator';
+import { AuthorizeGuard } from 'src/guards/authorize.guard';
 import { Role } from 'src/models/auth/role';
 import { User } from 'src/models/users/user';
 import { UserRequest } from 'src/models/users/user-request';
 import { UserResponse } from 'src/models/users/user-response';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { AuthService } from '../auth/auth.service';
 import { UsersService } from './users.service';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthorizeGuard)
 export class UsersController {
-  constructor(private _authService: AuthService, private _usersService: UsersService, private _mapper: MapperService) { }
+  constructor(private _usersService: UsersService, private _mapper: MapperService) { }
 
   @Get()
   public async getAllUsers(): Promise<UserResponse[]> {
@@ -32,7 +31,7 @@ export class UsersController {
   }
 
   @Post()
-  @AuthorizeRoles(Role.Administrator)
+  @Roles(Role.Administrator)
   public async postUser(@Body() request: UserRequest): Promise<UserResponse> {
     await this.validatePostModel(request);
 
@@ -44,32 +43,29 @@ export class UsersController {
   }
 
   @Put(":id")
-  public async putUser(@Req() req: Request, @Param("id", ParseIntPipe) id: number, @Body() request: UserRequest): Promise<UserResponse> {
-    const user: User = await this.tryGetUserById(id);
-    const requestUser: UserResponse = this._authService.getRequestUser(req);
+  public async putUser(@RequestUser() user: UserResponse, @Param("id", ParseIntPipe) id: number, @Body() request: UserRequest): Promise<UserResponse> {
+    const userEntity: User = await this.tryGetUserById(id);
 
-    await this.validatePutModel(requestUser, user, request);
+    await this.validatePutModel(user, userEntity, request);
 
-    this._mapper.users.mapEntity(request, user);
+    this._mapper.users.mapEntity(request, userEntity);
 
-    delete user.password;
-    if(requestUser.role !== Role.Administrator) {
-      delete user.role;
+    delete userEntity.password;
+    if(user.role !== Role.Administrator) {
+      delete userEntity.role;
     }
 
-    await this._usersService.update(user);
+    await this._usersService.update(userEntity);
 
-    const dto: UserResponse = this._mapper.users.mapResponse(user);
+    const dto: UserResponse = this._mapper.users.mapResponse(userEntity);
     return dto;
   }
 
   @Delete(":id")
-  @AuthorizeRoles(Role.Administrator)
+  @Roles(Role.Administrator)
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async deleteUser(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<void> {
-    const requestUser: UserResponse = this._authService.getRequestUser(req);
-
-    if(requestUser.id === id) {
+  public async deleteUser(@RequestUser() user: UserResponse, @Param("id", ParseIntPipe) id: number): Promise<void> {
+    if(user.id === id) {
       throw new ConflictException(["You may not delete your own user account"]);
     }
 
