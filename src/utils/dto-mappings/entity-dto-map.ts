@@ -5,11 +5,11 @@ export class EntityDtoMap<TEntity, TRequest, TResponse> {
     this._handlers = handlers ?? {};
   }
 
-  public toEntity(request: TRequest): TEntity {
+  public toEntity(request: TRequest, target?: TEntity): TEntity {
     let result: TEntity = null;
 
     if(request != null && this._handlers.toEntity != null) {
-      result = this._handlers.toEntity({ ...request });
+      result = this._handlers.toEntity({ ...request }, target);
     }
 
     return result;
@@ -63,6 +63,6 @@ export class EntityDtoMap<TEntity, TRequest, TResponse> {
 }
 
 interface EntityDtoMapHandlers<TEntity, TRequest, TResponse> {
-  toEntity?: (request: TRequest) => TEntity;
+  toEntity?: (request: TRequest, target?: TEntity) => TEntity;
   toResponse?: (entity: TEntity) => TResponse;
 }
