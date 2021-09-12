@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Role } from 'src/models/auth/role';
 import { User } from 'src/models/users/user';
+import { UserParams } from 'src/models/users/user-params';
 import { ServiceBase } from 'src/utils/dto-mappings/service-base';
 
 @Injectable()
@@ -13,6 +14,11 @@ export class UsersService extends ServiceBase<User> {
         { id: 3, role: Role.User, username: "user456", password: "12345", displayName: "User 456", isOnline: false }
       ]
     );
+  }
+
+  public async getAll(params?: UserParams): Promise<User[]> {
+    const predicate = UserParams.getPredicate(params);
+    return this.findEntities(predicate);
   }
 
   public async getByUsername(username: string): Promise<User> {

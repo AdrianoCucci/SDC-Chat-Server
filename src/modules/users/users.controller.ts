@@ -1,9 +1,10 @@
-import { BadRequestException, Body, ConflictException, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { RequestUser } from 'src/decorators/request-user.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
 import { AuthorizeGuard } from 'src/guards/authorize.guard';
 import { Role } from 'src/models/auth/role';
 import { User } from 'src/models/users/user';
+import { UserParams } from 'src/models/users/user-params';
 import { UserRequest } from 'src/models/users/user-request';
 import { UserResponse } from 'src/models/users/user-response';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
@@ -15,8 +16,10 @@ export class UsersController {
   constructor(private _usersService: UsersService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllUsers(): Promise<UserResponse[]> {
-    const users: User[] = await this._usersService.getAll();
+  public async getAllUsers(@Query() params: UserParams): Promise<UserResponse[]> {
+    console.log(params);
+    
+    const users: User[] = await this._usersService.getAll(params);
     const dtos: UserResponse[] = this._mapper.users.mapResponses(users);
 
     return dtos;
