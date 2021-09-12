@@ -1,4 +1,7 @@
 import { Injectable } from "@nestjs/common";
+import { ChatMessage } from "src/models/chat-messages/chat-message";
+import { ChatMessageRequest } from "src/models/chat-messages/chat-message-request";
+import { ChatMessageResponse } from "src/models/chat-messages/chat-message-response";
 import { User } from "src/models/users/user";
 import { UserRequest } from "src/models/users/user-request";
 import { UserResponse } from "src/models/users/user-response";
@@ -7,20 +10,26 @@ import { EntityDtoMap } from "./entity-dto-map";
 @Injectable()
 export class MapperService {
   public readonly users = new EntityDtoMap<User, UserRequest, UserResponse>({
-    toEntity: (request: UserRequest): User => {
-      const user = new User();
-      Object.assign(user, request);
-
-      return user;
-    },
+    toEntity: (request: UserRequest): User => Object.assign(new User(), request),
 
     toResponse: (entity: User): UserResponse => {
       delete entity.password;
-      
-      const dto = new UserResponse();
-      Object.assign(dto, entity);
+      return Object.assign(new UserResponse(), entity);
+    }
+  });
 
-      return dto;
+  public readonly chatMessages = new EntityDtoMap<ChatMessage, ChatMessageRequest, ChatMessageResponse>({
+    toEntity: (request: ChatMessageRequest): ChatMessage => Object.assign(new ChatMessage(), request),
+
+    toResponse: (entity: ChatMessage): ChatMessageResponse => {
+      const response = new ChatMessageResponse();
+      Object.assign(response, entity);
+
+      if(entity.senderUser != null) {
+        response.senderUser = this.users.toResponse(entity.senderUser);
+      }
+
+      return response;
     }
   });
 }
