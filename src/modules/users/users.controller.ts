@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthorizeRoles } from 'src/decorators/authorize-roles.decorator';
 import { Role } from 'src/models/auth/role';
@@ -64,7 +64,13 @@ export class UsersController {
   @Delete(":id")
   @AuthorizeRoles(Role.Administrator)
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async deleteUser(@Param("id", ParseIntPipe) id: number): Promise<void> {
+  public async deleteUser(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<void> {
+    const requestUser: UserResponse = this._authService.getRequestUser(req);
+
+    if(requestUser.id === id) {
+      throw new ConflictException(["You may not delete your own user account"]);
+    }
+
     await this._usersService.delete(id);
   }
 
