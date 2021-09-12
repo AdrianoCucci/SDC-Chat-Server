@@ -22,7 +22,9 @@ export class AuthorizeRolesGuard implements CanActivate {
       const request: Request = context.switchToHttp().getRequest();
       const user: UserResponse = this._authService.getRequestUser(request);
 
-      result = requiredRoles.includes(user.role);
+      if(user != null) {
+        result = requiredRoles.includes(user.role);
+      }
     }
 
     return result;
