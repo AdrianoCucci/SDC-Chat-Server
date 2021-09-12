@@ -1,4 +1,4 @@
-import { BadRequestException, Body, ConflictException, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthorizeRoles } from 'src/decorators/authorize-roles.decorator';
 import { Role } from 'src/models/auth/role';
@@ -25,7 +25,7 @@ export class UsersController {
 
   @Get(":id")
   public async getUserById(@Param("id", ParseIntPipe) id: number): Promise<UserResponse> {
-    const user: User = await this._usersService.tryGetById(id);
+    const user: User = await this.tryGetUserById(id);
     const dto: UserResponse = this._mapper.users.toResponse(user);
 
     return dto;
@@ -45,17 +45,19 @@ export class UsersController {
 
   @Put(":id")
   public async putUser(@Req() req: Request, @Param("id", ParseIntPipe) id: number, @Body() request: UserRequest): Promise<UserResponse> {
+    const user: User = await this.tryGetUserById(id);
     const requestUser: UserResponse = this._authService.getRequestUser(req);
-    await this.validatePutModel(requestUser, id, request);
 
-    let user: User = this._mapper.users.toEntity(request);
+    await this.validatePutModel(requestUser, user, request);
+
+    this._mapper.users.toEntity(request, user);
+
     delete user.password;
-
     if(requestUser.role !== Role.Administrator) {
       delete user.role;
     }
 
-    user = await this._usersService.update(id, user);
+    await this._usersService.update(user);
 
     const dto: UserResponse = this._mapper.users.toResponse(user);
     return dto;
@@ -72,6 +74,16 @@ export class UsersController {
     }
 
     await this._usersService.delete(id);
+  }
+
+  private async tryGetUserById(id: number): Promise<User> {
+    const user: User = await this._usersService.getById(id);
+
+    if(user == null) {
+      throw new NotFoundException(`User ID does not exist: ${id}`);
+    }
+
+    return user;
   }
 
   private async validatePostModel(request: UserRequest): Promise<void> {
@@ -96,14 +108,13 @@ export class UsersController {
     }
   }
 
-  private async validatePutModel(requestUser: UserResponse, id: number, request: UserRequest): Promise<void> {
-    const user: User = await this._usersService.tryGetById(id);
+  private async validatePutModel(requestUser: UserResponse, user: User, request: UserRequest): Promise<void> {
     const errors: string[] = [];
 
     if(request.username) {
       const userByUsername: User = await this._usersService.getByUsername(request.username);
 
-      if(userByUsername != null && userByUsername.id !== id) {
+      if(userByUsername != null && userByUsername.id !== user.id) {
         errors.push(`Username already exists: ${request.username}`);
       }
     }
