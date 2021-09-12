@@ -13,7 +13,7 @@ const jwtRegisterModule: DynamicModule = JwtModule.register({});
   providers: [
     AuthService,
     UsersService,
-    MapperService,
+    MapperService
   ],
   controllers: [AuthController]
 })
