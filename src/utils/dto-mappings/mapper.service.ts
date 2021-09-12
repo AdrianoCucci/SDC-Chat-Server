@@ -10,7 +10,7 @@ import { EntityDtoMap } from "./entity-dto-map";
 @Injectable()
 export class MapperService {
   public readonly users = new EntityDtoMap<User, UserRequest, UserResponse>({
-    toEntity: (request: UserRequest): User => Object.assign(new User(), request),
+    toEntity: (request: UserRequest, target?: User): User => Object.assign(target ?? new User(), request),
 
     toResponse: (entity: User): UserResponse => {
       delete entity.password;
@@ -19,7 +19,7 @@ export class MapperService {
   });
 
   public readonly chatMessages = new EntityDtoMap<ChatMessage, ChatMessageRequest, ChatMessageResponse>({
-    toEntity: (request: ChatMessageRequest): ChatMessage => Object.assign(new ChatMessage(), request),
+    toEntity: (request: ChatMessageRequest, target?: ChatMessage): ChatMessage => Object.assign(target ?? new ChatMessage(), request),
 
     toResponse: (entity: ChatMessage): ChatMessageResponse => {
       const response = new ChatMessageResponse();
