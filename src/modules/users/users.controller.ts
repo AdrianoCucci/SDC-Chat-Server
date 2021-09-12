@@ -51,7 +51,10 @@ export class UsersController {
 
     this._mapper.users.mapEntity(request, userEntity);
 
+    //Do not change user passwords from an update request - passwords should be changed from a password reset request.
     delete userEntity.password;
+
+    //Do not change user role unless an administrator is making the request.
     if(user.role !== Role.Administrator) {
       delete userEntity.role;
     }
@@ -67,7 +70,7 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   public async deleteUser(@RequestUser() user: UserResponse, @Param("id", ParseIntPipe) id: number): Promise<void> {
     if(user.id === id) {
-      throw new ConflictException(["You may not delete your own user account"]);
+      throw new ConflictException("You may not delete your own user account");
     }
 
     await this._usersService.delete(id);
