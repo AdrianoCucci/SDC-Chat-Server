@@ -16,10 +16,10 @@ export class UsersService extends ServiceBase<User> {
   }
 
   public async getByUsername(username: string): Promise<User> {
-    return this._entities.find((u: User) => u.username === username);
+    return this.findEntity((u: User) => u.username === username);
   }
 
   public async usernameExists(username: string): Promise<boolean> {
-    return this._entities.findIndex((u: User) => u.username === username) !== -1;
+    return this.entityExists((u: User) => u.username === username);
   }
 }

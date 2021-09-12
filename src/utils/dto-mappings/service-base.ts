@@ -1,6 +1,6 @@
 export abstract class ServiceBase<T> {
-  protected readonly _entities: T[];
-  protected readonly _idField: string;
+  private readonly _entities: T[];
+  private readonly _idField: string;
 
   private _nextId: number = 1;
 
@@ -75,7 +75,7 @@ export abstract class ServiceBase<T> {
 
   public async delete(id: number): Promise<boolean> {
     let isSuccess: boolean = false;
-    const index: number = this.findEntityIndex(id);
+    const index: number = this.findEntityIndex((entity: T) => entity[this._idField] === id);
 
     if(index !== -1) {
       this._entities.splice(index, 1);
@@ -99,7 +99,21 @@ export abstract class ServiceBase<T> {
     return deleteCount;
   }
 
-  private findEntityIndex(id: number): number {
-    return this._entities.findIndex((entity: T) => entity[this._idField] === id);
+  protected findEntity(predicate: (entity: T) => boolean) {
+    let result: T = this._entities.find(predicate);
+
+    if(result != null) {
+      result = { ...result };
+    }
+
+    return result;
+  }
+
+  protected findEntityIndex(predicate: (entity: T) => boolean): number {
+    return this._entities.findIndex(predicate);
+  }
+
+  protected entityExists(predicate: (entity: T) => boolean): boolean {
+    return this.findEntityIndex(predicate) !== -1;
   }
 }
