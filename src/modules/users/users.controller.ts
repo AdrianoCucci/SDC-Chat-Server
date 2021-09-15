@@ -69,7 +69,9 @@ export class UsersController {
   @Roles(Role.Administrator)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async deleteUser(@RequestUser() user: UserResponse, @Param("id", ParseIntPipe) id: number): Promise<void> {
-    if(user.id === id) {
+    const entity: User = await this.tryGetUserById(id);
+
+    if(user.id === entity.id) {
       throw new ConflictException("You may not delete your own user account");
     }
 
