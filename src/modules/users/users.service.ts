@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Role } from 'src/models/auth/role';
 import { User } from 'src/models/users/user';
 import { UserParams } from 'src/models/users/user-params';
-import { ServiceBase } from 'src/utils/dto-mappings/service-base';
+import { ServiceBase } from 'src/utils/service-base';
 
 @Injectable()
 export class UsersService extends ServiceBase<User> {
