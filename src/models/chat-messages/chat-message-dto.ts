@@ -1,6 +1,9 @@
 import { IsDateString, IsInt, IsOptional, IsPositive, IsString } from "class-validator";
+import { UserDto } from "../users/user-dto";
 
-export class ChatMessageRequest {
+export class ChatMessageDto {
+  public id?: number;
+
   @IsString()
   public contents: string;
 
@@ -16,4 +19,6 @@ export class ChatMessageRequest {
   @IsPositive()
   @IsOptional()
   public organizationId?: number;
+
+  public senderUser?: UserDto;
 }

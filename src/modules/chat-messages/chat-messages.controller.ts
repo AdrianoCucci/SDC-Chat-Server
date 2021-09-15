@@ -3,9 +3,9 @@ import { RequestUser } from 'src/decorators/request-user.decorator';
 import { AuthorizeGuard } from 'src/guards/authorize.guard';
 import { Role } from 'src/models/auth/role';
 import { ChatMessage } from 'src/models/chat-messages/chat-message';
+import { ChatMessageDto } from 'src/models/chat-messages/chat-message-dto';
+import { ChatMessageDtoPartial } from 'src/models/chat-messages/chat-message-dto-partial';
 import { ChatMessageParams } from 'src/models/chat-messages/chat-message-params';
-import { ChatMessageRequest } from 'src/models/chat-messages/chat-message-request';
-import { ChatMessageResponse } from 'src/models/chat-messages/chat-message-response';
 import { UserDto } from 'src/models/users/user-dto';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
 import { UsersService } from '../users/users.service';
@@ -17,23 +17,23 @@ export class ChatMessagesController {
   constructor(private _messagesService: ChatMessagesService, private _usersService: UsersService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllMessages(@Query() params: ChatMessageParams): Promise<ChatMessageResponse[]> {
+  public async getAllMessages(@Query() params: ChatMessageParams): Promise<ChatMessageDto[]> {
     const messages: ChatMessage[] = await this._messagesService.getAll(params);
-    const dtos: ChatMessageResponse[] = this._mapper.chatMessages.mapResponses(messages);
+    const dtos: ChatMessageDto[] = this._mapper.chatMessages.mapResponses(messages);
 
     return dtos;
   }
 
   @Get(":id")
-  public async getMessage(@Param("id", ParseIntPipe) id: number): Promise<ChatMessageResponse> {
+  public async getMessage(@Param("id", ParseIntPipe) id: number): Promise<ChatMessageDto> {
     const message: ChatMessage = await this.tryGetMessageById(id);
-    const dto: ChatMessageResponse = this._mapper.chatMessages.mapResponse(message);
+    const dto: ChatMessageDto = this._mapper.chatMessages.mapResponse(message);
 
     return dto;
   }
 
   @Post()
-  public async postMessage(@Body() request: ChatMessageRequest): Promise<ChatMessageResponse> {
+  public async postMessage(@Body() request: ChatMessageDto): Promise<ChatMessageDto> {
     if(!await this._usersService.idExists(request.senderUserId)) {
       throw new BadRequestException("A User ID with senderUserId value does not exist");
     }
@@ -41,12 +41,12 @@ export class ChatMessagesController {
     const message: ChatMessage = this._mapper.chatMessages.mapEntity(request);
     await this._messagesService.add(message);
 
-    const dto: ChatMessageResponse = this._mapper.chatMessages.mapResponse(message);
+    const dto: ChatMessageDto = this._mapper.chatMessages.mapResponse(message);
     return dto;
   }
 
   @Put(":id")
-  public async putMessage(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: ChatMessageRequest): Promise<ChatMessageResponse> {
+  public async putMessage(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: ChatMessageDtoPartial): Promise<ChatMessageDto> {
     const message: ChatMessage = await this.tryGetMessageById(id);
 
     if(message.senderUserId !== user.id && user.role !== Role.Administrator) {
@@ -59,7 +59,7 @@ export class ChatMessagesController {
     this._mapper.chatMessages.mapEntity(request, message);
     await this._messagesService.update(message);
     
-    const dto: ChatMessageResponse = this._mapper.chatMessages.mapResponse(message);
+    const dto: ChatMessageDto = this._mapper.chatMessages.mapResponse(message);
     return dto;
   }
 

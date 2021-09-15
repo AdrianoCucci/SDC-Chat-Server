@@ -1,6 +1,7 @@
 import { OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatMessage } from 'src/models/chat-messages/chat-message';
+import { ChatMessageDto } from 'src/models/chat-messages/chat-message-dto';
 import { User } from 'src/models/users/user';
 import { UserDto } from 'src/models/users/user-dto';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
@@ -45,7 +46,7 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
   }
 
   @SubscribeMessage(SOCKET_EVENTS.message)
-  public async onMessage(socket: Socket, payload: ChatMessage): Promise<void> {
+  public async onMessage(socket: Socket, payload: ChatMessageDto): Promise<void> {
     if(payload != null && payload.contents && payload.senderUserId != null) {
       const user: UserDto = this._socketUserMap.get(socket);
 
@@ -54,7 +55,8 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
         this.broadcastMessage(socket, SOCKET_EVENTS.message, payload, room);
 
         if(await this._usersService.idExists(payload.senderUserId)) {
-          await this._messagesService.add(payload);
+          const entity: ChatMessage = this._mapper.chatMessages.mapEntity(payload);
+          await this._messagesService.add(entity);
         }
       }
     }
