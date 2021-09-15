@@ -6,7 +6,7 @@ import { ChatMessage } from 'src/models/chat-messages/chat-message';
 import { ChatMessageParams } from 'src/models/chat-messages/chat-message-params';
 import { ChatMessageRequest } from 'src/models/chat-messages/chat-message-request';
 import { ChatMessageResponse } from 'src/models/chat-messages/chat-message-response';
-import { UserResponse } from 'src/models/users/user-response';
+import { UserDto } from 'src/models/users/user-dto';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
 import { UsersService } from '../users/users.service';
 import { ChatMessagesService } from './chat-messages.service';
@@ -46,7 +46,7 @@ export class ChatMessagesController {
   }
 
   @Put(":id")
-  public async putMessage(@RequestUser() user: UserResponse, @Param("id", ParseIntPipe) id: number, @Body() request: ChatMessageRequest): Promise<ChatMessageResponse> {
+  public async putMessage(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: ChatMessageRequest): Promise<ChatMessageResponse> {
     const message: ChatMessage = await this.tryGetMessageById(id);
 
     if(message.senderUserId !== user.id && user.role !== Role.Administrator) {
@@ -65,7 +65,7 @@ export class ChatMessagesController {
 
   @Delete(":id")
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async deleteMessage(@RequestUser() user: UserResponse, @Param("id", ParseIntPipe) id: number): Promise<void> {
+  public async deleteMessage(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number): Promise<void> {
     const message: ChatMessage = await this.tryGetMessageById(id);
 
     if(message.senderUserId !== user.id && user.role !== Role.Administrator) {

@@ -1,17 +1,17 @@
 import { IsBoolean, IsEnum, IsInt, IsOptional, IsPositive, IsString } from "class-validator";
 import { Role } from "../auth/role";
+import { OrganizationDto } from "../organizations/organization-dto";
 
-export class UserRequest {
+export class UserDto {
+  id?: number;
+
   @IsString()
-  @IsOptional()
-  public username?: string;
+  public username: string;
 
   @IsEnum(Role)
-  @IsOptional()
-  public role?: Role;
+  public role: Role;
 
   @IsString()
-  @IsOptional()
   public password?: string;
 
   @IsString()
@@ -26,4 +26,6 @@ export class UserRequest {
   @IsPositive()
   @IsOptional()
   public organizationId?: number;
+
+  public organization?: OrganizationDto;
 }

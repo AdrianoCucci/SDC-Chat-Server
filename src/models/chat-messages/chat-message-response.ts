@@ -1,4 +1,4 @@
-import { UserResponse } from "../users/user-response";
+import { UserDto } from "../users/user-dto";
 
 export class ChatMessageResponse {
   public id: number;
@@ -7,5 +7,5 @@ export class ChatMessageResponse {
   public senderUserId: number;
   public organizationId?: number;
 
-  public senderUser?: UserResponse;
+  public senderUser?: UserDto;
 }

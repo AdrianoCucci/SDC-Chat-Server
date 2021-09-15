@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthRequest } from 'src/models/auth/auth-request';
 import { AuthResponse } from 'src/models/auth/auth-response';
 import { User } from 'src/models/users/user';
-import { UserResponse } from 'src/models/users/user-response';
+import { UserDto } from 'src/models/users/user-dto';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
 import { UsersService } from '../users/users.service';
 import appConfig from 'src/app.config';
@@ -23,13 +23,13 @@ export class AuthService {
       user.isOnline = true;
       await this._usersService.update(user);
 
-      const userResponse: UserResponse = this._mapper.users.mapResponse(user);
+      const userDto: UserDto = this._mapper.users.mapResponse(user);
       const jwtSecret: string = appConfig().jwtSecret;
-      const jwt: string = this._jwtService.sign({ user: userResponse }, { secret: jwtSecret });
+      const jwt: string = this._jwtService.sign({ user: userDto }, { secret: jwtSecret });
 
       response = {
         isSuccess: true,
-        user: userResponse,
+        user: userDto,
         token: jwt
       };
     }

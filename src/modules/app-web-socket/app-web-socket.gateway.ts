@@ -2,7 +2,7 @@ import { OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServe
 import { Server, Socket } from 'socket.io';
 import { ChatMessage } from 'src/models/chat-messages/chat-message';
 import { User } from 'src/models/users/user';
-import { UserResponse } from 'src/models/users/user-response';
+import { UserDto } from 'src/models/users/user-dto';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
 import { ChatMessagesService } from '../chat-messages/chat-messages.service';
 import { UsersService } from '../users/users.service';
@@ -13,12 +13,12 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
   @WebSocketServer()
   private readonly _server: Server;
 
-  private readonly _socketUserMap = new Map<Socket, UserResponse>();
+  private readonly _socketUserMap = new Map<Socket, UserDto>();
 
   constructor(private _messagesService: ChatMessagesService, private _usersService: UsersService, private _mapper: MapperService) { }
 
   public handleDisconnect(socket: Socket): void {
-    const user: UserResponse = this._socketUserMap.get(socket);
+    const user: UserDto = this._socketUserMap.get(socket);
 
     if(user != null) {
       user.isOnline = false;
@@ -30,7 +30,7 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
   }
 
   @SubscribeMessage(SOCKET_EVENTS.userJoin)
-  public onUserJoin(socket: Socket, payload: UserResponse): void {
+  public onUserJoin(socket: Socket, payload: UserDto): void {
     this._socketUserMap.set(socket, payload);
 
     payload.isOnline = true;
@@ -47,7 +47,7 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
   @SubscribeMessage(SOCKET_EVENTS.message)
   public async onMessage(socket: Socket, payload: ChatMessage): Promise<void> {
     if(payload != null && payload.contents && payload.senderUserId != null) {
-      const user: UserResponse = this._socketUserMap.get(socket);
+      const user: UserDto = this._socketUserMap.get(socket);
 
       if(user != null) {
         const room: string = this.getUserSocketRoom(user);
@@ -69,7 +69,7 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
     }
   }
 
-  private getUserSocketRoom(user: UserResponse): string | null {
+  private getUserSocketRoom(user: UserDto): string | null {
     return user.organizationId != null ? `Organization_Room_${user.organizationId}` : null;
   }
 

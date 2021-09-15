@@ -3,7 +3,7 @@ import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
 import { Role } from "src/models/auth/role";
-import { UserResponse } from "src/models/users/user-response";
+import { UserDto } from "src/models/users/user-dto";
 import { ROLES_META_KEY } from "src/decorators/roles.decorator";
 import appConfig from "src/app.config";
 
@@ -15,7 +15,7 @@ export class AuthorizeGuard implements CanActivate {
     let result: boolean = false;
 
     const request: Request = context.switchToHttp().getRequest();
-    const user: UserResponse = this.getRequestUser(request);
+    const user: UserDto = this.getRequestUser(request);
 
     if(user != null) {
       request.user = user;
@@ -25,8 +25,8 @@ export class AuthorizeGuard implements CanActivate {
     return result;
   }
 
-  private getRequestUser(request: Request): UserResponse {
-    let user: UserResponse = null;
+  private getRequestUser(request: Request): UserDto {
+    let user: UserDto = null;
 
     if(request != null) {
       const header: string = request.header("authorization");
@@ -47,7 +47,7 @@ export class AuthorizeGuard implements CanActivate {
     return user;
   }
 
-  private validateRequiredRoles(user: UserResponse, context: ExecutionContext): boolean {
+  private validateRequiredRoles(user: UserDto, context: ExecutionContext): boolean {
     let isValid: boolean;
     const requiredRoles: Role[] = this._reflector.get<Role[]>(ROLES_META_KEY, context.getHandler());
 

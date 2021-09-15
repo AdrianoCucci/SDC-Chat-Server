@@ -4,9 +4,9 @@ import { Roles } from 'src/decorators/roles.decorator';
 import { AuthorizeGuard } from 'src/guards/authorize.guard';
 import { Role } from 'src/models/auth/role';
 import { User } from 'src/models/users/user';
+import { UserDto } from 'src/models/users/user-dto';
+import { UserDtoPartial } from 'src/models/users/user-dto-partial';
 import { UserParams } from 'src/models/users/user-params';
-import { UserRequest } from 'src/models/users/user-request';
-import { UserResponse } from 'src/models/users/user-response';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
 import { UsersService } from './users.service';
 
@@ -16,35 +16,35 @@ export class UsersController {
   constructor(private _usersService: UsersService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllUsers(@Query() params: UserParams): Promise<UserResponse[]> {
+  public async getAllUsers(@Query() params: UserParams): Promise<UserDto[]> {
     const users: User[] = await this._usersService.getAll(params);
-    const dtos: UserResponse[] = this._mapper.users.mapResponses(users);
+    const dtos: UserDto[] = this._mapper.users.mapResponses(users);
 
     return dtos;
   }
 
   @Get(":id")
-  public async getUserById(@Param("id", ParseIntPipe) id: number): Promise<UserResponse> {
+  public async getUserById(@Param("id", ParseIntPipe) id: number): Promise<UserDto> {
     const user: User = await this.tryGetUserById(id);
-    const dto: UserResponse = this._mapper.users.mapResponse(user);
+    const dto: UserDto = this._mapper.users.mapResponse(user);
 
     return dto;
   }
 
   @Post()
   @Roles(Role.Administrator)
-  public async postUser(@Body() request: UserRequest): Promise<UserResponse> {
+  public async postUser(@Body() request: UserDto): Promise<UserDto> {
     await this.validatePostModel(request);
 
     const user: User = this._mapper.users.mapEntity(request);
     await this._usersService.add(user);
 
-    const dto: UserResponse = this._mapper.users.mapResponse(user);
+    const dto: UserDto = this._mapper.users.mapResponse(user);
     return dto;
   }
 
   @Put(":id")
-  public async putUser(@RequestUser() user: UserResponse, @Param("id", ParseIntPipe) id: number, @Body() request: UserRequest): Promise<UserResponse> {
+  public async putUser(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: UserDtoPartial): Promise<UserDto> {
     const userEntity: User = await this.tryGetUserById(id);
 
     await this.validatePutModel(user, userEntity, request);
@@ -61,14 +61,14 @@ export class UsersController {
 
     await this._usersService.update(userEntity);
 
-    const dto: UserResponse = this._mapper.users.mapResponse(userEntity);
+    const dto: UserDto = this._mapper.users.mapResponse(userEntity);
     return dto;
   }
 
   @Delete(":id")
   @Roles(Role.Administrator)
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async deleteUser(@RequestUser() user: UserResponse, @Param("id", ParseIntPipe) id: number): Promise<void> {
+  public async deleteUser(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number): Promise<void> {
     const entity: User = await this.tryGetUserById(id);
 
     if(user.id === entity.id) {
@@ -88,40 +88,24 @@ export class UsersController {
     return user;
   }
 
-  private async validatePostModel(request: UserRequest): Promise<void> {
-    const errors: string[] = [];
-
-    if(!request.username) {
-      errors.push("Username is required");
-    }
-    else if(await this._usersService.usernameExists(request.username)) {
-      errors.push(`Username already exists: ${request.username}`);
-    }
-
-    if(!request.password) {
-      errors.push("Password is required");
-    }
-    if(!request.role) {
-      errors.push("Role is required");
-    }
-
-    if(errors.length > 0) {
-      throw new BadRequestException(errors);
+  private async validatePostModel(request: UserDto): Promise<void> {
+    if(await this._usersService.usernameExists(request.username)) {
+      throw new ConflictException(`Username already exists: ${request.username}`);
     }
   }
 
-  private async validatePutModel(requestUser: UserResponse, user: User, request: UserRequest): Promise<void> {
+  private async validatePutModel(requestUser: UserDto, entity: User, request: UserDtoPartial): Promise<void> {
     const errors: string[] = [];
 
     if(request.username) {
       const userByUsername: User = await this._usersService.getByUsername(request.username);
 
-      if(userByUsername != null && userByUsername.id !== user.id) {
+      if(userByUsername != null && userByUsername.id !== entity.id) {
         errors.push(`Username already exists: ${request.username}`);
       }
     }
 
-    if(requestUser.id !== user.id && requestUser.role !== Role.Administrator) {
+    if(requestUser.id !== entity.id && requestUser.role !== Role.Administrator) {
       errors.push("You may not edit a different user's information");
     }
 
