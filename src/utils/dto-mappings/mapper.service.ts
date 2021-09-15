@@ -22,8 +22,7 @@ export class MapperService {
     mapEntity: (request: ChatMessageRequest, target?: ChatMessage): ChatMessage => Object.assign(target ?? new ChatMessage(), request),
 
     mapResponse: (entity: ChatMessage): ChatMessageResponse => {
-      const response = new ChatMessageResponse();
-      Object.assign(response, entity);
+      const response: ChatMessageResponse = Object.assign(new ChatMessageResponse(), entity);
 
       if(entity.senderUser != null) {
         response.senderUser = this.users.mapResponse(entity.senderUser);
