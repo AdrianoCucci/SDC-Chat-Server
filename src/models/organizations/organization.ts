@@ -1,10 +1,11 @@
-export interface Organization {
-  id: number;
-  name: string;
-  street: string;
-  city: string;
-  province: string;
-  country: string;
-  postalCode: string;
-  fullAddress: string;
+export class Organization {
+  public id: number;
+  public name: string;
+  public email: string;
+  public phoneNumber: string;
+  public street: string;
+  public city: string;
+  public province: string;
+  public country: string;
+  public postalCode: string;
 }
