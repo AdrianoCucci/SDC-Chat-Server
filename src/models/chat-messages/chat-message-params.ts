@@ -26,7 +26,7 @@ export class ChatMessageParams {
           filters.push(message.organizationId === params.organizationId);
         }
 
-        return !filters.some((m: boolean) => m === false);
+        return !filters.some((f: boolean) => f === false);
       }
     }
 

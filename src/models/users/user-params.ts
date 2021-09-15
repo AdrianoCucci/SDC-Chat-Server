@@ -24,7 +24,7 @@ export class UserParams {
           filters.push(user.organizationId === params.organizationId);
         }
 
-        return !filters.some((m: boolean) => m === false);
+        return !filters.some((f: boolean) => f === false);
       }
     }
 
