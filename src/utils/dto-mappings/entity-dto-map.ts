@@ -1,38 +1,38 @@
-export class EntityDtoMap<TEntity, TRequest, TResponse> {
-  private readonly _handlers: EntityDtoMapHandlers<TEntity, TRequest, TResponse>;
+export class EntityDtoMap<TEntity, TDto> {
+  private readonly _handlers: EntityDtoMapHandlers<TEntity, TDto>;
 
-  public constructor(handlers: EntityDtoMapHandlers<TEntity, TRequest, TResponse>) {
+  public constructor(handlers: EntityDtoMapHandlers<TEntity, TDto>) {
     this._handlers = handlers ?? {};
   }
 
-  public mapEntity(request: TRequest, target?: TEntity): TEntity {
-    let result: TEntity = null;
+  public mapEntity(dto: Partial<TDto>, target?: TEntity): TEntity {
+    let entity: TEntity = null;
 
-    if(request != null && this._handlers.mapEntity != null) {
-      result = this._handlers.mapEntity({ ...request }, target);
+    if(dto != null && this._handlers.mapEntity != null) {
+      entity = this._handlers.mapEntity({ ...dto }, target);
     }
 
-    return result;
+    return entity;
   }
 
-  public mapResponse(entity: TEntity): TResponse {
-    let result: TResponse = null;
+  public mapDto(entity: TEntity): TDto {
+    let dto: TDto = null;
 
-    if(entity != null && this._handlers.mapResponse != null) {
-      result = this._handlers.mapResponse({ ...entity });
+    if(entity != null && this._handlers.mapDto != null) {
+      dto = this._handlers.mapDto({ ...entity });
     }
 
-    return result;
+    return dto;
   }
 
-  public mapEntities(requests: TRequest[]): TEntity[] {
+  public mapEntities(dtos: TDto[]): TEntity[] {
     const entities: TEntity[] = [];
 
-    if(requests != null) {
-      const length: number = requests.length;
+    if(dtos != null) {
+      const length: number = dtos.length;
 
       for(let i = 0; i < length; i++) {
-        const entity: TEntity = this.mapEntity(requests[i]);
+        const entity: TEntity = this.mapEntity(dtos[i]);
 
         if(entity != null) {
           entities.push(entity);
@@ -43,26 +43,26 @@ export class EntityDtoMap<TEntity, TRequest, TResponse> {
     return entities;
   }
 
-  public mapResponses(entities: TEntity[]): TResponse[] {
-    const responses: TResponse[] = [];
+  public mapDtos(entities: TEntity[]): TDto[] {
+    const dtos: TDto[] = [];
 
     if(entities != null) {
       const length: number = entities.length;
 
       for(let i = 0; i < length; i++) {
-        const response: TResponse = this.mapResponse(entities[i]);
+        const dto: TDto = this.mapDto(entities[i]);
 
-        if(response != null) {
-          responses.push(response);
+        if(dto != null) {
+          dtos.push(dto);
         }
       }
     }
 
-    return responses;
+    return dtos;
   }
 }
 
-interface EntityDtoMapHandlers<TEntity, TRequest, TResponse> {
-  mapEntity?: (request: TRequest, target?: TEntity) => TEntity;
-  mapResponse?: (entity: TEntity) => TResponse;
+interface EntityDtoMapHandlers<TEntity, TDto> {
+  mapEntity?: (dto: Partial<TDto>, target?: TEntity) => TEntity;
+  mapDto?: (entity: TEntity) => TDto;
 }

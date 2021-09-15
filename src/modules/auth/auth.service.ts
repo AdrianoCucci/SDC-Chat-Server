@@ -23,7 +23,7 @@ export class AuthService {
       user.isOnline = true;
       await this._usersService.update(user);
 
-      const userDto: UserDto = this._mapper.users.mapResponse(user);
+      const userDto: UserDto = this._mapper.users.mapDto(user);
       const jwtSecret: string = appConfig().jwtSecret;
       const jwt: string = this._jwtService.sign({ user: userDto }, { secret: jwtSecret });
 

@@ -19,7 +19,7 @@ export class ChatMessagesController {
   @Get()
   public async getAllMessages(@Query() params: ChatMessageParams): Promise<ChatMessageDto[]> {
     const messages: ChatMessage[] = await this._messagesService.getAll(params);
-    const dtos: ChatMessageDto[] = this._mapper.chatMessages.mapResponses(messages);
+    const dtos: ChatMessageDto[] = this._mapper.chatMessages.mapDtos(messages);
 
     return dtos;
   }
@@ -27,7 +27,7 @@ export class ChatMessagesController {
   @Get(":id")
   public async getMessage(@Param("id", ParseIntPipe) id: number): Promise<ChatMessageDto> {
     const message: ChatMessage = await this.tryGetMessageById(id);
-    const dto: ChatMessageDto = this._mapper.chatMessages.mapResponse(message);
+    const dto: ChatMessageDto = this._mapper.chatMessages.mapDto(message);
 
     return dto;
   }
@@ -41,7 +41,7 @@ export class ChatMessagesController {
     const message: ChatMessage = this._mapper.chatMessages.mapEntity(request);
     await this._messagesService.add(message);
 
-    const dto: ChatMessageDto = this._mapper.chatMessages.mapResponse(message);
+    const dto: ChatMessageDto = this._mapper.chatMessages.mapDto(message);
     return dto;
   }
 
@@ -59,7 +59,7 @@ export class ChatMessagesController {
     this._mapper.chatMessages.mapEntity(request, message);
     await this._messagesService.update(message);
     
-    const dto: ChatMessageDto = this._mapper.chatMessages.mapResponse(message);
+    const dto: ChatMessageDto = this._mapper.chatMessages.mapDto(message);
     return dto;
   }
 

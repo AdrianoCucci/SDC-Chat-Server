@@ -18,7 +18,7 @@ export class UsersController {
   @Get()
   public async getAllUsers(@Query() params: UserParams): Promise<UserDto[]> {
     const users: User[] = await this._usersService.getAll(params);
-    const dtos: UserDto[] = this._mapper.users.mapResponses(users);
+    const dtos: UserDto[] = this._mapper.users.mapDtos(users);
 
     return dtos;
   }
@@ -26,7 +26,7 @@ export class UsersController {
   @Get(":id")
   public async getUserById(@Param("id", ParseIntPipe) id: number): Promise<UserDto> {
     const user: User = await this.tryGetUserById(id);
-    const dto: UserDto = this._mapper.users.mapResponse(user);
+    const dto: UserDto = this._mapper.users.mapDto(user);
 
     return dto;
   }
@@ -39,7 +39,7 @@ export class UsersController {
     const user: User = this._mapper.users.mapEntity(request);
     await this._usersService.add(user);
 
-    const dto: UserDto = this._mapper.users.mapResponse(user);
+    const dto: UserDto = this._mapper.users.mapDto(user);
     return dto;
   }
 
@@ -61,7 +61,7 @@ export class UsersController {
 
     await this._usersService.update(userEntity);
 
-    const dto: UserDto = this._mapper.users.mapResponse(userEntity);
+    const dto: UserDto = this._mapper.users.mapDto(userEntity);
     return dto;
   }
 

@@ -16,7 +16,7 @@ export class OrganizationsController {
   @Get()
   public async getAllOrganizations(): Promise<OrganizationDto[]> {
     const entities: Organization[] = await this._orgsService.getAll();
-    const dtos: OrganizationDto[] = this._mapper.organizations.mapResponses(entities);
+    const dtos: OrganizationDto[] = this._mapper.organizations.mapDtos(entities);
 
     return dtos;
   }
@@ -24,7 +24,7 @@ export class OrganizationsController {
   @Get(":id")
   public async getOrganizationById(@Param("id", ParseIntPipe) id: number): Promise<OrganizationDto> {
     const entity: Organization = await this.tryGetOrganizationById(id);
-    const dto: OrganizationDto = this._mapper.organizations.mapResponse(entity);
+    const dto: OrganizationDto = this._mapper.organizations.mapDto(entity);
 
     return dto;
   }
@@ -35,7 +35,7 @@ export class OrganizationsController {
     const entity: Organization = this._mapper.organizations.mapEntity(request);
     await this._orgsService.add(entity);
 
-    const response: OrganizationDto = this._mapper.organizations.mapResponse(entity);
+    const response: OrganizationDto = this._mapper.organizations.mapDto(entity);
     return response;
   }
 
@@ -47,7 +47,7 @@ export class OrganizationsController {
 
     await this._orgsService.update(entity);
 
-    const response: OrganizationDto = this._mapper.organizations.mapResponse(entity);
+    const response: OrganizationDto = this._mapper.organizations.mapDto(entity);
     return response;
   }
 
