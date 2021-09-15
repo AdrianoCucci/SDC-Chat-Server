@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { JwtAuthModule } from './modules/shared/jwt-auth/jwt-auth.module';
 import { AuthModule } from './modules/core/auth/auth.module';
 import { UsersModule } from './modules/core/users/users.module';
 import { ChatMessagesModule } from './modules/core/chat-messages/chat-messages.module';
@@ -9,6 +10,7 @@ import { AppWebSocketModule } from './modules/core/app-web-socket/app-web-socket
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    JwtAuthModule,
     AuthModule,
     UsersModule,
     ChatMessagesModule,

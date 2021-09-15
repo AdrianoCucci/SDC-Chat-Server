@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { Roles } from 'src/decorators/roles.decorator';
-import { AuthorizeGuard } from 'src/guards/authorize.guard';
+import { AuthorizeGuard } from 'src/modules/shared/jwt-auth/authorize.guard';
 import { Role } from 'src/models/auth/role';
 import { Organization } from 'src/models/organizations/organization';
 import { OrganizationDto } from 'src/models/organizations/organization-dto';

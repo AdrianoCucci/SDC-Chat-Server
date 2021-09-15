@@ -1,18 +1,15 @@
-import { DynamicModule, forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
-import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from '../users/users.module';
-
-const jwtRegisterModule: DynamicModule = JwtModule.register({});
+import { JwtAuthModule } from 'src/modules/shared/jwt-auth/jwt-auth.module';
 
 @Module({
   imports: [
-    jwtRegisterModule,
+    JwtAuthModule,
     UsersModule
   ],
-  exports: [jwtRegisterModule],
   providers: [
     AuthService,
     MapperService

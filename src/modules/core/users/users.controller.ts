@@ -1,7 +1,7 @@
 import { BadRequestException, Body, ConflictException, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { RequestUser } from 'src/decorators/request-user.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
-import { AuthorizeGuard } from 'src/guards/authorize.guard';
+import { AuthorizeGuard } from 'src/modules/shared/jwt-auth/authorize.guard';
 import { Role } from 'src/models/auth/role';
 import { User } from 'src/models/users/user';
 import { UserDto } from 'src/models/users/user-dto';

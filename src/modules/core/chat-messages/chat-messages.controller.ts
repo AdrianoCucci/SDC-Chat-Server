@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { RequestUser } from 'src/decorators/request-user.decorator';
-import { AuthorizeGuard } from 'src/guards/authorize.guard';
+import { AuthorizeGuard } from 'src/modules/shared/jwt-auth/authorize.guard';
 import { Role } from 'src/models/auth/role';
 import { ChatMessage } from 'src/models/chat-messages/chat-message';
 import { ChatMessageDto } from 'src/models/chat-messages/chat-message-dto';
