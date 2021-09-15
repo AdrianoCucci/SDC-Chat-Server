@@ -10,8 +10,10 @@ export class UsersService extends ServiceBase<User> {
     super("id",
       [
         { id: 1, role: Role.Administrator, username: "admin", password: "12345", displayName: "Admin", isOnline: false },
-        { id: 2, role: Role.User, username: "user123", password: "12345", displayName: "User 123", isOnline: false },
-        { id: 3, role: Role.User, username: "user456", password: "12345", displayName: "User 456", isOnline: false }
+        { id: 2, role: Role.User, username: "user1", password: "12345", displayName: "User 1", isOnline: false, organizationId: 1 },
+        { id: 3, role: Role.User, username: "user2", password: "12345", displayName: "User 2", isOnline: false, organizationId: 1 },
+        { id: 4, role: Role.User, username: "user3", password: "12345", displayName: "User 3", isOnline: false, organizationId: 2 },
+        { id: 5, role: Role.User, username: "user4", password: "12345", displayName: "User 4", isOnline: false, organizationId: 2 }
       ]
     );
   }
