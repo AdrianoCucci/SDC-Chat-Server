@@ -5,12 +5,9 @@ import { User } from "./user";
 
 export class UserParams {
   public static getPredicate(params: UserParams): (user: User) => boolean {
-    let predicate: (user: User) => boolean;
+    let predicate: (user: User) => boolean = null;
 
-    if(params == null) {
-      predicate = () => true;
-    }
-    else {
+    if(params != null) {
       predicate = (user: User) => {
         const filters: boolean[] = [];
 

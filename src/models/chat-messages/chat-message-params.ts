@@ -4,12 +4,9 @@ import { ChatMessage } from "./chat-message";
 
 export class ChatMessageParams {
   public static getPredicate(params: ChatMessageParams): (message: ChatMessage) => boolean {
-    let predicate: (message: ChatMessage) => boolean;
+    let predicate: (message: ChatMessage) => boolean = null;
 
-    if(params == null) {
-      predicate = () => true;
-    }
-    else {
+    if(params != null) {
       predicate = (message: ChatMessage) => {
         const filters: boolean[] = [];
 

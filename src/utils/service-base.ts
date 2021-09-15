@@ -110,7 +110,7 @@ export abstract class ServiceBase<T> {
   }
 
   protected findEntities(predicate: (entity: T) => boolean): T[] {
-    return [...this._entities.filter(predicate)];
+    return predicate != null ? [...this._entities.filter(predicate)] : [...this._entities];
   }
 
   protected findEntityIndex(predicate: (entity: T) => boolean): number {
