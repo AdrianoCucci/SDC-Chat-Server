@@ -34,18 +34,28 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
     this._socketUserMap.set(socket, payload);
 
     payload.isOnline = true;
-    socket.broadcast.emit(SOCKET_EVENTS.userJoin, payload);
 
+    const room: string = this.getUserSocketRoom(payload);
+    if(room) {
+      socket.join(room);
+    }
+
+    this.broadcastMessage(socket, SOCKET_EVENTS.userJoin, payload, room);
     this.updateUserOnline(payload.id, true);
   }
 
   @SubscribeMessage(SOCKET_EVENTS.message)
   public async onMessage(socket: Socket, payload: ChatMessage): Promise<void> {
     if(payload != null && payload.contents && payload.senderUserId != null) {
-      socket.broadcast.emit(SOCKET_EVENTS.message, payload);
+      const user: UserResponse = this._socketUserMap.get(socket);
 
-      if(await this._usersService.idExists(payload.senderUserId)) {
-        await this._messagesService.add(payload);
+      if(user != null) {
+        const room: string = this.getUserSocketRoom(user);
+        this.broadcastMessage(socket, SOCKET_EVENTS.message, payload, room);
+
+        if(await this._usersService.idExists(payload.senderUserId)) {
+          await this._messagesService.add(payload);
+        }
       }
     }
   }
@@ -56,6 +66,19 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
     if(userEntity != null) {
       userEntity.isOnline = isOnline;
       await this._usersService.update(userEntity);
+    }
+  }
+
+  private getUserSocketRoom(user: UserResponse): string | null {
+    return user.organizationId != null ? `Organization_Room_${user.organizationId}` : null;
+  }
+
+  private broadcastMessage(socket: Socket, event: string, payload: any, room?: string): void {
+    if(room) {
+      socket.to(room).emit(event, payload);
+    }
+    else {
+      socket.broadcast.emit(event, payload);
     }
   }
 }
