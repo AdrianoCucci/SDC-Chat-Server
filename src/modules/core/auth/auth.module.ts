@@ -10,12 +10,9 @@ const jwtRegisterModule: DynamicModule = JwtModule.register({});
 @Module({
   imports: [
     jwtRegisterModule,
-    forwardRef(() => UsersModule)
+    UsersModule
   ],
-  exports: [
-    jwtRegisterModule,
-    AuthService
-  ],
+  exports: [jwtRegisterModule],
   providers: [
     AuthService,
     MapperService
