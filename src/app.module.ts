@@ -13,7 +13,7 @@ import { AppWebSocketModule } from './modules/app-web-socket/app-web-socket.modu
     UsersModule,
     ChatMessagesModule,
     OrganizationsModule,
-    AppWebSocketModule,
+    AppWebSocketModule
   ],
 })
 export class AppModule { }

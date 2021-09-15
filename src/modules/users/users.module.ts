@@ -6,6 +6,7 @@ import { UsersService } from './users.service';
 
 @Module({
   imports: [AuthModule],
+  exports: [UsersService],
   providers: [
     UsersService,
     MapperService

@@ -3,13 +3,16 @@ import { ChatMessagesService } from './chat-messages.service';
 import { ChatMessagesController } from './chat-messages.controller';
 import { MapperService } from 'src/utils/dto-mappings/mapper.service';
 import { AuthModule } from '../auth/auth.module';
-import { UsersService } from '../users/users.service';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [AuthModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+  ],
+  exports: [ChatMessagesService],
   providers: [
     ChatMessagesService,
-    UsersService,
     MapperService
   ],
   controllers: [ChatMessagesController]

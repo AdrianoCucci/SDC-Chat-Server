@@ -58,7 +58,7 @@ export class ChatMessagesController {
 
     this._mapper.chatMessages.mapEntity(request, message);
     await this._messagesService.update(message);
-    
+
     const dto: ChatMessageDto = this._mapper.chatMessages.mapDto(message);
     return dto;
   }
