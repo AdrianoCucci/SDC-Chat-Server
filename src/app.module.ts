@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ChatMessagesModule } from './modules/chat-messages/chat-messages.module';
+import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { AppWebSocketModule } from './modules/app-web-socket/app-web-socket.module';
 
 @Module({
@@ -11,7 +12,8 @@ import { AppWebSocketModule } from './modules/app-web-socket/app-web-socket.modu
     AuthModule,
     UsersModule,
     ChatMessagesModule,
-    AppWebSocketModule
+    OrganizationsModule,
+    AppWebSocketModule,
   ],
 })
 export class AppModule { }
