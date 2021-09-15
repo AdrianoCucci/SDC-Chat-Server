@@ -11,4 +11,9 @@ export class ChatMessageRequest {
   @IsInt()
   @IsPositive()
   public senderUserId: number;
+
+  @IsInt()
+  @IsPositive()
+  @IsOptional()
+  public organizationId?: number;
 }

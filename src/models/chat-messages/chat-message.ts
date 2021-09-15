@@ -5,6 +5,7 @@ export class ChatMessage {
   public contents: string;
   public datePosted: Date | string;
   public senderUserId: number;
+  public organizationId?: number
 
   public senderUser?: User;
 }

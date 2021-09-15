@@ -22,6 +22,9 @@ export class ChatMessageParams {
         if(params.senderUserId != null) {
           filters.push(message.senderUserId === params.senderUserId);
         }
+        if(params.organizationId != null) {
+          filters.push(message.organizationId === params.organizationId);
+        }
 
         return !filters.some((m: boolean) => m === false);
       }
@@ -43,4 +46,10 @@ export class ChatMessageParams {
   @IsPositive()
   @IsOptional()
   senderUserId?: number;
+
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  @IsOptional()
+  organizationId?: number;
 }
