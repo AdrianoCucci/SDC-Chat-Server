@@ -4,7 +4,7 @@ import { AuthRequest } from 'src/models/auth/auth-request';
 import { AuthResponse } from 'src/models/auth/auth-response';
 import { User } from 'src/models/users/user';
 import { UserDto } from 'src/models/users/user-dto';
-import { MapperService } from 'src/utils/dto-mappings/mapper.service';
+import { MapperService } from 'src/modules/shared/mapper/mapper.service';
 import { UsersService } from '../users/users.service';
 import appConfig from 'src/app.config';
 

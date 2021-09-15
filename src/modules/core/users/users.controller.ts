@@ -7,7 +7,7 @@ import { User } from 'src/models/users/user';
 import { UserDto } from 'src/models/users/user-dto';
 import { UserDtoPartial } from 'src/models/users/user-dto-partial';
 import { UserParams } from 'src/models/users/user-params';
-import { MapperService } from 'src/utils/dto-mappings/mapper.service';
+import { MapperService } from 'src/modules/shared/mapper/mapper.service';
 import { UsersService } from './users.service';
 
 @Controller("api/users")

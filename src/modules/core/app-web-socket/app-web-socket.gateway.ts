@@ -4,7 +4,7 @@ import { ChatMessage } from 'src/models/chat-messages/chat-message';
 import { ChatMessageDto } from 'src/models/chat-messages/chat-message-dto';
 import { User } from 'src/models/users/user';
 import { UserDto } from 'src/models/users/user-dto';
-import { MapperService } from 'src/utils/dto-mappings/mapper.service';
+import { MapperService } from 'src/modules/shared/mapper/mapper.service';
 import { ChatMessagesService } from '../chat-messages/chat-messages.service';
 import { UsersService } from '../users/users.service';
 import { SOCKET_EVENTS } from './socket-events';

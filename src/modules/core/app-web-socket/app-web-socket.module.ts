@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { MapperService } from 'src/utils/dto-mappings/mapper.service';
 import { ChatMessagesModule } from '../chat-messages/chat-messages.module';
-import { UsersService } from '../users/users.service';
+import { UsersModule } from '../users/users.module';
+import { MapperModule } from 'src/modules/shared/mapper/mapper.module';
 import { AppWebSocketGateway } from './app-web-socket.gateway';
 
 @Module({
-  imports: [ChatMessagesModule],
-  providers: [
-    AppWebSocketGateway,
-    UsersService,
-    MapperService
-  ]
+  imports: [
+    ChatMessagesModule,
+    UsersModule,
+    MapperModule
+  ],
+  providers: [AppWebSocketGateway]
 })
 export class AppWebSocketModule { }

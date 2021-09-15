@@ -7,7 +7,7 @@ import { ChatMessageDto } from 'src/models/chat-messages/chat-message-dto';
 import { ChatMessageDtoPartial } from 'src/models/chat-messages/chat-message-dto-partial';
 import { ChatMessageParams } from 'src/models/chat-messages/chat-message-params';
 import { UserDto } from 'src/models/users/user-dto';
-import { MapperService } from 'src/utils/dto-mappings/mapper.service';
+import { MapperService } from 'src/modules/shared/mapper/mapper.service';
 import { UsersService } from '../users/users.service';
 import { ChatMessagesService } from './chat-messages.service';
 

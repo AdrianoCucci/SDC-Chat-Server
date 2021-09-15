@@ -6,6 +6,7 @@ import { UsersModule } from './modules/core/users/users.module';
 import { ChatMessagesModule } from './modules/core/chat-messages/chat-messages.module';
 import { OrganizationsModule } from './modules/core/organizations/organizations.module';
 import { AppWebSocketModule } from './modules/core/app-web-socket/app-web-socket.module';
+import { MapperModule } from './modules/shared/mapper/mapper.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { AppWebSocketModule } from './modules/core/app-web-socket/app-web-socket
     UsersModule,
     ChatMessagesModule,
     OrganizationsModule,
-    AppWebSocketModule
+    AppWebSocketModule,
+    MapperModule
   ],
 })
 export class AppModule { }

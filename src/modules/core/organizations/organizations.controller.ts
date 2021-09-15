@@ -5,7 +5,7 @@ import { Role } from 'src/models/auth/role';
 import { Organization } from 'src/models/organizations/organization';
 import { OrganizationDto } from 'src/models/organizations/organization-dto';
 import { OrganizationDtoPartial } from 'src/models/organizations/organization-dto-partial';
-import { MapperService } from 'src/utils/dto-mappings/mapper.service';
+import { MapperService } from 'src/modules/shared/mapper/mapper.service';
 import { OrganizationsService } from './organizations.service';
 
 @Controller("api/organizations")
