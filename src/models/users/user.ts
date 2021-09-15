@@ -7,7 +7,7 @@ export class User {
   public username: string;
   public password: string;
   public displayName?: string;
-  public isOnline?: boolean = false;
+  public isOnline: boolean = false;
   public organizationId?: number;
   
   public organization?: Organization;
