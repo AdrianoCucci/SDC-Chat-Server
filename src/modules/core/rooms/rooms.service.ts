@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Room } from 'src/models/rooms/room';
+import { RoomParams } from 'src/models/rooms/room-params';
 import { ServiceBase } from 'src/utils/service-base';
 
 @Injectable()
@@ -16,5 +17,10 @@ export class RoomsService extends ServiceBase<Room> {
         }
       ]
     );
+  }
+
+  public async getAll(params?: RoomParams): Promise<Room[]> {
+    const predicate = RoomParams.getPredicate(params);
+    return this.findEntities(predicate);
   }
 }
