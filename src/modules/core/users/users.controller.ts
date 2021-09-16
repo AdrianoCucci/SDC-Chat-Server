@@ -1,4 +1,4 @@
-import { Body, ConflictException, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { RequestUser } from 'src/decorators/request-user.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
 import { AuthorizeGuard } from 'src/modules/shared/jwt-auth/authorize.guard';
@@ -73,7 +73,7 @@ export class UsersController {
     const entity: User = await this.tryGetUserById(id);
 
     if(user.id === entity.id) {
-      throw new ConflictException("You may not delete your own user account");
+      throw new ForbiddenException("You may not delete your own user account");
     }
 
     await this._usersService.delete(id);
