@@ -1,4 +1,4 @@
-import { BadRequestException, Body, ConflictException, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { RequestUser } from 'src/decorators/request-user.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
 import { AuthorizeGuard } from 'src/modules/shared/jwt-auth/authorize.guard';
@@ -9,11 +9,12 @@ import { UserDtoPartial } from 'src/models/users/user-dto-partial';
 import { UserParams } from 'src/models/users/user-params';
 import { MapperService } from 'src/modules/shared/mapper/mapper.service';
 import { UsersService } from './users.service';
+import { OrganizationsService } from '../organizations/organizations.service';
 
 @Controller("api/users")
 @UseGuards(AuthorizeGuard)
 export class UsersController {
-  constructor(private _usersService: UsersService, private _mapper: MapperService) { }
+  constructor(private _usersService: UsersService, private _orgService: OrganizationsService, private _mapper: MapperService) { }
 
   @Get()
   public async getAllUsers(@Query() params: UserParams): Promise<UserDto[]> {
@@ -89,8 +90,17 @@ export class UsersController {
   }
 
   private async validatePostModel(request: UserDto): Promise<void> {
+    const errors: string[] = [];
+
     if(await this._usersService.usernameExists(request.username)) {
-      throw new ConflictException(`Username already exists: ${request.username}`);
+      errors.push(`username already exists: ${request.username}`);
+    }
+    if(request.organizationId != null && !await this._orgService.idExists(request.organizationId)) {
+      errors.push(`organizationId does not exist: ${request.username}`);
+    }
+
+    if(errors.length > 0) {
+      throw new ConflictException(errors);
     }
   }
 
@@ -101,16 +111,18 @@ export class UsersController {
       const userByUsername: User = await this._usersService.getByUsername(request.username);
 
       if(userByUsername != null && userByUsername.id !== entity.id) {
-        errors.push(`Username already exists: ${request.username}`);
+        errors.push(`username already exists: ${request.username}`);
       }
     }
-
+    if(request.organizationId != null && !await this._orgService.idExists(request.organizationId)) {
+      errors.push(`organizationId does not exist: ${request.username}`);
+    }
     if(requestUser.id !== entity.id && requestUser.role !== Role.Administrator) {
       errors.push("You may not edit a different user's information");
     }
 
     if(errors.length > 0) {
-      throw new BadRequestException(errors);
+      throw new ConflictException(errors);
     }
   }
 }
