@@ -32,21 +32,21 @@ export class ChatMessageParams {
 
   @IsDateString()
   @IsOptional()
-  minDate?: Date | string;
+  public minDate?: Date | string;
 
   @IsDateString()
   @IsOptional()
-  maxDate?: Date | string;
+  public maxDate?: Date | string;
 
   @Type(() => Number)
   @IsInt()
   @IsPositive()
   @IsOptional()
-  senderUserId?: number;
+  public senderUserId?: number;
 
   @Type(() => Number)
   @IsInt()
   @IsPositive()
   @IsOptional()
-  organizationId?: number;
+  public organizationId?: number;
 }
