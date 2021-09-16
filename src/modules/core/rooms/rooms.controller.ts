@@ -35,7 +35,12 @@ export class RoomsController {
 
   @Post()
   @Roles(Role.Administrator, Role.OrganizationAdmin)
-  public async postRoom(@Body() request: RoomDto): Promise<RoomDto> {
+  public async postRoom(@RequestUser() user: UserDto, @Body() request: RoomDto): Promise<RoomDto> {
+    //Make sure non-administrators can only post new rooms in their associated organizations.
+    if(user.role !== Role.Administrator) {
+      request.organizationId = user.organizationId;
+    }
+
     await this.validateRequest(request);
 
     const room: Room = this._mapper.rooms.mapEntity(request);
@@ -53,7 +58,12 @@ export class RoomsController {
     if(user.organizationId !== room.organizationId && user.role !== Role.Administrator) {
       throw new ForbiddenException("You do not have permission to update this room");
     }
-    if(request.organizationId != null) {
+
+    //Make sure non-administrators cannot change the organization of a room.
+    if(user.role !== Role.Administrator) {
+      request.organizationId = room.organizationId;
+    }
+    else if(request.organizationId != null) {
       await this.validateRequest(request);
     }
 
@@ -73,7 +83,7 @@ export class RoomsController {
     if(user.organizationId !== room.organizationId && user.role !== Role.Administrator) {
       throw new ForbiddenException("You do not have permission to delete this room");
     }
-    
+
     await this._roomsService.delete(id);
   }
 
