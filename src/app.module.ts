@@ -5,6 +5,7 @@ import { AuthModule } from './modules/core/auth/auth.module';
 import { UsersModule } from './modules/core/users/users.module';
 import { ChatMessagesModule } from './modules/core/chat-messages/chat-messages.module';
 import { OrganizationsModule } from './modules/core/organizations/organizations.module';
+import { RoomsModule } from './modules/core/rooms/rooms.module';
 import { AppWebSocketModule } from './modules/core/app-web-socket/app-web-socket.module';
 import { MapperModule } from './modules/shared/mapper/mapper.module';
 
@@ -16,8 +17,9 @@ import { MapperModule } from './modules/shared/mapper/mapper.module';
     UsersModule,
     ChatMessagesModule,
     OrganizationsModule,
+    RoomsModule,
     AppWebSocketModule,
     MapperModule
-  ],
+  ]
 })
 export class AppModule { }
