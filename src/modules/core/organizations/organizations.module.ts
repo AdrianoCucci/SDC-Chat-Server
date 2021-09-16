@@ -9,6 +9,7 @@ import { MapperModule } from 'src/modules/shared/mapper/mapper.module';
     JwtAuthModule,
     MapperModule
   ],
+  exports: [OrganizationsService],
   providers: [OrganizationsService],
   controllers: [OrganizationsController]
 })
