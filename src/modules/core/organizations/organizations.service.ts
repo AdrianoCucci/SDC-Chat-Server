@@ -17,6 +17,17 @@ export class OrganizationsService extends ServiceBase<Organization> {
           province: "Ontario",
           country: "Canada",
           postalCode: "L7B 2G9"
+        },
+        {
+          id: 2,
+          name: "Demo Organization",
+          email: "contact@demo.ca",
+          phoneNumber: "123-456-7890",
+          street: "456 Test Ave.",
+          city: "Brampton",
+          province: "Ontario",
+          country: "Canada",
+          postalCode: "L4C 1F6"
         }
       ]
     );
