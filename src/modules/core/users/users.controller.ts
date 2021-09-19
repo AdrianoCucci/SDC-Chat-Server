@@ -133,7 +133,7 @@ export class UsersController {
         errors.push(`username already exists: ${request.username}`);
       }
     }
-    
+
     //Non-administrators must specify the organization of users.
     if(request.organizationId == null && requestUser.role !== Role.Administrator) {
       errors.push("organizationId is required");
@@ -142,7 +142,7 @@ export class UsersController {
       errors.push(`organizationId does not exist: ${request.organizationId}`);
     }
 
-    if(requestUser.id !== entity.id && requestUser.role !== Role.Administrator) {
+    if(requestUser.id !== entity.id && (requestUser.role !== Role.Administrator && requestUser.role !== Role.OrganizationAdmin)) {
       errors.push("You may not edit a different user's information");
     }
 
