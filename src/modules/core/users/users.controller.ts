@@ -85,7 +85,7 @@ export class UsersController {
     await this._usersService.delete(id);
   }
 
-  @Post()
+  @Post(":id/reset-password")
   @HttpCode(HttpStatus.NO_CONTENT)
   public async resetPassword(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: PassResetRequest): Promise<void> {
     const entity: User = await this.tryGetUserById(id);
@@ -101,7 +101,7 @@ export class UsersController {
     await this._usersService.update(entity);
   }
 
-  @Post()
+  @Post(":id/admin-reset-password")
   @Roles(Role.Administrator, Role.OrganizationAdmin)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async adminResetPassword(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: AdminPassResetRequest): Promise<void> {
