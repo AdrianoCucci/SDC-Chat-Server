@@ -10,6 +10,8 @@ import { UserParams } from 'src/models/users/user-params';
 import { MapperService } from 'src/modules/shared/mapper/mapper.service';
 import { UsersService } from './users.service';
 import { OrganizationsService } from '../organizations/organizations.service';
+import { PassResetRequest } from 'src/models/auth/pass-reset-request';
+import { AdminPassResetRequest } from 'src/models/auth/admin-pass-reset-request';
 
 @Controller("api/users")
 @UseGuards(AuthorizeGuard)
@@ -81,6 +83,47 @@ export class UsersController {
     }
 
     await this._usersService.delete(id);
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.OK)
+  public async resetPassword(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: PassResetRequest): Promise<void> {
+    const entity: User = await this.tryGetUserById(id);
+
+    if(user.id !== entity.id) {
+      throw new ForbiddenException("You do not have permission to reset this user's password");
+    }
+    if(entity.password !== request.currentPassword) {
+      throw new ConflictException("Current password is invalid");
+    }
+
+    entity.password = request.newPassword;
+    await this._usersService.update(entity);
+  }
+
+  @Post()
+  @Roles(Role.Administrator, Role.OrganizationAdmin)
+  @HttpCode(HttpStatus.OK)
+  public async adminResetPassword(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: AdminPassResetRequest): Promise<void> {
+    const entity: User = await this.tryGetUserById(id);
+
+    const doUpdate = async () => {
+      entity.password = request.newPassword;
+      await this._usersService.update(entity);
+    };
+
+    if(user.role === Role.OrganizationAdmin) {
+      if(entity.organizationId !== user.organizationId || entity.role !== Role.User) {
+        throw new ForbiddenException("You do not have permission to reset this user's password");
+      }
+
+      await doUpdate();
+    }
+    else if(entity.role === Role.Administrator) {
+      throw new ForbiddenException("You may not reset an administrator's password");
+    }
+
+    await doUpdate();
   }
 
   private async tryGetUserById(id: number): Promise<User> {
