@@ -8,4 +8,10 @@ export class Room {
   public organizationId: number;
 
   public organization?: Organization;
+
+  public constructor(values?: Partial<Room>) {
+    if(values != null) {
+      Object.assign(this, values);
+    }
+  }
 }

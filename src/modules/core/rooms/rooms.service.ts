@@ -8,13 +8,13 @@ export class RoomsService extends ServiceBase<Room> {
   constructor() {
     super("id",
       [
-        {
+        new Room({
           id: 1,
           name: "Operating Room",
           description: "Sample text description...",
           number: 261,
           organizationId: 1
-        }
+        })
       ]
     );
   }

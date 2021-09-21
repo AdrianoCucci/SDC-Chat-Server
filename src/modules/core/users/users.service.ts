@@ -9,11 +9,11 @@ export class UsersService extends ServiceBase<User> {
   constructor() {
     super("id",
       [
-        { id: 1, role: Role.Administrator, username: "admin", password: "12345", displayName: "Admin", isOnline: false },
-        { id: 2, role: Role.OrganizationAdmin, username: "orgadmin1", password: "12345", displayName: "Org Admin 1", isOnline: false, organizationId: 1 },
-        { id: 3, role: Role.User, username: "user1", password: "12345", displayName: "User 1", isOnline: false, organizationId: 1 },
-        { id: 4, role: Role.OrganizationAdmin, username: "orgadmin2", password: "12345", displayName: "Org Admin 2", isOnline: false, organizationId: 2 },
-        { id: 5, role: Role.User, username: "user2", password: "12345", displayName: "User 2", isOnline: false, organizationId: 2 }
+        new User({ id: 1, role: Role.Administrator, username: "admin", password: "12345", displayName: "Admin", isOnline: false }),
+        new User({ id: 2, role: Role.OrganizationAdmin, username: "orgadmin1", password: "12345", displayName: "Org Admin 1", isOnline: false, organizationId: 1 }),
+        new User({ id: 3, role: Role.User, username: "user1", password: "12345", displayName: "User 1", isOnline: false, organizationId: 1 }),
+        new User({ id: 4, role: Role.OrganizationAdmin, username: "orgadmin2", password: "12345", displayName: "Org Admin 2", isOnline: false, organizationId: 2 }),
+        new User({ id: 5, role: Role.User, username: "user2", password: "12345", displayName: "User 2", isOnline: false, organizationId: 2 })
       ]
     );
   }

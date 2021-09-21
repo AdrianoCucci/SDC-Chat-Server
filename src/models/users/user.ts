@@ -11,4 +11,10 @@ export class User {
   public organizationId?: number;
   
   public organization?: Organization;
+
+  public constructor(values?: Partial<User>) {
+    if(values != null) {
+      Object.assign(this, values);
+    }
+  }
 }
