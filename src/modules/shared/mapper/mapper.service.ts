@@ -19,8 +19,11 @@ export class MapperService {
   public readonly users = new EntityDtoMap<User, UserDto>({
     mapEntity: (dto: Partial<UserDto>, target?: User): User => Object.assign(target ?? new User(), dto),
     mapDto: (entity: User): UserDto => {
-      const dto: UserDto = Object.assign(new UserDto(), entity);
-      delete dto.password;
+      const dto: UserDto = Object.assign(new User() as any, entity);
+
+      if(entity.organization != null) {
+        dto.organization = this.organizations.mapDto(entity.organization);
+      }
 
       return dto;
     }
@@ -28,7 +31,15 @@ export class MapperService {
 
   public readonly rooms = new EntityDtoMap<Room, RoomDto>({
     mapEntity: (dto: Partial<RoomDto>, target?: Room): Room => Object.assign(target ?? new Room(), dto),
-    mapDto: (entity: Room): RoomDto => Object.assign(new Room(), entity)
+    mapDto: (entity: Room): RoomDto => {
+      const dto: RoomDto = Object.assign(new Room() as any, entity);
+
+      if(entity.organization != null) {
+        dto.organization = this.organizations.mapDto(entity.organization);
+      }
+
+      return dto;
+    }
   });
 
   public readonly chatMessages = new EntityDtoMap<ChatMessage, ChatMessageDto>({
