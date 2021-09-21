@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Param, ParseIntPipe, NotFoundException, Post, Body, ConflictException, Put, ForbiddenException, Delete, HttpCode, HttpStatus, UseGuards } from "@nestjs/common";
+import { Controller, Get, Query, Param, ParseIntPipe, NotFoundException, Post, Body, ConflictException, Put, ForbiddenException, Delete, HttpCode, HttpStatus, UseGuards, ClassSerializerInterceptor, UseInterceptors } from "@nestjs/common";
 import { RequestUser } from "src/decorators/request-user.decorator";
 import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/models/auth/role";
@@ -14,6 +14,7 @@ import { RoomsService } from "./rooms.service";
 
 @Controller("api/rooms")
 @UseGuards(AuthorizeGuard)
+@UseInterceptors(ClassSerializerInterceptor)
 export class RoomsController {
   constructor(private _roomsService: RoomsService, private _orgsService: OrganizationsService, private _mapper: MapperService) { }
 

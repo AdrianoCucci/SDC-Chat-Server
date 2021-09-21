@@ -1,4 +1,4 @@
-import { Body, ConflictException, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, ConflictException, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 import { RequestUser } from 'src/decorators/request-user.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
 import { AuthorizeGuard } from 'src/modules/shared/jwt-auth/authorize.guard';
@@ -15,6 +15,7 @@ import { AdminPassResetRequest } from 'src/models/auth/admin-pass-reset-request'
 
 @Controller("api/users")
 @UseGuards(AuthorizeGuard)
+@UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(private _usersService: UsersService, private _orgService: OrganizationsService, private _mapper: MapperService) { }
 

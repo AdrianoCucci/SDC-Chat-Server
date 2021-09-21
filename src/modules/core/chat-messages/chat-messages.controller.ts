@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 import { RequestUser } from 'src/decorators/request-user.decorator';
 import { AuthorizeGuard } from 'src/modules/shared/jwt-auth/authorize.guard';
 import { Role } from 'src/models/auth/role';
@@ -13,6 +13,7 @@ import { ChatMessagesService } from './chat-messages.service';
 
 @Controller("api/chat-messages")
 @UseGuards(AuthorizeGuard)
+@UseInterceptors(ClassSerializerInterceptor)
 export class ChatMessagesController {
   constructor(private _messagesService: ChatMessagesService, private _usersService: UsersService, private _mapper: MapperService) { }
 

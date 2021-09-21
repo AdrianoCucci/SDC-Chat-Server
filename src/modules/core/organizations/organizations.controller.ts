@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Roles } from 'src/decorators/roles.decorator';
 import { AuthorizeGuard } from 'src/modules/shared/jwt-auth/authorize.guard';
 import { Role } from 'src/models/auth/role';
@@ -10,6 +10,7 @@ import { OrganizationsService } from './organizations.service';
 
 @Controller("api/organizations")
 @UseGuards(AuthorizeGuard)
+@UseInterceptors(ClassSerializerInterceptor)
 export class OrganizationsController {
   constructor(private _orgsService: OrganizationsService, private _mapper: MapperService) { }
 

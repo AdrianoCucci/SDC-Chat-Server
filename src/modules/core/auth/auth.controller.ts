@@ -1,9 +1,10 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, HttpCode, HttpStatus, Post, UnauthorizedException, UseInterceptors } from '@nestjs/common';
 import { AuthRequest } from 'src/models/auth/auth-request';
 import { AuthResponse } from 'src/models/auth/auth-response';
 import { AuthService } from './auth.service';
 
 @Controller("api/auth")
+@UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
   constructor(private _authService: AuthService) { }
 
