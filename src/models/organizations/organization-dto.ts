@@ -26,4 +26,6 @@ export class OrganizationDto {
   
   @IsString()
   public postalCode: string;
+
+  public fullAddress: string;
 }

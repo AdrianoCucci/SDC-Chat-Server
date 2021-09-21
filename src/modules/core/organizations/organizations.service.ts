@@ -7,7 +7,7 @@ export class OrganizationsService extends ServiceBase<Organization> {
   constructor() {
     super("id",
       [
-        {
+        new Organization({
           id: 1,
           name: "Sorriso Dental Care",
           email: "contact@sdc.ca",
@@ -17,8 +17,8 @@ export class OrganizationsService extends ServiceBase<Organization> {
           province: "Ontario",
           country: "Canada",
           postalCode: "L7B 2G9"
-        },
-        {
+        }),
+        new Organization({
           id: 2,
           name: "Demo Organization",
           email: "contact@demo.ca",
@@ -28,7 +28,7 @@ export class OrganizationsService extends ServiceBase<Organization> {
           province: "Ontario",
           country: "Canada",
           postalCode: "L4C 1F6"
-        }
+        })
       ]
     );
   }
