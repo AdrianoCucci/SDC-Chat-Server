@@ -16,20 +16,38 @@ export class Organization {
     }
 
     if(!this.fullAddress) {
-      this.fullAddress = this.createFullAddress();
+      const fullAddress: string = this.createFullAddress();
+
+      if(fullAddress) {
+        this.fullAddress = fullAddress;
+      }
     }
   }
 
   private createFullAddress(): string {
-    let address: string = `${this.street}, ${this.city}, ${this.province}, ${this.country} ${this.postalCode}`.trim();
-    const duplicateCommaExpr: RegExp = /,{2,}/g
-    address = address.replace(duplicateCommaExpr, ',');
+    let address: string = "";
 
-    //If address is nothing but a string of commas.
-    if(/^,*$/.test(address)) {
-      address = null;
+    if(this.street) {
+      address += `${this.street}, `;
+    }
+    if(this.city) {
+      address += `${this.city}, `;
+    }
+    if(this.province) {
+      address += `${this.province}, `;
+    }
+    if(this.country) {
+      address += `${this.country} `;
+    }
+    if(this.postalCode) {
+      address += `${this.postalCode}`;
     }
 
-    return address;
+    //Remove any leading/trailing commas.
+    const commaTrimExp: RegExp = /(^,+)|(,+$)/g
+
+    return address
+      .trim()
+      .replace(commaTrimExp, '');
   }
 }
