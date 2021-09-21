@@ -1,4 +1,4 @@
-import { IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 export class OrganizationDto {
   public id?: number;
@@ -7,25 +7,32 @@ export class OrganizationDto {
   public name: string;
   
   @IsString()
-  public email: string;
+  @IsOptional()
+  public email?: string;
 
   @IsString()
-  public phoneNumber: string;
+  @IsOptional()
+  public phoneNumber?: string;
 
   @IsString()
-  public street: string;
+  @IsOptional()
+  public street?: string;
   
   @IsString()
-  public city: string;
+  @IsOptional()
+  public city?: string;
   
   @IsString()
-  public province: string;
+  @IsOptional()
+  public province?: string;
 
   @IsString()
-  public country: string;
+  @IsOptional()
+  public country?: string;
   
   @IsString()
-  public postalCode: string;
+  @IsOptional()
+  public postalCode?: string;
 
-  public fullAddress: string;
+  public fullAddress?: string;
 }
