@@ -19,6 +19,9 @@ export class AuthService {
     if(user == null || user.password !== request.password) {
       response = { isSuccess: false, message: "Login credentials are invalid" };
     }
+    else if(user.isLocked) {
+      response = { isSuccess: false, message: "Your account is locked. Please speak with your administrator." };
+    }
     else {
       user.isOnline = true;
       await this._usersService.update(user);
