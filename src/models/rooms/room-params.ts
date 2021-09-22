@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
-import { IsInt, IsPositive, IsOptional } from "class-validator";
+import { IsInt, IsPositive, IsOptional, IsEnum } from "class-validator";
+import { AudioSound } from "../audio-sound";
 import { Room } from "./room";
 
 export class RoomParams {
@@ -8,18 +9,26 @@ export class RoomParams {
 
     if(params != null) {
       predicate = (room: Room) => {
-        let filter: boolean = true;
+        const filters: boolean[] = [];
 
         if(params.organizationId != null) {
-          filter = room.organizationId === params.organizationId;
+          filters.push(room.organizationId === params.organizationId);
+        }
+        if(params.pingSound != null) {
+          filters.push(room.pingSound === params.pingSound);
         }
 
-        return filter;
+        return !filters.some((f: boolean) => f === false);
       }
     }
 
     return predicate;
   }
+
+  @Type(() => Number)
+  @IsEnum(AudioSound)
+  @IsOptional()
+  public pingSound?: AudioSound;
 
   @Type(() => Number)
   @IsInt()
