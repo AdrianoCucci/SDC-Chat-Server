@@ -20,6 +20,10 @@ export class UserDto {
 
   @IsBoolean()
   @IsOptional()
+  public isLocked?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
   public isOnline?: boolean;
 
   @IsInt()

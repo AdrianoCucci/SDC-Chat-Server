@@ -7,6 +7,7 @@ export class User {
   public username: string;
   public password: string;
   public displayName?: string;
+  public isLocked: boolean = false;
   public isOnline: boolean = false;
   public organizationId?: number;
   

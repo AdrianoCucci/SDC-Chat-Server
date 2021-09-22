@@ -14,6 +14,9 @@ export class UserParams {
         if(params.role != null) {
           filters.push(user.role === params.role);
         }
+        if(params.isLocked != null) {
+          filters.push(user.isLocked === params.isLocked);
+        }
         if(params.isOnline != null) {
           filters.push(user.isOnline === params.isOnline);
         }
@@ -32,6 +35,11 @@ export class UserParams {
   @IsEnum(Role)
   @IsOptional()
   public role?: Role;
+
+  @Type(() => Boolean)
+  @IsBoolean()
+  @IsOptional()
+  public isLocked?: boolean;
 
   @Type(() => Boolean)
   @IsBoolean()
