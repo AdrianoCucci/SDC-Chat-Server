@@ -1,12 +1,12 @@
+import { AudioSound } from "../audio-sound";
 import { Organization } from "../organizations/organization";
-import { RoomPingSound } from "./room-ping-sound";
 
 export class Room {
   public id: number;
   public name: string;
   public number?: number;
   public description?: string;
-  public pingSound?: RoomPingSound;
+  public pingSound?: AudioSound;
   public organizationId: number;
 
   public organization?: Organization;

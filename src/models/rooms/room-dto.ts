@@ -1,6 +1,6 @@
 import { IsEnum, IsInt, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
+import { AudioSound } from "../audio-sound";
 import { OrganizationDto } from "../organizations/organization-dto";
-import { RoomPingSound } from "./room-ping-sound";
 
 export class RoomDto {
   public id?: number;
@@ -16,9 +16,9 @@ export class RoomDto {
   @IsOptional()
   public description?: string;
 
-  @IsEnum(RoomPingSound)
+  @IsEnum(AudioSound)
   @IsOptional()
-  public pingSound?: RoomPingSound;
+  public pingSound?: AudioSound;
 
   @IsInt()
   @IsPositive()
