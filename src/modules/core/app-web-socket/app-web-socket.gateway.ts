@@ -1,65 +1,43 @@
 import { OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
-import { ChatMessage } from 'src/models/chat-messages/chat-message';
+import { Socket } from 'socket.io';
 import { ChatMessageDto } from 'src/models/chat-messages/chat-message-dto';
 import { User } from 'src/models/users/user';
 import { UserDto } from 'src/models/users/user-dto';
-import { MapperService } from 'src/modules/shared/mapper/mapper.service';
-import { ChatMessagesService } from '../chat-messages/chat-messages.service';
 import { UsersService } from '../users/users.service';
-import { SOCKET_EVENTS } from './socket-events';
+import { LiveChatService } from './services/live-chat.service';
+import { SocketUsersService } from './services/socket-users.service';
+import { SOCKET_EVENTS } from './utils/socket-events';
+import { getUserRoom, broadcast } from './utils/socket-functions';
 
 @WebSocketGateway({ cors: { origin: "*" } })
 export class AppWebSocketGateway implements OnGatewayDisconnect {
-  @WebSocketServer()
-  private readonly _server: Server;
-
-  private readonly _socketUserMap = new Map<Socket, UserDto>();
-
-  constructor(private _messagesService: ChatMessagesService, private _usersService: UsersService, private _mapper: MapperService) { }
+  constructor(private _socketUsersService: SocketUsersService, private _usersService: UsersService, private _liveChatService: LiveChatService) { }
 
   public handleDisconnect(socket: Socket): void {
-    const user: UserDto = this._socketUserMap.get(socket);
+    const user: UserDto = this._socketUsersService.get(socket);
 
     if(user != null) {
       user.isOnline = false;
       socket.broadcast.emit(SOCKET_EVENTS.userLeave, user);
 
       this.updateUserOnline(user.id, false);
-      this._socketUserMap.delete(socket);
+      this._socketUsersService.delete(socket);
     }
   }
 
   @SubscribeMessage(SOCKET_EVENTS.userJoin)
   public onUserJoin(socket: Socket, payload: UserDto): void {
-    this._socketUserMap.set(socket, payload);
+    this._socketUsersService.set(socket, payload);
 
     payload.isOnline = true;
 
-    const room: string = this.getUserSocketRoom(payload);
+    const room: string = getUserRoom(payload);
     if(room) {
       socket.join(room);
     }
 
-    this.broadcastMessage(socket, SOCKET_EVENTS.userJoin, payload, room);
+    broadcast(socket, SOCKET_EVENTS.userJoin, payload, room);
     this.updateUserOnline(payload.id, true);
-  }
-
-  @SubscribeMessage(SOCKET_EVENTS.message)
-  public async onMessage(socket: Socket, payload: ChatMessageDto): Promise<void> {
-    if(payload != null && payload.contents && payload.senderUserId != null) {
-      const user: UserDto = this._socketUserMap.get(socket);
-
-      if(user != null) {
-        const room: string = this.getUserSocketRoom(user);
-        this.broadcastMessage(socket, SOCKET_EVENTS.message, payload, room);
-
-        if(await this._usersService.idExists(payload.senderUserId)) {
-          const entity: ChatMessage = this._mapper.chatMessages.mapEntity(payload);
-          await this._messagesService.add(entity);
-        }
-      }
-    }
   }
 
   private async updateUserOnline(userId: number, isOnline: boolean): Promise<void> {
@@ -71,16 +49,8 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
     }
   }
 
-  private getUserSocketRoom(user: UserDto): string | null {
-    return user.organizationId != null ? `Organization_Room_${user.organizationId}` : null;
-  }
-
-  private broadcastMessage(socket: Socket, event: string, payload: any, room?: string): void {
-    if(room) {
-      socket.to(room).emit(event, payload);
-    }
-    else {
-      socket.broadcast.emit(event, payload);
-    }
+  @SubscribeMessage(SOCKET_EVENTS.message)
+  public onMessage(socket: Socket, payload: ChatMessageDto): void {
+    this._liveChatService.onMessage(socket, payload);
   }
 }

@@ -3,6 +3,8 @@ import { ChatMessagesModule } from '../chat-messages/chat-messages.module';
 import { UsersModule } from '../users/users.module';
 import { MapperModule } from 'src/modules/shared/mapper/mapper.module';
 import { AppWebSocketGateway } from './app-web-socket.gateway';
+import { SocketUsersService } from './services/socket-users.service';
+import { LiveChatService } from './services/live-chat.service';
 
 @Module({
   imports: [
@@ -10,6 +12,10 @@ import { AppWebSocketGateway } from './app-web-socket.gateway';
     UsersModule,
     MapperModule
   ],
-  providers: [AppWebSocketGateway]
+  providers: [
+    AppWebSocketGateway,
+    SocketUsersService,
+    LiveChatService
+  ]
 })
 export class AppWebSocketModule { }
