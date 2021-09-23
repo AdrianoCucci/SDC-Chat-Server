@@ -11,9 +11,23 @@ export class RoomsService extends ServiceBase<Room> {
         new Room({
           id: 1,
           name: "Operating Room",
-          description: "Sample text description...",
+          description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Magnam et beatae, odio itaque sunt iusto quae blanditiis dignissimos adipisci accusamus repudiandae facere consequuntur quis ad, ex laboriosam vero delectus ipsam.",
           number: 261,
-          organizationId: 1
+          organizationId: 1,
+          pingSound: 1
+        }),
+        new Room({
+          id: 2,
+          name: "Front Desk",
+          organizationId: 1,
+        }),
+        new Room({
+          id: 3,
+          name: "Cleaning Room",
+          description: "Sample text description...",
+          number: 186,
+          organizationId: 1,
+          pingSound: 1
         })
       ]
     );
