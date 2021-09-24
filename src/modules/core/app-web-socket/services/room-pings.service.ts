@@ -6,18 +6,22 @@ import { UserDto } from 'src/models/users/user-dto';
 import { SOCKET_EVENTS } from '../utils/socket-events';
 import { broadcast, getUserRoom } from '../utils/socket-functions';
 import { SocketUsersService } from './socket-users.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class RoomPingsService {
   constructor(private _socketUsersService: SocketUsersService) { }
 
-  public onRoomPingRequest(socket: Socket, payload: RoomPing): void { 
+  public onRoomPingRequest(socket: Socket, payload: RoomPing): void {
     const requestUser: UserDto = this._socketUsersService.get(socket);
 
     if(requestUser != null) {
       payload.state = RoomPingState.Requesting;
       payload.requestUser = requestUser;
-      
+
+      if(!payload.guid) {
+        payload.guid = uuidv4();
+      }
       if(!payload.requestDate) {
         payload.requestDate = new Date().toISOString();
       }
@@ -27,7 +31,7 @@ export class RoomPingsService {
     }
   }
 
-  public onRoomPingResponse(socket: Socket, payload: RoomPing): void { 
+  public onRoomPingResponse(socket: Socket, payload: RoomPing): void {
     const responseUser: UserDto = this._socketUsersService.get(socket);
 
     if(responseUser != null) {
