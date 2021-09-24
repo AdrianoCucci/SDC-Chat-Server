@@ -71,8 +71,15 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
     this._roomPingsService.onRoomPingResponse(socket, payload);
   }
 
+  @SubscribeMessage(SOCKET_EVENTS.roomPingCancel)
+  public onRoomPingCancel(socket: Socket, payload: RoomPing): WsResponse<boolean> {
+    const didCancel: boolean = this._roomPingsService.onRoomPingCancel(socket, payload);
+    return { event: SOCKET_EVENTS.roomPingCancel, data: didCancel };
+  }
+
   @SubscribeMessage(SOCKET_EVENTS.getRoomPings)
   public onGetRequestingRoomPings(socket: Socket): WsResponse<RoomPing[]> {
-    return this._roomPingsService.onGetRequestingPings(socket);
+    const pings: RoomPing[] = this._roomPingsService.onGetRequestingPings(socket);
+    return { event: SOCKET_EVENTS.getRoomPings, data: pings };
   }
 }
