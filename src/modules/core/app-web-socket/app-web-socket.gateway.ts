@@ -62,13 +62,13 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
   }
 
   @SubscribeMessage(SOCKET_EVENTS.roomPingRequest)
-  public onRoomPingRequest(socket: Socket, payload: RoomPing): void {
-    this._roomPingsService.onRoomPingRequest(socket, payload);
+  public onRoomPingRequest(socket: Socket, payload: RoomPing): RoomPing {
+    return this._roomPingsService.onRoomPingRequest(socket, payload);
   }
 
   @SubscribeMessage(SOCKET_EVENTS.roomPingResponse)
-  public onRoomPingResponse(socket: Socket, payload: RoomPing): void {
-    this._roomPingsService.onRoomPingResponse(socket, payload);
+  public onRoomPingResponse(socket: Socket, payload: RoomPing): RoomPing {
+    return this._roomPingsService.onRoomPingResponse(socket, payload);
   }
 
   @SubscribeMessage(SOCKET_EVENTS.roomPingCancel)

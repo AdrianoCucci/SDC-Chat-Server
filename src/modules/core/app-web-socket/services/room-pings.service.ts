@@ -14,7 +14,7 @@ export class RoomPingsService {
 
   constructor(private _socketUsersService: SocketUsersService) { }
 
-  public onRoomPingRequest(socket: Socket, payload: RoomPing): void {
+  public onRoomPingRequest(socket: Socket, payload: RoomPing): RoomPing {
     if(!this.hasRequestingPing(payload?.guid)) {
       const requestUser: UserDto = this._socketUsersService.get(socket);
 
@@ -36,24 +36,26 @@ export class RoomPingsService {
         broadcast(socket, SOCKET_EVENTS.roomPingRequest, payload, room);
       }
     }
+
+    return payload;
   }
 
-  public onRoomPingResponse(socket: Socket, payload: RoomPing): void {
-    const requestingPing: RoomPing = this.findRequestingPing(payload?.guid);
-
-    if(requestingPing != null) {
+  public onRoomPingResponse(socket: Socket, payload: RoomPing): RoomPing {
+    if(this.hasRequestingPing(payload?.guid)) {
       const responseUser: UserDto = this._socketUsersService.get(socket);
 
-      if(responseUser?.organizationId === requestingPing.organizationId) {
-        requestingPing.state = RoomPingState.Responded;
-        requestingPing.responseUser = responseUser;
+      if(responseUser?.organizationId === payload.organizationId) {
+        payload.state = RoomPingState.Responded;
+        payload.responseUser = responseUser;
 
         const room: string = getUserRoom(responseUser);
-        broadcast(socket, SOCKET_EVENTS.roomPingResponse, requestingPing, room);
+        broadcast(socket, SOCKET_EVENTS.roomPingResponse, payload, room);
 
-        this.removeRequestingPing(requestingPing);
+        this.removeRequestingPing(payload.guid);
       }
     }
+
+    return payload;
   }
 
   public onRoomPingCancel(socket: Socket, payload: RoomPing): void {
@@ -66,7 +68,7 @@ export class RoomPingsService {
         const room: string = getUserRoom(user);
         broadcast(socket, SOCKET_EVENTS.roomPingCancel, requestingPing, room);
 
-        this.removeRequestingPing(requestingPing);
+        this.removeRequestingPing(payload.guid);
       }
     }
   }
@@ -94,8 +96,8 @@ export class RoomPingsService {
     return this.findRequestingPingIndex(guid) !== -1;
   }
 
-  private removeRequestingPing(roomPing: RoomPing): boolean {
-    const index: number = this._requestingPings.indexOf(roomPing);
+  private removeRequestingPing(guid: string): boolean {
+    const index: number = this.findRequestingPingIndex(guid);
     const canRemove: boolean = index !== -1;
 
     if(canRemove) {
