@@ -49,7 +49,7 @@ export class RoomPingsService {
         requestingPing.responseUser = responseUser;
 
         const room: string = getUserRoom(responseUser);
-        broadcast(socket, SOCKET_EVENTS.roomPingRequest, requestingPing, room);
+        broadcast(socket, SOCKET_EVENTS.roomPingResponse, requestingPing, room);
 
         this.removeRequestingPing(requestingPing);
       }
