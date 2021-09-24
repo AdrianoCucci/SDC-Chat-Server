@@ -3,5 +3,7 @@ export const SOCKET_EVENTS = {
   disconnect: "disconnect",
   userJoin: "user-join",
   userLeave: "user-leave",
-  message: "message"
+  message: "message",
+  roomPingRequest: "room-ping-request",
+  roomPingResponse: "room-ping-response"
 };

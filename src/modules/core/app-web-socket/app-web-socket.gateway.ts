@@ -1,17 +1,24 @@
 import { OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { ChatMessageDto } from 'src/models/chat-messages/chat-message-dto';
+import { RoomPing } from 'src/models/room-pings/room-ping';
 import { User } from 'src/models/users/user';
 import { UserDto } from 'src/models/users/user-dto';
 import { UsersService } from '../users/users.service';
 import { LiveChatService } from './services/live-chat.service';
+import { RoomPingsService } from './services/room-pings.service';
 import { SocketUsersService } from './services/socket-users.service';
 import { SOCKET_EVENTS } from './utils/socket-events';
 import { getUserRoom, broadcast } from './utils/socket-functions';
 
 @WebSocketGateway({ cors: { origin: "*" } })
 export class AppWebSocketGateway implements OnGatewayDisconnect {
-  constructor(private _socketUsersService: SocketUsersService, private _usersService: UsersService, private _liveChatService: LiveChatService) { }
+  constructor(
+    private _socketUsersService: SocketUsersService,
+    private _usersService: UsersService,
+    private _liveChatService: LiveChatService,
+    private _roomPingsService: RoomPingsService
+  ) { }
 
   public handleDisconnect(socket: Socket): void {
     const user: UserDto = this._socketUsersService.get(socket);
@@ -52,5 +59,15 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
   @SubscribeMessage(SOCKET_EVENTS.message)
   public onMessage(socket: Socket, payload: ChatMessageDto): void {
     this._liveChatService.onMessage(socket, payload);
+  }
+
+  @SubscribeMessage(SOCKET_EVENTS.roomPingRequest)
+  public onRoomPingRequest(socket: Socket, payload: RoomPing): void {
+    this._roomPingsService.onRoomPingRequest(socket, payload);
+  }
+
+  @SubscribeMessage(SOCKET_EVENTS.roomPingResponse)
+  public onRoomPingResponse(socket: Socket, payload: RoomPing): void {
+    this._roomPingsService.onRoomPingResponse(socket, payload);
   }
 }
