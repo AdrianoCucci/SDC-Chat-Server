@@ -33,7 +33,7 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
   }
 
   @SubscribeMessage(SOCKET_EVENTS.userJoin)
-  public onUserJoin(socket: Socket, payload: UserDto): void {
+  public onUserJoin(socket: Socket, payload: UserDto): UserDto {
     this._socketUsersService.set(socket, payload);
 
     payload.isOnline = true;
@@ -45,6 +45,8 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
 
     broadcast(socket, SOCKET_EVENTS.userJoin, payload, room);
     this.updateUserOnline(payload.id, true);
+
+    return payload;
   }
 
   private async updateUserOnline(userId: number, isOnline: boolean): Promise<void> {
