@@ -6,6 +6,7 @@ export interface RoomPing {
   guid: string;
   state: RoomPingState;
   roomId: number;
+  organizationId: number;
   requestDate: Date | string;
   requestMessage: string;
   responseMessage?: string;

@@ -55,7 +55,12 @@ export class RoomPingsService {
   }
 
   public onGetRequestingPings(socket: Socket): WsResponse<RoomPing[]> {
-    const pings: RoomPing[] = this._socketUsersService.has(socket) ? this._requestingPings : null;
+    let pings: RoomPing[] = null;
+
+    const user: UserDto = this._socketUsersService.get(socket);
+    if(user?.organizationId != null) {
+      pings = this.getOrganizationPingRequests(user.organizationId);
+    }
 
     return {
       event: SOCKET_EVENTS.getRoomPings,
@@ -77,5 +82,9 @@ export class RoomPingsService {
     if(index !== -1) {
       this._requestingPings.splice(index, 1);
     }
+  }
+
+  private getOrganizationPingRequests(organizationId: number): RoomPing[] {
+    return this._requestingPings.filter((r: RoomPing) => r.organizationId === organizationId);
   }
 }
