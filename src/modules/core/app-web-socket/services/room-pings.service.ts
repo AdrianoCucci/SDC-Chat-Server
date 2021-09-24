@@ -16,11 +16,12 @@ export class RoomPingsService {
   constructor(private _socketUsersService: SocketUsersService) { }
 
   public onRoomPingRequest(socket: Socket, payload: RoomPing): void {
-    if(!this.hasRequestingPing(payload)) {
+    if(!this.hasRequestingPing(payload?.guid)) {
       const requestUser: UserDto = this._socketUsersService.get(socket);
 
-      if(requestUser != null) {
+      if(requestUser?.organizationId != null) {
         payload.state = RoomPingState.Requesting;
+        payload.organizationId = requestUser.organizationId;
         payload.requestUser = requestUser;
 
         if(!payload.guid) {
@@ -39,39 +40,39 @@ export class RoomPingsService {
   }
 
   public onRoomPingResponse(socket: Socket, payload: RoomPing): void {
-    if(this.hasRequestingPing(payload)) {
+    const requestingPing: RoomPing = this.findRequestingPing(payload?.guid);
+
+    if(requestingPing != null) {
       const responseUser: UserDto = this._socketUsersService.get(socket);
 
-      if(responseUser != null) {
-        payload.state = RoomPingState.Responded;
-        payload.responseUser = responseUser;
+      if(responseUser?.organizationId === requestingPing.organizationId) {
+        requestingPing.state = RoomPingState.Responded;
+        requestingPing.responseUser = responseUser;
 
         const room: string = getUserRoom(responseUser);
-        broadcast(socket, SOCKET_EVENTS.roomPingRequest, payload, room);
+        broadcast(socket, SOCKET_EVENTS.roomPingRequest, requestingPing, room);
 
-        this.removeRequestingPing(payload);
+        this.removeRequestingPing(requestingPing);
       }
     }
   }
 
-  public onRoomPingCancel(socket: Socket, payload: RoomPing): boolean {
-    let didCancel: boolean = false;
-
+  public onRoomPingCancel(socket: Socket, payload: RoomPing): void {
     const user: UserDto = this._socketUsersService.get(socket);
 
     if(user?.organizationId != null) {
-      const index: number = this.findRequestingPingIndex(payload);
+      const requestingPing: RoomPing = this.findRequestingPing(payload?.guid);
 
-      if(index !== -1 && this._requestingPings[index].organizationId === user.organizationId) {
-        this._requestingPings.splice(index, 1);
-        didCancel = true;
+      if(requestingPing?.organizationId === user.organizationId) {
+        const room: string = getUserRoom(user);
+        broadcast(socket, SOCKET_EVENTS.roomPingCancel, requestingPing, room);
+
+        this.removeRequestingPing(requestingPing);
       }
     }
-
-    return didCancel;
   }
 
-  public onGetRequestingPings(socket: Socket): RoomPing[] {
+  public onGetRequestingPings(socket: Socket): WsResponse<RoomPing[]> {
     let pings: RoomPing[] = null;
 
     const user: UserDto = this._socketUsersService.get(socket);
@@ -79,19 +80,23 @@ export class RoomPingsService {
       pings = this.getOrganizationPingRequests(user.organizationId);
     }
 
-    return pings;
+    return { event: SOCKET_EVENTS.getRoomPings, data: pings };
   }
 
-  private findRequestingPingIndex(roomPing: RoomPing): number {
-    return this._requestingPings.findIndex((r: RoomPing) => r.guid === roomPing.guid);
+  private findRequestingPing(guid: string): RoomPing {
+    return this._requestingPings.find((r: RoomPing) => r.guid === guid);
   }
 
-  private hasRequestingPing(roomPing: RoomPing): boolean {
-    return this.findRequestingPingIndex(roomPing) !== -1;
+  private findRequestingPingIndex(guid: string): number {
+    return this._requestingPings.findIndex((r: RoomPing) => r.guid === guid);
+  }
+
+  private hasRequestingPing(guid: string): boolean {
+    return this.findRequestingPingIndex(guid) !== -1;
   }
 
   private removeRequestingPing(roomPing: RoomPing): boolean {
-    const index: number = this.findRequestingPingIndex(roomPing);
+    const index: number = this._requestingPings.indexOf(roomPing);
     const canRemove: boolean = index !== -1;
 
     if(canRemove) {
