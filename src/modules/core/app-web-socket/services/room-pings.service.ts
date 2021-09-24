@@ -7,7 +7,6 @@ import { SOCKET_EVENTS } from '../utils/socket-events';
 import { broadcast, getUserRoom } from '../utils/socket-functions';
 import { SocketUsersService } from './socket-users.service';
 import { v4 as uuidv4 } from 'uuid';
-import { WsResponse } from '@nestjs/websockets';
 
 @Injectable()
 export class RoomPingsService {
@@ -72,7 +71,7 @@ export class RoomPingsService {
     }
   }
 
-  public onGetRequestingPings(socket: Socket): WsResponse<RoomPing[]> {
+  public onGetRequestingPings(socket: Socket): RoomPing[] {
     let pings: RoomPing[] = null;
 
     const user: UserDto = this._socketUsersService.get(socket);
@@ -80,7 +79,7 @@ export class RoomPingsService {
       pings = this.getOrganizationPingRequests(user.organizationId);
     }
 
-    return { event: SOCKET_EVENTS.getRoomPings, data: pings };
+    return pings;
   }
 
   private findRequestingPing(guid: string): RoomPing {

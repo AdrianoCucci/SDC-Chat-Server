@@ -1,4 +1,4 @@
-import { OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
+import { OnGatewayDisconnect, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { ChatMessageDto } from 'src/models/chat-messages/chat-message-dto';
 import { RoomPing } from 'src/models/room-pings/room-ping';
@@ -77,7 +77,7 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
   }
 
   @SubscribeMessage(SOCKET_EVENTS.getRoomPings)
-  public onGetRequestingRoomPings(socket: Socket): WsResponse<RoomPing[]> {
+  public onGetRequestingRoomPings(socket: Socket): RoomPing[] {
     return this._roomPingsService.onGetRequestingPings(socket);
   }
 }
