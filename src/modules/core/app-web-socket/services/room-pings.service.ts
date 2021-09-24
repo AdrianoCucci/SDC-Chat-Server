@@ -7,39 +7,75 @@ import { SOCKET_EVENTS } from '../utils/socket-events';
 import { broadcast, getUserRoom } from '../utils/socket-functions';
 import { SocketUsersService } from './socket-users.service';
 import { v4 as uuidv4 } from 'uuid';
+import { WsResponse } from '@nestjs/websockets';
 
 @Injectable()
 export class RoomPingsService {
+  private readonly _requestingPings: RoomPing[] = [];
+
   constructor(private _socketUsersService: SocketUsersService) { }
 
   public onRoomPingRequest(socket: Socket, payload: RoomPing): void {
-    const requestUser: UserDto = this._socketUsersService.get(socket);
+    if(!this.hasRequestingPing(payload)) {
+      const requestUser: UserDto = this._socketUsersService.get(socket);
 
-    if(requestUser != null) {
-      payload.state = RoomPingState.Requesting;
-      payload.requestUser = requestUser;
+      if(requestUser != null) {
+        payload.state = RoomPingState.Requesting;
+        payload.requestUser = requestUser;
 
-      if(!payload.guid) {
-        payload.guid = uuidv4();
+        if(!payload.guid) {
+          payload.guid = uuidv4();
+        }
+        if(!payload.requestDate) {
+          payload.requestDate = new Date().toISOString();
+        }
+
+        this._requestingPings.push(payload);
+
+        const room: string = getUserRoom(requestUser);
+        broadcast(socket, SOCKET_EVENTS.roomPingRequest, payload, room);
       }
-      if(!payload.requestDate) {
-        payload.requestDate = new Date().toISOString();
-      }
-
-      const room: string = getUserRoom(requestUser);
-      broadcast(socket, SOCKET_EVENTS.roomPingRequest, payload, room);
     }
   }
 
   public onRoomPingResponse(socket: Socket, payload: RoomPing): void {
-    const responseUser: UserDto = this._socketUsersService.get(socket);
+    if(this.hasRequestingPing(payload)) {
+      const responseUser: UserDto = this._socketUsersService.get(socket);
 
-    if(responseUser != null) {
-      payload.state = RoomPingState.Responded;
-      payload.responseUser = responseUser;
+      if(responseUser != null) {
+        payload.state = RoomPingState.Responded;
+        payload.responseUser = responseUser;
 
-      const room: string = getUserRoom(responseUser);
-      broadcast(socket, SOCKET_EVENTS.roomPingRequest, payload, room);
+        const room: string = getUserRoom(responseUser);
+        broadcast(socket, SOCKET_EVENTS.roomPingRequest, payload, room);
+
+        this.removeRequestingPing(payload);
+      }
+    }
+  }
+
+  public onGetRequestingPings(socket: Socket): WsResponse<RoomPing[]> {
+    const pings: RoomPing[] = this._socketUsersService.has(socket) ? this._requestingPings : null;
+
+    return {
+      event: SOCKET_EVENTS.getRoomPings,
+      data: pings
+    };
+  }
+
+  private findRequestingPingIndex(roomPing: RoomPing): number {
+    return this._requestingPings.findIndex((r: RoomPing) => r.guid === roomPing.guid);
+  }
+
+  private hasRequestingPing(roomPing: RoomPing): boolean {
+    return this.findRequestingPingIndex(roomPing) !== -1;
+  }
+
+  private removeRequestingPing(roomPing: RoomPing): void {
+    const index: number = this.findRequestingPingIndex(roomPing);
+
+    if(index !== -1) {
+      this._requestingPings.splice(index, 1);
     }
   }
 }
