@@ -20,8 +20,12 @@ export class ChatMessagesController {
   @Get()
   public async getAllMessages(@Query() params: ChatMessageParams): Promise<ChatMessageDto[]> {
     const messages: ChatMessage[] = await this._messagesService.getAll(params);
-    const dtos: ChatMessageDto[] = this._mapper.chatMessages.mapDtos(messages);
 
+    for(let i = 0; i < messages.length; i++) {
+      messages[i].senderUser = await this._usersService.getById(messages[i].senderUserId);
+    }
+
+    const dtos: ChatMessageDto[] = this._mapper.chatMessages.mapDtos(messages);
     return dtos;
   }
 
