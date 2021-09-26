@@ -48,7 +48,6 @@ export class UsersController {
   }
 
   @Put(":id")
-  @Roles(Role.Administrator, Role.OrganizationAdmin)
   public async putUser(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: UserDtoPartial): Promise<UserDto> {
     const userEntity: User = await this.tryGetUserById(id);
 
