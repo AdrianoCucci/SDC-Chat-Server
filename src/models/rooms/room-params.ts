@@ -1,6 +1,5 @@
 import { Type } from "class-transformer";
 import { IsInt, IsPositive, IsOptional, IsEnum } from "class-validator";
-import { AudioSound } from "../audio-sound";
 import { Room } from "./room";
 
 export class RoomParams {
@@ -26,9 +25,9 @@ export class RoomParams {
   }
 
   @Type(() => Number)
-  @IsEnum(AudioSound)
+  @IsPositive()
   @IsOptional()
-  public pingSound?: AudioSound;
+  public pingSound?: number;
 
   @Type(() => Number)
   @IsInt()

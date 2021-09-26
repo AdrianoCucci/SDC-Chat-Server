@@ -1,4 +1,3 @@
-import { AudioSound } from "../audio-sound";
 import { Organization } from "../organizations/organization";
 
 export class Room {
@@ -6,7 +5,7 @@ export class Room {
   public name: string;
   public number?: number;
   public description?: string;
-  public pingSound?: AudioSound;
+  public pingSound?: number;
   public organizationId: number;
 
   public organization?: Organization;
