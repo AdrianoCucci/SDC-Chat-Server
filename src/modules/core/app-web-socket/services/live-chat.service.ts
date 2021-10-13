@@ -34,4 +34,33 @@ export class LiveChatService {
       }
     }
   }
+
+  public async onMessageEdit(socket: Socket, payload: ChatMessageDto): Promise<void> {
+    if(payload?.id != null && payload.contents && payload.senderUserId != null) {
+      const user: UserDto = this._socketUsersService.get(socket);
+
+      if(user != null) {
+        const room: string = getUserRoom(user);
+        broadcast(socket, SOCKET_EVENTS.messageEdit, payload, room);
+
+        if(await this._messagesService.idExists(payload.id)) {
+          const entity: ChatMessage = this._mapper.chatMessages.mapEntity(payload);
+          await this._messagesService.update(entity);
+        }
+      }
+    }
+  }
+
+  public async onMessageDelete(socket: Socket, payload: ChatMessageDto): Promise<void> {
+    if(payload?.id != null) {
+      const user: UserDto = this._socketUsersService.get(socket);
+
+      if(user != null) {
+        const room: string = getUserRoom(user);
+        broadcast(socket, SOCKET_EVENTS.messageDelete, payload, room);
+
+        await this._messagesService.delete(payload.id);
+      }
+    }
+  }
 }

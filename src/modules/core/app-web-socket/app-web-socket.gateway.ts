@@ -63,6 +63,16 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
     this._liveChatService.onMessage(socket, payload);
   }
 
+  @SubscribeMessage(SOCKET_EVENTS.messageEdit)
+  public onMessageEdit(socket: Socket, payload: ChatMessageDto): void {
+    this._liveChatService.onMessageEdit(socket, payload);
+  }
+
+  @SubscribeMessage(SOCKET_EVENTS.messageDelete)
+  public onMessageDelete(socket: Socket, payload: ChatMessageDto): void {
+    this._liveChatService.onMessageDelete(socket, payload);
+  }
+
   @SubscribeMessage(SOCKET_EVENTS.roomPingRequest)
   public onRoomPingRequest(socket: Socket, payload: RoomPing): RoomPing {
     return this._roomPingsService.onRoomPingRequest(socket, payload);

@@ -4,6 +4,8 @@ export const SOCKET_EVENTS = {
   userJoin: "user-join",
   userLeave: "user-leave",
   message: "message",
+  messageEdit: "message-edit",
+  messageDelete: "message-delete",
   roomPingRequest: "room-ping-request",
   roomPingResponse: "room-ping-response",
   roomPingCancel: "room-ping-cancel",
