@@ -6,11 +6,11 @@ import { ServiceBase } from "src/utils/service-base";
 export class UserPasswordsService extends ServiceBase<UserPassword> {
   constructor() {
     super("id", [
-      new UserPassword({ userId: 1, value: "12345", salt: "" }),
-      new UserPassword({ userId: 2, value: "12345", salt: "" }),
-      new UserPassword({ userId: 3, value: "12345", salt: "" }),
-      new UserPassword({ userId: 4, value: "12345", salt: "" }),
-      new UserPassword({ userId: 5, value: "12345", salt: "" })
+      new UserPassword({ id: 1, value: "12345", salt: "", userId: 1 }),
+      new UserPassword({ id: 2, value: "12345", salt: "", userId: 2 }),
+      new UserPassword({ id: 3, value: "12345", salt: "", userId: 3 }),
+      new UserPassword({ id: 4, value: "12345", salt: "", userId: 4 }),
+      new UserPassword({ id: 5, value: "12345", salt: "", userId: 5 })
     ]);
   }
 

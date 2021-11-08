@@ -1,5 +1,5 @@
 export class UserPassword {
-  public userPasswordId: number;
+  public id: number;
   public value: string;
   public salt: string;
   public userId: number;
