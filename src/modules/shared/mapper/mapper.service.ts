@@ -17,7 +17,10 @@ export class MapperService {
   });
 
   public readonly users = new EntityDtoMap<User, UserDto>({
-    mapEntity: (dto: Partial<UserDto>, target?: User): User => Object.assign(target ?? new User(), dto),
+    mapEntity: (dto: Partial<UserDto>, target?: User): User => {
+      delete dto.password;
+      return Object.assign(target ?? new User(), dto);
+    },
     mapDto: (entity: User): UserDto => {
       const dto: UserDto = Object.assign(new User() as any, entity);
 

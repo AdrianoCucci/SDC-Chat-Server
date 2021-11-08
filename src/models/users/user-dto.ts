@@ -12,6 +12,9 @@ export class UserDto {
   public role: Role;
 
   @IsString()
+  public password?: string;
+
+  @IsString()
   @IsOptional()
   public displayName?: string;
 
