@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthRequest } from 'src/models/auth/auth-request';
 import { AuthResponse } from 'src/models/auth/auth-response';
@@ -6,9 +6,11 @@ import { User } from 'src/models/users/user';
 import { UserDto } from 'src/models/users/user-dto';
 import { MapperService } from 'src/modules/shared/mapper/mapper.service';
 import { UsersService } from '../users/users.service';
-import appConfig from 'src/app.config';
 import { UserPasswordsService } from './user-passwords.service';
 import { UserPassword } from 'src/models/auth/user-password';
+import { PassResetRequest } from 'src/models/auth/pass-reset-request';
+import { AdminPassResetRequest } from 'src/models/auth/admin-pass-reset-request';
+import appConfig from 'src/app.config';
 
 @Injectable()
 export class AuthService {
@@ -50,5 +52,22 @@ export class AuthService {
     }
 
     return response;
+  }
+
+  public async resetUserPassword(request: PassResetRequest | AdminPassResetRequest): Promise<void> {
+    const password: UserPassword = await this._passwordsService.getByUserId(request.userId);
+
+    if(password == null) {
+      throw new NotFoundException(`Failed to reset password - User ID does not exist: ${request.userId}`);
+    }
+    if(request instanceof PassResetRequest && password.value !== request.currentPassword) {
+      throw new ConflictException("Current password is invalid");
+    }
+    if(!request.newPassword) {
+      throw new BadRequestException("New password must have a value");
+    }
+
+    password.value = request.newPassword;
+    await this._passwordsService.update(password);
   }
 }
