@@ -10,6 +10,7 @@ import { UserPasswordsService } from './user-passwords.service';
 import { UserPassword } from 'src/models/auth/user-password';
 import { PassResetRequest } from 'src/models/auth/pass-reset-request';
 import { AdminPassResetRequest } from 'src/models/auth/admin-pass-reset-request';
+import { compareHash } from 'src/utils/password-utils';
 import appConfig from 'src/app.config';
 
 @Injectable()
@@ -34,7 +35,7 @@ export class AuthService {
       }
 
       const password: UserPassword = await this._passwordsService.getByUserId(user.id);
-      if(password == null || password.value !== request.password) {
+      if(password == null || !await compareHash(request.password, password.value)) {
         throw "Login credentials are invalid";
       }
 
