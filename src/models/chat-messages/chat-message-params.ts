@@ -1,0 +1,52 @@
+import { Type } from "class-transformer";
+import { IsDateString, IsInt, IsOptional, IsPositive } from "class-validator";
+import { ChatMessage } from "./chat-message";
+
+export class ChatMessageParams {
+  public static getPredicate(params: ChatMessageParams): (message: ChatMessage) => boolean {
+    let predicate: (message: ChatMessage) => boolean = null;
+
+    if(params != null) {
+      predicate = (message: ChatMessage) => {
+        const filters: boolean[] = [];
+
+        if(params.minDate != null) {
+          filters.push(new Date(message.datePosted) >= new Date(params.minDate));
+        }
+        if(params.maxDate != null) {
+          filters.push(new Date(message.datePosted) >= new Date(params.maxDate));
+        }
+        if(params.senderUserId != null) {
+          filters.push(message.senderUserId === params.senderUserId);
+        }
+        if(params.organizationId != null) {
+          filters.push(message.organizationId === params.organizationId);
+        }
+
+        return !filters.some((f: boolean) => f === false);
+      }
+    }
+
+    return predicate;
+  }
+
+  @IsDateString()
+  @IsOptional()
+  public minDate?: Date | string;
+
+  @IsDateString()
+  @IsOptional()
+  public maxDate?: Date | string;
+
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  @IsOptional()
+  public senderUserId?: number;
+
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  @IsOptional()
+  public organizationId?: number;
+}

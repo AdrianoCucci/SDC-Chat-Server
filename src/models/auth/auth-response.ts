@@ -1,8 +1,8 @@
 import { UserDto } from "../users/user-dto";
 
-export interface AuthResponse {
-  isSuccess: boolean;
-  message?: string;
-  token?: string;
-  user?: UserDto;
+export class AuthResponse {
+  public isSuccess: boolean;
+  public message?: string;
+  public user?: UserDto;
+  public token?: string;
 }

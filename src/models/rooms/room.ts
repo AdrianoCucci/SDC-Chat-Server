@@ -1,7 +1,18 @@
-export interface Room {
-  id: number;
-  name: string;
-  number?: number;
-  description?: string;
-  organizationId: number;
+import { Organization } from "../organizations/organization";
+
+export class Room {
+  public id: number;
+  public name: string;
+  public number?: number;
+  public description?: string;
+  public pingSound?: number;
+  public organizationId: number;
+
+  public organization?: Organization;
+
+  public constructor(values?: Partial<Room>) {
+    if(values != null) {
+      Object.assign(this, values);
+    }
+  }
 }
