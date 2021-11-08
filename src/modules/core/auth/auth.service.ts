@@ -7,22 +7,35 @@ import { UserDto } from 'src/models/users/user-dto';
 import { MapperService } from 'src/modules/shared/mapper/mapper.service';
 import { UsersService } from '../users/users.service';
 import appConfig from 'src/app.config';
+import { UserPasswordsService } from './user-passwords.service';
+import { UserPassword } from 'src/models/auth/user-password';
 
 @Injectable()
 export class AuthService {
-  constructor(private _usersService: UsersService, private _jwtService: JwtService, private _mapper: MapperService) { }
+  constructor(
+    private _usersService: UsersService,
+    private _passwordsService: UserPasswordsService,
+    private _jwtService: JwtService,
+    private _mapper: MapperService
+  ) { }
 
   public async login(request: AuthRequest): Promise<AuthResponse> {
     let response: AuthResponse;
-    const user: User = await this._usersService.getByUsername(request.username);
 
-    if(user == null || user.password !== request.password) {
-      response = { isSuccess: false, message: "Login credentials are invalid" };
-    }
-    else if(user.isLocked) {
-      response = { isSuccess: false, message: "Your account is locked. Please speak with your administrator." };
-    }
-    else {
+    try {
+      const user: User = await this._usersService.getByUsername(request.username);
+      if(user == null) {
+        throw "Login credentials are invalid";
+      }
+      else if(user.isLocked) {
+        throw "Your account is locked. Please speak with your administrator.";
+      }
+
+      const password: UserPassword = await this._passwordsService.getByUserId(user.id);
+      if(password == null || password.value !== request.password) {
+        throw "Login credentials are invalid";
+      }
+
       user.isOnline = true;
       await this._usersService.update(user);
 
@@ -30,11 +43,10 @@ export class AuthService {
       const jwtSecret: string = appConfig().jwtSecret;
       const jwt: string = this._jwtService.sign({ user: userDto }, { secret: jwtSecret });
 
-      response = {
-        isSuccess: true,
-        user: userDto,
-        token: jwt
-      };
+      response = { isSuccess: true, user: userDto, token: jwt };
+    }
+    catch(error) {
+      response = { isSuccess: false, message: error };
     }
 
     return response;

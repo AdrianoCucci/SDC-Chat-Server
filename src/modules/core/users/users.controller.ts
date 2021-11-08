@@ -55,9 +55,6 @@ export class UsersController {
 
     this._mapper.users.mapEntity(request, userEntity);
 
-    //Do not change user passwords from an update request - passwords should be changed from a password reset request.
-    delete userEntity.password;
-
     //Do not change user role unless an administrator is making the request.
     if(user.role !== Role.Administrator) {
       delete userEntity.role;
@@ -85,21 +82,21 @@ export class UsersController {
     await this._usersService.delete(id);
   }
 
-  @Post(":id/reset-password")
-  @HttpCode(HttpStatus.NO_CONTENT)
-  public async resetPassword(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: PassResetRequest): Promise<void> {
-    const entity: User = await this.tryGetUserById(id);
+  // @Post(":id/reset-password")
+  // @HttpCode(HttpStatus.NO_CONTENT)
+  // public async resetPassword(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: PassResetRequest): Promise<void> {
+  //   const entity: User = await this.tryGetUserById(id);
 
-    if(user.id !== entity.id) {
-      throw new ForbiddenException("You do not have permission to reset this user's password");
-    }
-    if(entity.password !== request.currentPassword) {
-      throw new ConflictException("Current password is invalid");
-    }
+  //   if(user.id !== entity.id) {
+  //     throw new ForbiddenException("You do not have permission to reset this user's password");
+  //   }
+  //   if(entity.password !== request.currentPassword) {
+  //     throw new ConflictException("Current password is invalid");
+  //   }
 
-    entity.password = request.newPassword;
-    await this._usersService.update(entity);
-  }
+  //   entity.password = request.newPassword;
+  //   await this._usersService.update(entity);
+  // }
 
   @Post(":id/admin-reset-password")
   @Roles(Role.Administrator, Role.OrganizationAdmin)
@@ -107,23 +104,18 @@ export class UsersController {
   public async adminResetPassword(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: AdminPassResetRequest): Promise<void> {
     const entity: User = await this.tryGetUserById(id);
 
-    const doUpdate = async () => {
-      entity.password = request.newPassword;
-      await this._usersService.update(entity);
-    };
-
     if(user.role === Role.OrganizationAdmin) {
       if(entity.organizationId !== user.organizationId || entity.role !== Role.User) {
         throw new ForbiddenException("You do not have permission to reset this user's password");
       }
 
-      await doUpdate();
+      await this._usersService.update(entity);
     }
     else if(entity.role === Role.Administrator) {
       throw new ForbiddenException("You may not reset an administrator's password");
     }
 
-    await doUpdate();
+    await this._usersService.update(entity);
   }
 
   private async tryGetUserById(id: number): Promise<User> {

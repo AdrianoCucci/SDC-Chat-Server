@@ -20,7 +20,6 @@ export class MapperService {
     mapEntity: (dto: Partial<UserDto>, target?: User): User => Object.assign(target ?? new User(), dto),
     mapDto: (entity: User): UserDto => {
       const dto: UserDto = Object.assign(new User() as any, entity);
-      delete dto.password;
 
       if(entity.organization != null) {
         dto.organization = this.organizations.mapDto(entity.organization);

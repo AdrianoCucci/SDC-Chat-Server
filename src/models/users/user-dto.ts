@@ -11,8 +11,8 @@ export class UserDto {
   @IsEnum(Role)
   public role: Role;
 
-  @IsString()
-  public password?: string;
+  // @IsString()
+  // public password?: string;
 
   @IsString()
   @IsOptional()

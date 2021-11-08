@@ -5,7 +5,6 @@ export class User {
   public id: number;
   public role: Role = Role.User;
   public username: string;
-  public password: string;
   public displayName?: string;
   public isLocked: boolean = false;
   public isOnline: boolean = false;
