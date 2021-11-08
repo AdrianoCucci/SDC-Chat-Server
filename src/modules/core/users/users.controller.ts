@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, ConflictException, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 import { RequestUser } from 'src/decorators/request-user.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
 import { AuthorizeGuard } from 'src/modules/shared/jwt-auth/authorize.guard';
@@ -10,12 +10,20 @@ import { UserParams } from 'src/models/users/user-params';
 import { MapperService } from 'src/modules/shared/mapper/mapper.service';
 import { UsersService } from './users.service';
 import { OrganizationsService } from '../organizations/organizations.service';
+import { UserPasswordsService } from '../user-passwords/user-passwords.service';
+import { UserPassword } from 'src/models/auth/user-password';
+import { generateUserPassword } from 'src/utils/password-utils';
 
 @Controller("api/users")
 @UseGuards(AuthorizeGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
-  constructor(private _usersService: UsersService, private _orgService: OrganizationsService, private _mapper: MapperService) { }
+  constructor(
+    private _usersService: UsersService,
+    private _passwordsService: UserPasswordsService,
+    private _orgService: OrganizationsService,
+    private _mapper: MapperService
+  ) { }
 
   @Get()
   public async getAllUsers(@Query() params: UserParams): Promise<UserDto[]> {
@@ -41,26 +49,29 @@ export class UsersController {
     const entity: User = this._mapper.users.mapEntity(request);
     await this._usersService.add(entity);
 
+    const password: UserPassword = await generateUserPassword(entity.id, request.password);
+    await this._passwordsService.add(password);
+
     const dto: UserDto = this._mapper.users.mapDto(entity);
     return dto;
   }
 
   @Put(":id")
   public async putUser(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: UserDtoPartial): Promise<UserDto> {
-    const userEntity: User = await this.tryGetUserById(id);
+    const entity: User = await this.tryGetUserById(id);
 
-    await this.validatePutModel(user, userEntity, request);
+    await this.validatePutModel(user, entity, request);
 
-    this._mapper.users.mapEntity(request, userEntity);
+    this._mapper.users.mapEntity(request, entity);
 
     //Do not change user role unless an administrator is making the request.
     if(user.role !== Role.Administrator) {
-      delete userEntity.role;
+      delete entity.role;
     }
 
-    await this._usersService.update(userEntity);
+    await this._usersService.update(entity);
 
-    const dto: UserDto = this._mapper.users.mapDto(userEntity);
+    const dto: UserDto = this._mapper.users.mapDto(entity);
     return dto;
   }
 
@@ -93,6 +104,10 @@ export class UsersController {
   private async validatePostModel(requestUser: UserDto, request: UserDto): Promise<void> {
     const errors: string[] = [];
 
+    if(!request.password) {
+      errors.push("password is required");
+    }
+
     //Make sure non-administrators can only add users within their own organization.
     if(requestUser.role !== Role.Administrator) {
       request.organizationId = requestUser.organizationId;
@@ -111,7 +126,7 @@ export class UsersController {
     }
 
     if(errors.length > 0) {
-      throw new ConflictException(errors);
+      throw new BadRequestException(errors);
     }
   }
 
@@ -144,7 +159,7 @@ export class UsersController {
     }
 
     if(errors.length > 0) {
-      throw new ConflictException(errors);
+      throw new BadRequestException(errors);
     }
   }
 }

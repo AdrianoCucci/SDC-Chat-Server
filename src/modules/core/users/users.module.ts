@@ -1,15 +1,17 @@
 import { Module } from '@nestjs/common';
 import { JwtAuthModule } from 'src/modules/shared/jwt-auth/jwt-auth.module';
-import { MapperModule } from 'src/modules/shared/mapper/mapper.module';
+import { UserPasswordsModule } from '../user-passwords/user-passwords.module';
 import { OrganizationsModule } from '../organizations/organizations.module';
+import { MapperModule } from 'src/modules/shared/mapper/mapper.module';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
 @Module({
   imports: [
     JwtAuthModule,
+    UserPasswordsModule,
+    OrganizationsModule,
     MapperModule,
-    OrganizationsModule
   ],
   exports: [UsersService],
   providers: [UsersService],

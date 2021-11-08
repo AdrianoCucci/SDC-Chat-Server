@@ -6,10 +6,11 @@ import { User } from 'src/models/users/user';
 import { UserDto } from 'src/models/users/user-dto';
 import { MapperService } from 'src/modules/shared/mapper/mapper.service';
 import { UsersService } from '../users/users.service';
-import { UserPasswordsService } from './user-passwords.service';
+import { UserPasswordsService } from '../user-passwords/user-passwords.service';
 import { UserPassword } from 'src/models/auth/user-password';
 import { PassResetRequest } from 'src/models/auth/pass-reset-request';
 import { AdminPassResetRequest } from 'src/models/auth/admin-pass-reset-request';
+import { compareHash, generateHash } from 'src/utils/password-utils';
 import appConfig from 'src/app.config';
 
 @Injectable()
@@ -34,7 +35,7 @@ export class AuthService {
       }
 
       const password: UserPassword = await this._passwordsService.getByUserId(user.id);
-      if(password == null || password.value !== request.password) {
+      if(password == null || !await compareHash(request.password, password.value)) {
         throw "Login credentials are invalid";
       }
 
@@ -60,14 +61,14 @@ export class AuthService {
     if(password == null) {
       throw new NotFoundException(`Failed to reset password - User ID does not exist: ${request.userId}`);
     }
-    if(request instanceof PassResetRequest && password.value !== request.currentPassword) {
+    if(request instanceof PassResetRequest && !await compareHash(request.currentPassword, password.value)) {
       throw new ConflictException("Current password is invalid");
     }
     if(!request.newPassword) {
       throw new BadRequestException("New password must have a value");
     }
 
-    password.value = request.newPassword;
+    password.value = await generateHash(request.newPassword, password.salt);
     await this._passwordsService.update(password);
   }
 }
