@@ -6,7 +6,7 @@ import { User } from 'src/models/users/user';
 import { UserDto } from 'src/models/users/user-dto';
 import { MapperService } from 'src/modules/shared/mapper/mapper.service';
 import { UsersService } from '../users/users.service';
-import { UserPasswordsService } from './user-passwords.service';
+import { UserPasswordsService } from '../user-passwords/user-passwords.service';
 import { UserPassword } from 'src/models/auth/user-password';
 import { PassResetRequest } from 'src/models/auth/pass-reset-request';
 import { AdminPassResetRequest } from 'src/models/auth/admin-pass-reset-request';
