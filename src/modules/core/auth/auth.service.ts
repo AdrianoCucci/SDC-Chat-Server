@@ -10,7 +10,7 @@ import { UserPasswordsService } from '../user-passwords/user-passwords.service';
 import { UserPassword } from 'src/models/auth/user-password';
 import { PassResetRequest } from 'src/models/auth/pass-reset-request';
 import { AdminPassResetRequest } from 'src/models/auth/admin-pass-reset-request';
-import { compareHash } from 'src/utils/password-utils';
+import { compareHash, generateHash } from 'src/utils/password-utils';
 import appConfig from 'src/app.config';
 
 @Injectable()
@@ -68,7 +68,7 @@ export class AuthService {
       throw new BadRequestException("New password must have a value");
     }
 
-    password.value = request.newPassword;
+    password.value = await generateHash(request.newPassword, password.salt);
     await this._passwordsService.update(password);
   }
 }
