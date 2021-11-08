@@ -61,7 +61,7 @@ export class AuthService {
     if(password == null) {
       throw new NotFoundException(`Failed to reset password - User ID does not exist: ${request.userId}`);
     }
-    if(request instanceof PassResetRequest && password.value !== request.currentPassword) {
+    if(request instanceof PassResetRequest && !await compareHash(request.currentPassword, password.value)) {
       throw new ConflictException("Current password is invalid");
     }
     if(!request.newPassword) {
