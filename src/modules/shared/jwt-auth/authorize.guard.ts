@@ -48,16 +48,7 @@ export class AuthorizeGuard implements CanActivate {
   }
 
   private validateRequiredRoles(user: UserDto, context: ExecutionContext): boolean {
-    let isValid: boolean;
     const requiredRoles: Role[] = this._reflector.get<Role[]>(ROLES_META_KEY, context.getHandler());
-
-    if(requiredRoles == null || requiredRoles.length === 0) {
-      isValid = true;
-    }
-    else {
-      isValid = requiredRoles.includes(user.role);
-    }
-
-    return isValid;
+    return requiredRoles?.includes(user.role) ?? true;
   }
 }
