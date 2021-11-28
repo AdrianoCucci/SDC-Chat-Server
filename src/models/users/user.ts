@@ -9,7 +9,7 @@ export class User {
   public isLocked: boolean = false;
   public isOnline: boolean = false;
   public organizationId?: number;
-  
+
   public organization?: Organization;
 
   public constructor(values?: Partial<User>) {
