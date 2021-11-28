@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtAuthModule } from 'src/modules/shared/jwt-auth/jwt-auth.module';
-import { UserPasswordsModule } from '../user-passwords/user-passwords.module';
+import { UserSecretsModule } from '../user-secrets/user-secrets.module';
 import { OrganizationsModule } from '../organizations/organizations.module';
 import { MapperModule } from 'src/modules/shared/mapper/mapper.module';
 import { UsersController } from './users.controller';
@@ -9,7 +9,7 @@ import { UsersService } from './users.service';
 @Module({
   imports: [
     JwtAuthModule,
-    UserPasswordsModule,
+    UserSecretsModule,
     OrganizationsModule,
     MapperModule,
   ],

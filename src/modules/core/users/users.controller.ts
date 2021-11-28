@@ -4,10 +4,10 @@ import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/models/auth/role";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
-import { generateUserPassword } from "src/utils/password-utils";
+import { generateUserSecret } from "src/utils/hash-utils";
 import { OrganizationsService } from "../organizations/organizations.service";
-import { UserPassword } from "../user-passwords/entities/user-password.entity";
-import { UserPasswordsService } from "../user-passwords/user-passwords.service";
+import { UserSecret } from "../user-secrets/entities/user-secret.entity";
+import { UserSecretsService } from "../user-secrets/user-secrets.service";
 import { PartialUserDto } from "./dtos/partial-user.dto";
 import { UserQuery } from "./dtos/user-query.dto";
 import { UserDto } from "./dtos/user.dto";
@@ -20,7 +20,7 @@ import { UsersService } from "./users.service";
 export class UsersController {
   constructor(
     private _usersService: UsersService,
-    private _passwordsService: UserPasswordsService,
+    private _secretsService: UserSecretsService,
     private _orgService: OrganizationsService,
     private _mapper: MapperService
   ) { }
@@ -49,8 +49,8 @@ export class UsersController {
     const entity: User = this._mapper.users.mapEntity(request);
     await this._usersService.add(entity);
 
-    const password: UserPassword = await generateUserPassword(entity.id, request.password);
-    await this._passwordsService.add(password);
+    const secret: UserSecret = await generateUserSecret(entity.id, request.password);
+    await this._secretsService.add(secret);
 
     const dto: UserDto = this._mapper.users.mapDto(entity);
     return dto;

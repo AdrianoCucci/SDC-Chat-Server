@@ -1,5 +1,5 @@
 import { genSalt, hash, compare } from 'bcrypt';
-import { UserPassword } from 'src/modules/core/user-passwords/entities/user-password.entity';
+import { UserSecret } from 'src/modules/core/user-secrets/entities/user-secret.entity';
 
 export const generateSalt = async (rounds: number = 10): Promise<string> => await genSalt(rounds);
 
@@ -7,12 +7,12 @@ export const generateHash = async (value: string, salt: string): Promise<string>
 
 export const compareHash = async (plainText: string, hash: string): Promise<boolean> => await compare(plainText, hash);
 
-export const generateUserPassword = async (userId: number, password: string): Promise<UserPassword> => {
+export const generateUserSecret = async (userId: number, password: string): Promise<UserSecret> => {
   const salt: string = await generateSalt();
   const hash: string = await generateHash(password, salt);
 
-  return new UserPassword({
-    value: hash,
+  return new UserSecret({
+    password: hash,
     salt,
     userId
   });
