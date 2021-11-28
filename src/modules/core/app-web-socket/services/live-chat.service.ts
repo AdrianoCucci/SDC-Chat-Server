@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { ChatMessage } from 'src/models/chat-messages/chat-message';
-import { ChatMessageDto } from 'src/models/chat-messages/chat-message-dto';
-import { UserDto } from 'src/models/users/user-dto';
 import { MapperService } from 'src/modules/shared/mapper/mapper.service';
 import { ChatMessagesService } from '../../chat-messages/chat-messages.service';
+import { ChatMessageDto } from '../../chat-messages/dtos/chat-message.dto';
+import { ChatMessage } from '../../chat-messages/entities/chat-message.entity';
+import { UserDto } from '../../users/dtos/user.dto';
 import { UsersService } from '../../users/users.service';
 import { SOCKET_EVENTS } from '../utils/socket-events';
 import { getUserRoom, broadcast } from '../utils/socket-functions';

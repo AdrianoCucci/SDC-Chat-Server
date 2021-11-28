@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { UserPassword } from "src/models/auth/user-password";
 import { ServiceBase } from "src/utils/service-base";
+import { UserPassword } from "./entities/user-password.entity";
 
 @Injectable()
 export class UserPasswordsService extends ServiceBase<UserPassword> {

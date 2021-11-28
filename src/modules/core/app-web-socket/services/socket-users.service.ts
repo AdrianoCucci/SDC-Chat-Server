@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Socket } from "socket.io";
-import { UserDto } from "src/models/users/user-dto";
+import { UserDto } from "../../users/dtos/user.dto";
 
 @Injectable()
 export class SocketUsersService {

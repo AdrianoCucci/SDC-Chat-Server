@@ -1,16 +1,16 @@
-import { Body, ClassSerializerInterceptor, Controller, ForbiddenException, HttpCode, HttpStatus, NotFoundException, Post, UnauthorizedException, UseGuards, UseInterceptors } from '@nestjs/common';
-import { RequestUser } from 'src/decorators/request-user.decorator';
-import { Roles } from 'src/decorators/roles.decorator';
-import { AdminPassResetRequest } from 'src/models/auth/admin-pass-reset-request';
-import { AuthRequest } from 'src/models/auth/auth-request';
-import { AuthResponse } from 'src/models/auth/auth-response';
-import { PassResetRequest } from 'src/models/auth/pass-reset-request';
-import { Role } from 'src/models/auth/role';
-import { User } from 'src/models/users/user';
-import { UserDto } from 'src/models/users/user-dto';
-import { AuthorizeGuard } from 'src/modules/shared/jwt-auth/authorize.guard';
-import { UsersService } from '../users/users.service';
-import { AuthService } from './auth.service';
+import { Controller, UseInterceptors, ClassSerializerInterceptor, Post, HttpCode, HttpStatus, Body, UnauthorizedException, UseGuards, ForbiddenException, NotFoundException } from "@nestjs/common";
+import { RequestUser } from "src/decorators/request-user.decorator";
+import { Roles } from "src/decorators/roles.decorator";
+import { Role } from "src/models/auth/role";
+import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
+import { UserDto } from "../users/dtos/user.dto";
+import { User } from "../users/entities/user.entity";
+import { UsersService } from "../users/users.service";
+import { AuthService } from "./auth.service";
+import { AdminPassResetRequest } from "./dtos/admin-pass-reset-request.dto";
+import { AuthRequest } from "./dtos/auth-request.dto";
+import { AuthResponse } from "./dtos/auth-response.dto";
+import { PassResetRequest } from "./dtos/pass-reset-request.dto";
 
 @Controller("api/auth")
 @UseInterceptors(ClassSerializerInterceptor)

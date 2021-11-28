@@ -1,15 +1,15 @@
-import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UseGuards, UseInterceptors } from '@nestjs/common';
-import { RequestUser } from 'src/decorators/request-user.decorator';
-import { AuthorizeGuard } from 'src/modules/shared/jwt-auth/authorize.guard';
-import { Role } from 'src/models/auth/role';
-import { ChatMessage } from 'src/models/chat-messages/chat-message';
-import { ChatMessageDto } from 'src/models/chat-messages/chat-message-dto';
-import { ChatMessageDtoPartial } from 'src/models/chat-messages/chat-message-dto-partial';
-import { ChatMessageParams } from 'src/models/chat-messages/chat-message-params';
-import { UserDto } from 'src/models/users/user-dto';
-import { MapperService } from 'src/modules/shared/mapper/mapper.service';
-import { UsersService } from '../users/users.service';
-import { ChatMessagesService } from './chat-messages.service';
+import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Query, Param, ParseIntPipe, Post, Body, BadRequestException, Put, ForbiddenException, Delete, HttpCode, HttpStatus, NotFoundException } from "@nestjs/common";
+import { RequestUser } from "src/decorators/request-user.decorator";
+import { Role } from "src/models/auth/role";
+import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
+import { MapperService } from "src/modules/shared/mapper/mapper.service";
+import { UserDto } from "../users/dtos/user.dto";
+import { UsersService } from "../users/users.service";
+import { ChatMessagesService } from "./chat-messages.service";
+import { ChatMessageQuery } from "./dtos/chat-message-query.dto";
+import { ChatMessageDto } from "./dtos/chat-message.dto";
+import { PartialChatMessageDto } from "./dtos/partial-chat-message.dto";
+import { ChatMessage } from "./entities/chat-message.entity";
 
 @Controller("api/chat-messages")
 @UseGuards(AuthorizeGuard)
@@ -18,8 +18,8 @@ export class ChatMessagesController {
   constructor(private _messagesService: ChatMessagesService, private _usersService: UsersService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllMessages(@Query() params: ChatMessageParams): Promise<ChatMessageDto[]> {
-    const messages: ChatMessage[] = await this._messagesService.getAll(params);
+  public async getAllMessages(@Query() query?: ChatMessageQuery): Promise<ChatMessageDto[]> {
+    const messages: ChatMessage[] = await this._messagesService.getAll(query);
 
     for(let i = 0; i < messages.length; i++) {
       messages[i].senderUser = await this._usersService.getById(messages[i].senderUserId);
@@ -51,7 +51,7 @@ export class ChatMessagesController {
   }
 
   @Put(":id")
-  public async putMessage(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: ChatMessageDtoPartial): Promise<ChatMessageDto> {
+  public async putMessage(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: PartialChatMessageDto): Promise<ChatMessageDto> {
     const message: ChatMessage = await this.tryGetMessageById(id);
 
     if(message.senderUserId !== user.id && user.role !== Role.Administrator) {

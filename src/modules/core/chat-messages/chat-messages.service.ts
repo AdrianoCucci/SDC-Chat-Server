@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ChatMessage } from 'src/models/chat-messages/chat-message';
-import { ChatMessageParams } from 'src/models/chat-messages/chat-message-params';
 import { ServiceBase } from 'src/utils/service-base';
+import { ChatMessageQuery } from './dtos/chat-message-query.dto';
+import { ChatMessage } from './entities/chat-message.entity';
 
 @Injectable()
 export class ChatMessagesService extends ServiceBase<ChatMessage> {
@@ -9,8 +9,8 @@ export class ChatMessagesService extends ServiceBase<ChatMessage> {
     super("id");
   }
 
-  public async getAll(params?: ChatMessageParams): Promise<ChatMessage[]> {
-    const predicate = ChatMessageParams.getPredicate(params);
+  public async getAll(query?: ChatMessageQuery): Promise<ChatMessage[]> {
+    const predicate = ChatMessageQuery.getPredicate(query);
     return this.findEntities(predicate);
   }
 }

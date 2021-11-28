@@ -1,10 +1,10 @@
 import { OnGatewayDisconnect, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { ChatMessageDto } from 'src/models/chat-messages/chat-message-dto';
-import { RoomPing } from 'src/models/room-pings/room-ping';
-import { User } from 'src/models/users/user';
-import { UserDto } from 'src/models/users/user-dto';
+import { ChatMessageDto } from '../chat-messages/dtos/chat-message.dto';
+import { UserDto } from '../users/dtos/user.dto';
+import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
+import { RoomPing } from './dtos/room-ping.dto';
 import { LiveChatService } from './services/live-chat.service';
 import { RoomPingsService } from './services/room-pings.service';
 import { SocketUsersService } from './services/socket-users.service';

@@ -1,10 +1,10 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
-import { Role } from "src/models/auth/role";
-import { UserDto } from "src/models/users/user-dto";
+import { JwtService } from "@nestjs/jwt";
 import { ROLES_META_KEY } from "src/decorators/roles.decorator";
+import { Role } from "src/models/auth/role";
+import { UserDto } from "src/modules/core/users/dtos/user.dto";
 import appConfig from "src/app.config";
 
 @Injectable()

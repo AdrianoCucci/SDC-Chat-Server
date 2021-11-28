@@ -1,17 +1,17 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { AuthRequest } from 'src/models/auth/auth-request';
-import { AuthResponse } from 'src/models/auth/auth-response';
-import { User } from 'src/models/users/user';
-import { UserDto } from 'src/models/users/user-dto';
-import { MapperService } from 'src/modules/shared/mapper/mapper.service';
-import { UsersService } from '../users/users.service';
-import { UserPasswordsService } from '../user-passwords/user-passwords.service';
-import { UserPassword } from 'src/models/auth/user-password';
-import { PassResetRequest } from 'src/models/auth/pass-reset-request';
-import { AdminPassResetRequest } from 'src/models/auth/admin-pass-reset-request';
-import { compareHash, generateHash } from 'src/utils/password-utils';
-import appConfig from 'src/app.config';
+import { Injectable, NotFoundException, ConflictException, BadRequestException } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { MapperService } from "src/modules/shared/mapper/mapper.service";
+import { compareHash, generateHash } from "src/utils/password-utils";
+import { UserPassword } from "../user-passwords/entities/user-password.entity";
+import { UserPasswordsService } from "../user-passwords/user-passwords.service";
+import { UserDto } from "../users/dtos/user.dto";
+import { User } from "../users/entities/user.entity";
+import { UsersService } from "../users/users.service";
+import { AdminPassResetRequest } from "./dtos/admin-pass-reset-request.dto";
+import { AuthRequest } from "./dtos/auth-request.dto";
+import { AuthResponse } from "./dtos/auth-response.dto";
+import { PassResetRequest } from "./dtos/pass-reset-request.dto";
+import appConfig from "src/app.config";
 
 @Injectable()
 export class AuthService {

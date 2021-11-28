@@ -1,5 +1,5 @@
 import { genSalt, hash, compare } from 'bcrypt';
-import { UserPassword } from 'src/models/auth/user-password';
+import { UserPassword } from 'src/modules/core/user-passwords/entities/user-password.entity';
 
 export const generateSalt = async (rounds: number = 10): Promise<string> => await genSalt(rounds);
 
