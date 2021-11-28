@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { RoomPing } from 'src/models/room-pings/room-ping';
-import { RoomPingState } from 'src/models/room-pings/room-ping-state';
-import { UserDto } from 'src/models/users/user-dto';
 import { SOCKET_EVENTS } from '../utils/socket-events';
 import { broadcast, getUserRoom } from '../utils/socket-functions';
 import { SocketUsersService } from './socket-users.service';
 import { v4 as uuidv4 } from 'uuid';
+import { UserDto } from '../../users/dtos/user.dto';
+import { RoomPingState } from '../dtos/room-ping-state';
+import { RoomPing } from '../dtos/room-ping.dto';
 
 @Injectable()
 export class RoomPingsService {

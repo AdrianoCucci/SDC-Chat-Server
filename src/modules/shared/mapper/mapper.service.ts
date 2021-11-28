@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { ChatMessage } from "src/models/chat-messages/chat-message";
-import { ChatMessageDto } from "src/models/chat-messages/chat-message-dto";
-import { Organization } from "src/models/organizations/organization";
-import { OrganizationDto } from "src/models/organizations/organization-dto";
-import { Room } from "src/models/rooms/room";
-import { RoomDto } from "src/models/rooms/room-dto";
-import { User } from "src/models/users/user";
-import { UserDto } from "src/models/users/user-dto";
+import { ChatMessageDto } from "src/modules/core/chat-messages/dtos/chat-message.dto";
+import { ChatMessage } from "src/modules/core/chat-messages/entities/chat-message.entity";
+import { OrganizationDto } from "src/modules/core/organizations/dtos/organization.dto";
+import { Organization } from "src/modules/core/organizations/entities/organization.entity";
+import { RoomDto } from "src/modules/core/rooms/dtos/room.dto";
+import { Room } from "src/modules/core/rooms/entities/room.entity";
+import { UserDto } from "src/modules/core/users/dtos/user.dto";
+import { User } from "src/modules/core/users/entities/user.entity";
 import { EntityDtoMap } from "./entity-dto-map";
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { createParamDecorator, ExecutionContext, ForbiddenException } from "@nestjs/common";
 import { Request } from "express";
-import { UserDto } from "src/models/users/user-dto";
+import { UserDto } from "src/modules/core/users/dtos/user.dto";
 
 export const RequestUser = createParamDecorator(
   (data: any, context: ExecutionContext) => {

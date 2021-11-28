@@ -1,10 +1,10 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
-import { Role } from "src/models/auth/role";
-import { UserDto } from "src/models/users/user-dto";
+import { JwtService } from "@nestjs/jwt";
 import { ROLES_META_KEY } from "src/decorators/roles.decorator";
+import { Role } from "src/models/auth/role";
+import { UserDto } from "src/modules/core/users/dtos/user.dto";
 import appConfig from "src/app.config";
 
 @Injectable()
@@ -48,16 +48,7 @@ export class AuthorizeGuard implements CanActivate {
   }
 
   private validateRequiredRoles(user: UserDto, context: ExecutionContext): boolean {
-    let isValid: boolean;
     const requiredRoles: Role[] = this._reflector.get<Role[]>(ROLES_META_KEY, context.getHandler());
-
-    if(requiredRoles == null || requiredRoles.length === 0) {
-      isValid = true;
-    }
-    else {
-      isValid = requiredRoles.includes(user.role);
-    }
-
-    return isValid;
+    return requiredRoles?.includes(user.role) ?? true;
   }
 }

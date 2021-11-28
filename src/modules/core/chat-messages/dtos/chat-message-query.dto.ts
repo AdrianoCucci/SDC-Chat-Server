@@ -1,26 +1,26 @@
 import { Type } from "class-transformer";
 import { IsDateString, IsInt, IsOptional, IsPositive } from "class-validator";
-import { ChatMessage } from "./chat-message";
+import { ChatMessage } from "../entities/chat-message.entity";
 
-export class ChatMessageParams {
-  public static getPredicate(params: ChatMessageParams): (message: ChatMessage) => boolean {
+export class ChatMessageQuery {
+  public static getPredicate(query: ChatMessageQuery): (message: ChatMessage) => boolean {
     let predicate: (message: ChatMessage) => boolean = null;
 
-    if(params != null) {
+    if(query != null) {
       predicate = (message: ChatMessage) => {
         const filters: boolean[] = [];
 
-        if(params.minDate != null) {
-          filters.push(new Date(message.datePosted) >= new Date(params.minDate));
+        if(query.minDate != null) {
+          filters.push(new Date(message.datePosted) >= new Date(query.minDate));
         }
-        if(params.maxDate != null) {
-          filters.push(new Date(message.datePosted) >= new Date(params.maxDate));
+        if(query.maxDate != null) {
+          filters.push(new Date(message.datePosted) >= new Date(query.maxDate));
         }
-        if(params.senderUserId != null) {
-          filters.push(message.senderUserId === params.senderUserId);
+        if(query.senderUserId != null) {
+          filters.push(message.senderUserId === query.senderUserId);
         }
-        if(params.organizationId != null) {
-          filters.push(message.organizationId === params.organizationId);
+        if(query.organizationId != null) {
+          filters.push(message.organizationId === query.organizationId);
         }
 
         return !filters.some((f: boolean) => f === false);

@@ -1,6 +1,6 @@
 import { IsBoolean, IsEnum, IsInt, IsOptional, IsPositive, IsString } from "class-validator";
-import { Role } from "../auth/role";
-import { OrganizationDto } from "../organizations/organization-dto";
+import { Role } from "src/models/auth/role";
+import { OrganizationDto } from "../../organizations/dtos/organization.dto";
 
 export class UserDto {
   id?: number;

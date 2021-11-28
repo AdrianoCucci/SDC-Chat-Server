@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Room } from 'src/models/rooms/room';
-import { RoomParams } from 'src/models/rooms/room-params';
 import { ServiceBase } from 'src/utils/service-base';
+import { RoomQuery } from './dtos/room-query.dto';
+import { Room } from './entities/room.entity';
 
 @Injectable()
 export class RoomsService extends ServiceBase<Room> {
@@ -33,8 +33,8 @@ export class RoomsService extends ServiceBase<Room> {
     );
   }
 
-  public async getAll(params?: RoomParams): Promise<Room[]> {
-    const predicate = RoomParams.getPredicate(params);
+  public async getAll(query?: RoomQuery): Promise<Room[]> {
+    const predicate = RoomQuery.getPredicate(query);
     return this.findEntities(predicate);
   }
 }

@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { UserDto } from "src/models/users/user-dto";
+import { UserDto } from "../../users/dtos/user.dto";
 
 export const getUserRoom = (user: UserDto): string | null => user.organizationId != null ? `Organization_Room_${user.organizationId}` : null;
 

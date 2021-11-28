@@ -1,5 +1,5 @@
-import { RoomDto } from "../rooms/room-dto";
-import { UserDto } from "../users/user-dto";
+import { RoomDto } from "../../rooms/dtos/room.dto";
+import { UserDto } from "../../users/dtos/user.dto";
 import { RoomPingState } from "./room-ping-state";
 
 export interface RoomPing {

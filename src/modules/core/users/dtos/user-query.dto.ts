@@ -1,27 +1,27 @@
 import { Type } from "class-transformer";
 import { IsBoolean, IsEnum, IsInt, IsOptional, IsPositive } from "class-validator";
-import { Role } from "../auth/role";
-import { User } from "./user";
+import { Role } from "src/models/auth/role";
+import { User } from "../entities/user.entity";
 
-export class UserParams {
-  public static getPredicate(params: UserParams): (user: User) => boolean {
+export class UserQuery {
+  public static getPredicate(query: UserQuery): (user: User) => boolean {
     let predicate: (user: User) => boolean = null;
 
-    if(params != null) {
+    if(query != null) {
       predicate = (user: User) => {
         const filters: boolean[] = [];
 
-        if(params.role != null) {
-          filters.push(user.role === params.role);
+        if(query.role != null) {
+          filters.push(user.role === query.role);
         }
-        if(params.isLocked != null) {
-          filters.push(user.isLocked === params.isLocked);
+        if(query.isLocked != null) {
+          filters.push(user.isLocked === query.isLocked);
         }
-        if(params.isOnline != null) {
-          filters.push(user.isOnline === params.isOnline);
+        if(query.isOnline != null) {
+          filters.push(user.isOnline === query.isOnline);
         }
-        if(params.organizationId != null) {
-          filters.push(user.organizationId === params.organizationId);
+        if(query.organizationId != null) {
+          filters.push(user.organizationId === query.organizationId);
         }
 
         return !filters.some((f: boolean) => f === false);

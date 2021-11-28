@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtAuthModule } from './modules/shared/jwt-auth/jwt-auth.module';
 import { AuthModule } from './modules/core/auth/auth.module';
 import { UsersModule } from './modules/core/users/users.module';
-import { UserPasswordsModule } from './modules/core/user-passwords/user-passwords.module';
+import { UserSecretsModule } from './modules/core/user-secrets/user-secrets.module';
 import { ChatMessagesModule } from './modules/core/chat-messages/chat-messages.module';
 import { OrganizationsModule } from './modules/core/organizations/organizations.module';
 import { RoomsModule } from './modules/core/rooms/rooms.module';
@@ -16,7 +16,7 @@ import { MapperModule } from './modules/shared/mapper/mapper.module';
     JwtAuthModule,
     AuthModule,
     UsersModule,
-    UserPasswordsModule,
+    UserSecretsModule,
     ChatMessagesModule,
     OrganizationsModule,
     RoomsModule,

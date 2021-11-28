@@ -1,5 +1,5 @@
-import { Role } from "../auth/role";
-import { Organization } from "../organizations/organization";
+import { Role } from "src/models/auth/role";
+import { Organization } from "../../organizations/entities/organization.entity";
 
 export class User {
   public id: number;

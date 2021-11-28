@@ -1,4 +1,4 @@
-import { User } from "../users/user";
+import { User } from "../../users/entities/user.entity";
 
 export class ChatMessage {
   public id: number;

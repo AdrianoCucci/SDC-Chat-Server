@@ -1,12 +1,12 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, UseGuards, UseInterceptors } from '@nestjs/common';
-import { Roles } from 'src/decorators/roles.decorator';
-import { AuthorizeGuard } from 'src/modules/shared/jwt-auth/authorize.guard';
-import { Role } from 'src/models/auth/role';
-import { Organization } from 'src/models/organizations/organization';
-import { OrganizationDto } from 'src/models/organizations/organization-dto';
-import { OrganizationDtoPartial } from 'src/models/organizations/organization-dto-partial';
-import { MapperService } from 'src/modules/shared/mapper/mapper.service';
-import { OrganizationsService } from './organizations.service';
+import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Param, ParseIntPipe, Post, Body, Put, Delete, HttpCode, HttpStatus, NotFoundException } from "@nestjs/common";
+import { Roles } from "src/decorators/roles.decorator";
+import { Role } from "src/models/auth/role";
+import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
+import { MapperService } from "src/modules/shared/mapper/mapper.service";
+import { OrganizationDto } from "./dtos/organization.dto";
+import { PartialOrganizationDto } from "./dtos/partial-organization.dto";
+import { Organization } from "./entities/organization.entity";
+import { OrganizationsService } from "./organizations.service";
 
 @Controller("api/organizations")
 @UseGuards(AuthorizeGuard)
@@ -42,7 +42,7 @@ export class OrganizationsController {
 
   @Put(":id")
   @Roles(Role.Administrator)
-  public async putOrganization(@Param("id", ParseIntPipe) id: number, @Body() request: OrganizationDtoPartial): Promise<OrganizationDto> {
+  public async putOrganization(@Param("id", ParseIntPipe) id: number, @Body() request: PartialOrganizationDto): Promise<OrganizationDto> {
     const entity: Organization = await this.tryGetOrganizationById(id);
     this._mapper.organizations.mapEntity(request, entity);
 

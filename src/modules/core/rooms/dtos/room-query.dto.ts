@@ -1,20 +1,20 @@
 import { Type } from "class-transformer";
-import { IsInt, IsPositive, IsOptional, IsEnum } from "class-validator";
-import { Room } from "./room";
+import { IsInt, IsPositive, IsOptional } from "class-validator";
+import { Room } from "../entities/room.entity";
 
-export class RoomParams {
-  public static getPredicate(params: RoomParams): (room: Room) => boolean {
+export class RoomQuery {
+  public static getPredicate(query: RoomQuery): (room: Room) => boolean {
     let predicate: (room: Room) => boolean = null;
 
-    if(params != null) {
+    if(query != null) {
       predicate = (room: Room) => {
         const filters: boolean[] = [];
 
-        if(params.organizationId != null) {
-          filters.push(room.organizationId === params.organizationId);
+        if(query.organizationId != null) {
+          filters.push(room.organizationId === query.organizationId);
         }
-        if(params.pingSound != null) {
-          filters.push(room.pingSound === params.pingSound);
+        if(query.pingSound != null) {
+          filters.push(room.pingSound === query.pingSound);
         }
 
         return !filters.some((f: boolean) => f === false);

@@ -1,4 +1,4 @@
-import { Organization } from "../organizations/organization";
+import { Organization } from "../../organizations/entities/organization.entity";
 
 export class Room {
   public id: number;

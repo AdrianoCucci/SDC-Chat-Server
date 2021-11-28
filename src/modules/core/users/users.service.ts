@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Role } from 'src/models/auth/role';
-import { User } from 'src/models/users/user';
-import { UserParams } from 'src/models/users/user-params';
 import { ServiceBase } from 'src/utils/service-base';
+import { UserQuery } from './dtos/user-query.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService extends ServiceBase<User> {
@@ -18,8 +18,8 @@ export class UsersService extends ServiceBase<User> {
     );
   }
 
-  public async getAll(params?: UserParams): Promise<User[]> {
-    const predicate = UserParams.getPredicate(params);
+  public async getAll(query?: UserQuery): Promise<User[]> {
+    const predicate = UserQuery.getPredicate(query);
     return this.findEntities(predicate);
   }
 

@@ -1,5 +1,5 @@
 import { IsInt, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
-import { OrganizationDto } from "../organizations/organization-dto";
+import { OrganizationDto } from "../../organizations/dtos/organization.dto";
 
 export class RoomDto {
   public id?: number;

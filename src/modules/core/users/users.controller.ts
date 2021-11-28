@@ -1,18 +1,18 @@
-import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UseGuards, UseInterceptors } from '@nestjs/common';
-import { RequestUser } from 'src/decorators/request-user.decorator';
-import { Roles } from 'src/decorators/roles.decorator';
-import { AuthorizeGuard } from 'src/modules/shared/jwt-auth/authorize.guard';
-import { Role } from 'src/models/auth/role';
-import { User } from 'src/models/users/user';
-import { UserDto } from 'src/models/users/user-dto';
-import { UserDtoPartial } from 'src/models/users/user-dto-partial';
-import { UserParams } from 'src/models/users/user-params';
-import { MapperService } from 'src/modules/shared/mapper/mapper.service';
-import { UsersService } from './users.service';
-import { OrganizationsService } from '../organizations/organizations.service';
-import { UserPasswordsService } from '../user-passwords/user-passwords.service';
-import { UserPassword } from 'src/models/auth/user-password';
-import { generateUserPassword } from 'src/utils/password-utils';
+import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Query, Param, ParseIntPipe, Post, Body, Put, Delete, HttpCode, HttpStatus, ForbiddenException, NotFoundException, BadRequestException } from "@nestjs/common";
+import { RequestUser } from "src/decorators/request-user.decorator";
+import { Roles } from "src/decorators/roles.decorator";
+import { Role } from "src/models/auth/role";
+import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
+import { MapperService } from "src/modules/shared/mapper/mapper.service";
+import { generateUserSecret } from "src/utils/hash-utils";
+import { OrganizationsService } from "../organizations/organizations.service";
+import { UserSecret } from "../user-secrets/entities/user-secret.entity";
+import { UserSecretsService } from "../user-secrets/user-secrets.service";
+import { PartialUserDto } from "./dtos/partial-user.dto";
+import { UserQuery } from "./dtos/user-query.dto";
+import { UserDto } from "./dtos/user.dto";
+import { User } from "./entities/user.entity";
+import { UsersService } from "./users.service";
 
 @Controller("api/users")
 @UseGuards(AuthorizeGuard)
@@ -20,14 +20,14 @@ import { generateUserPassword } from 'src/utils/password-utils';
 export class UsersController {
   constructor(
     private _usersService: UsersService,
-    private _passwordsService: UserPasswordsService,
+    private _secretsService: UserSecretsService,
     private _orgService: OrganizationsService,
     private _mapper: MapperService
   ) { }
 
   @Get()
-  public async getAllUsers(@Query() params: UserParams): Promise<UserDto[]> {
-    const users: User[] = await this._usersService.getAll(params);
+  public async getAllUsers(@Query() query?: UserQuery): Promise<UserDto[]> {
+    const users: User[] = await this._usersService.getAll(query);
     const dtos: UserDto[] = this._mapper.users.mapDtos(users);
 
     return dtos;
@@ -49,15 +49,15 @@ export class UsersController {
     const entity: User = this._mapper.users.mapEntity(request);
     await this._usersService.add(entity);
 
-    const password: UserPassword = await generateUserPassword(entity.id, request.password);
-    await this._passwordsService.add(password);
+    const secret: UserSecret = await generateUserSecret(entity.id, request.password);
+    await this._secretsService.add(secret);
 
     const dto: UserDto = this._mapper.users.mapDto(entity);
     return dto;
   }
 
   @Put(":id")
-  public async putUser(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: UserDtoPartial): Promise<UserDto> {
+  public async putUser(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: PartialUserDto): Promise<UserDto> {
     const entity: User = await this.tryGetUserById(id);
 
     await this.validatePutModel(user, entity, request);
@@ -130,7 +130,7 @@ export class UsersController {
     }
   }
 
-  private async validatePutModel(requestUser: UserDto, entity: User, request: UserDtoPartial): Promise<void> {
+  private async validatePutModel(requestUser: UserDto, entity: User, request: PartialUserDto): Promise<void> {
     const errors: string[] = [];
 
     //Make sure non-administrators can only update users within their own organization.

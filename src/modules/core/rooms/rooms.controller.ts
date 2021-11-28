@@ -1,15 +1,15 @@
-import { Controller, Get, Query, Param, ParseIntPipe, NotFoundException, Post, Body, ConflictException, Put, ForbiddenException, Delete, HttpCode, HttpStatus, UseGuards, ClassSerializerInterceptor, UseInterceptors } from "@nestjs/common";
+import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Query, Param, ParseIntPipe, Post, Body, Put, ForbiddenException, Delete, HttpCode, HttpStatus, NotFoundException, ConflictException } from "@nestjs/common";
 import { RequestUser } from "src/decorators/request-user.decorator";
 import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/models/auth/role";
-import { Room } from "src/models/rooms/room";
-import { RoomDto } from "src/models/rooms/room-dto";
-import { RoomDtoPartial } from "src/models/rooms/room-dto-partial";
-import { RoomParams } from "src/models/rooms/room-params";
-import { UserDto } from "src/models/users/user-dto";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
 import { OrganizationsService } from "../organizations/organizations.service";
+import { UserDto } from "../users/dtos/user.dto";
+import { PartialRoomDto } from "./dtos/partial-room.dto";
+import { RoomQuery } from "./dtos/room-query.dto";
+import { RoomDto } from "./dtos/room.dto";
+import { Room } from "./entities/room.entity";
 import { RoomsService } from "./rooms.service";
 
 @Controller("api/rooms")
@@ -19,8 +19,8 @@ export class RoomsController {
   constructor(private _roomsService: RoomsService, private _orgsService: OrganizationsService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllRooms(@Query() params: RoomParams): Promise<RoomDto[]> {
-    const rooms: Room[] = await this._roomsService.getAll(params);
+  public async getAllRooms(@Query() query?: RoomQuery): Promise<RoomDto[]> {
+    const rooms: Room[] = await this._roomsService.getAll(query);
     const dtos: RoomDto[] = this._mapper.rooms.mapDtos(rooms);
 
     return dtos;
@@ -53,7 +53,7 @@ export class RoomsController {
 
   @Put(":id")
   @Roles(Role.Administrator, Role.OrganizationAdmin)
-  public async putRoom(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: RoomDtoPartial): Promise<RoomDto> {
+  public async putRoom(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: PartialRoomDto): Promise<RoomDto> {
     const room: Room = await this.tryGetRoomById(id);
 
     if(user.organizationId !== room.organizationId && user.role !== Role.Administrator) {
@@ -98,7 +98,7 @@ export class RoomsController {
     return room;
   }
 
-  private async validateRequest(request: RoomDto | RoomDtoPartial): Promise<void> {
+  private async validateRequest(request: RoomDto | PartialRoomDto): Promise<void> {
     if(!await this._orgsService.idExists(request.organizationId)) {
       throw new ConflictException(`organizationId does not exist: ${request.organizationId}`);
     }
