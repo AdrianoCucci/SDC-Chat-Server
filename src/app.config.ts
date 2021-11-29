@@ -5,7 +5,7 @@ const env: NodeJS.ProcessEnv = process.env;
 export default () => ({
   httpPort: Number(env.HTTP_PORT),
   jwtSecret: env.JWT_SECRET,
-  typeOrm: <TypeOrmModuleOptions> {
+  typeOrm: <TypeOrmModuleOptions>{
     type: "postgres",
     host: env.DB_HOST,
     port: Number(env.DB_PORT),
