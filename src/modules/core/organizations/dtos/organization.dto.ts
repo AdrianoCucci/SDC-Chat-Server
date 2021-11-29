@@ -1,5 +1,8 @@
 import { Exclude, Expose } from "class-transformer";
 import { IsOptional, IsString } from "class-validator";
+import { ChatMessageDto } from "../../chat-messages/dtos/chat-message.dto";
+import { RoomDto } from "../../rooms/dtos/room.dto";
+import { UserDto } from "../../users/dtos/user.dto";
 
 export class OrganizationDto {
   public id?: number;
@@ -34,6 +37,10 @@ export class OrganizationDto {
   @IsString()
   @IsOptional()
   public postalCode?: string;
+
+  public users?: UserDto[];
+  public rooms?: RoomDto[];
+  public chatMessages?: ChatMessageDto[];
 
   @Expose()
   @Exclude({ toClassOnly: true })

@@ -1,4 +1,5 @@
 import { IsDateString, IsInt, IsOptional, IsPositive, IsString } from "class-validator";
+import { OrganizationDto } from "../../organizations/dtos/organization.dto";
 import { UserDto } from "../../users/dtos/user.dto";
 
 export class ChatMessageDto {
@@ -21,4 +22,6 @@ export class ChatMessageDto {
   public organizationId?: number;
 
   public senderUser?: UserDto;
+
+  public organization?: OrganizationDto;
 }

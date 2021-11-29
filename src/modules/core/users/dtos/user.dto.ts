@@ -1,5 +1,6 @@
 import { IsBoolean, IsEnum, IsInt, IsOptional, IsPositive, IsString } from "class-validator";
 import { Role } from "src/models/auth/role";
+import { ChatMessageDto } from "../../chat-messages/dtos/chat-message.dto";
 import { OrganizationDto } from "../../organizations/dtos/organization.dto";
 
 export class UserDto {
@@ -32,4 +33,6 @@ export class UserDto {
   public organizationId?: number;
 
   public organization?: OrganizationDto;
+
+  public chatMessages?: ChatMessageDto[];
 }
