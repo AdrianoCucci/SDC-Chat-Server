@@ -43,7 +43,7 @@ export class AuthService {
       await this._usersService.update(user);
 
       const userDto: UserDto = this._mapper.users.mapDto(user);
-      const jwtSecret: string = appConfig().jwtSecret;
+      const jwtSecret: string = appConfig.jwtSecret;
       const jwt: string = this._jwtService.sign({ user: userDto }, { secret: jwtSecret });
 
       response = { isSuccess: true, user: userDto, token: jwt };

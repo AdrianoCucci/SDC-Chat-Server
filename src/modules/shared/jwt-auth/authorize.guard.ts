@@ -35,7 +35,7 @@ export class AuthorizeGuard implements CanActivate {
         const token: string = header.replace("Bearer", "").trim();
 
         if(token) {
-          const payload: any = this._jwtService.verify(token, { secret: appConfig().jwtSecret });
+          const payload: any = this._jwtService.verify(token, { secret: appConfig.jwtSecret });
 
           if(payload) {
             user = payload.user;

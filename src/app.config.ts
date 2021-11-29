@@ -1,8 +1,10 @@
+import { config } from "dotenv";
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 
+config();
 const env: NodeJS.ProcessEnv = process.env;
 
-export default () => ({
+export default {
   httpPort: Number(env.HTTP_PORT),
   jwtSecret: env.JWT_SECRET,
   typeOrm: <TypeOrmModuleOptions>{
@@ -15,4 +17,4 @@ export default () => ({
     entities: ["dist/**/*.entity{.ts,.js}"],
     synchronize: true
   }
-});
+};
