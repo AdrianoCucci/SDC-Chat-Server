@@ -13,7 +13,21 @@ import { EntityDtoMap } from "./entity-dto-map";
 export class MapperService {
   public readonly organizations = new EntityDtoMap<Organization, OrganizationDto>({
     mapEntity: (dto: Partial<OrganizationDto>, target?: Organization): Organization => Object.assign(target ?? new Organization(), dto),
-    mapDto: (entity: Organization): OrganizationDto => Object.assign(new OrganizationDto(), entity)
+    mapDto: (entity: Organization): OrganizationDto => {
+      const dto: OrganizationDto = Object.assign(new OrganizationDto(), entity);
+
+      if(entity.users?.length > 0) {
+        dto.users = this.users.mapDtos(entity.users);
+      }
+      if(entity.rooms?.length > 0) {
+        dto.rooms = this.rooms.mapDtos(entity.rooms);
+      }
+      if(entity.chatMessages?.length > 0) {
+        dto.chatMessages = this.chatMessages.mapDtos(entity.chatMessages);
+      }
+
+      return dto;
+    }
   });
 
   public readonly users = new EntityDtoMap<User, UserDto>({
@@ -22,10 +36,15 @@ export class MapperService {
       return Object.assign(target ?? new User(), dto);
     },
     mapDto: (entity: User): UserDto => {
-      const dto: UserDto = Object.assign(new User() as any, entity);
+      const { userSecretId, userSecret, ...rest } = entity;
 
-      if(entity.organization != null) {
-        dto.organization = this.organizations.mapDto(entity.organization);
+      const dto: UserDto = Object.assign(new UserDto(), rest);
+
+      if(rest.organization != null) {
+        dto.organization = this.organizations.mapDto(rest.organization);
+      }
+      if(rest.chatMessages?.length > 0) {
+        dto.chatMessages = this.chatMessages.mapDtos(rest.chatMessages);
       }
 
       return dto;
@@ -35,7 +54,7 @@ export class MapperService {
   public readonly rooms = new EntityDtoMap<Room, RoomDto>({
     mapEntity: (dto: Partial<RoomDto>, target?: Room): Room => Object.assign(target ?? new Room(), dto),
     mapDto: (entity: Room): RoomDto => {
-      const dto: RoomDto = Object.assign(new Room() as any, entity);
+      const dto: RoomDto = Object.assign(new RoomDto(), entity);
 
       if(entity.organization != null) {
         dto.organization = this.organizations.mapDto(entity.organization);
@@ -53,6 +72,9 @@ export class MapperService {
 
       if(entity.senderUser != null) {
         dto.senderUser = this.users.mapDto(entity.senderUser);
+      }
+      if(entity.organization != null) {
+        dto.organization = this.organizations.mapDto(entity.organization);
       }
 
       return dto;
