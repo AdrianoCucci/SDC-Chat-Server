@@ -11,13 +11,30 @@ export abstract class RepositoryBase<T> {
     return this._repository.find(options);
   }
 
-  public getById(id: EntityID, options?: FindOneOptions<T>): Promise<T> {
+  public getAllByModel(model: DeepPartial<T>): Promise<T[]> {
+    return this.getAll({ where: model });
+  }
+
+  public getOne(options: FindOneOptions<T>): Promise<T> {
+    return this._repository.findOneOrFail(options);
+  }
+
+  public getOneById(id: EntityID, options?: FindOneOptions<T>): Promise<T> {
     return this._repository.findOneOrFail(id, options);
   }
 
-  public async hasAny(id: EntityID): Promise<boolean> {
+  public getOneByModel(model: DeepPartial<T>): Promise<T> {
+    return this.getOne({ where: model });
+  }
+
+  public async hasAnyWithId(id: EntityID): Promise<boolean> {
     const entity: T = await this._repository.findOne(id);
     return entity !== undefined || entity !== null;
+  }
+
+  public async hasAnyWithModel(model: DeepPartial<T>): Promise<boolean> {
+    const entities: T[] = await this.getAllByModel(model);
+    return entities?.length > 0 ?? false;
   }
 
   public async add(entity: DeepPartial<T>): Promise<T> {
