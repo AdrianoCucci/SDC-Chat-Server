@@ -22,7 +22,7 @@ export class ChatMessagesController {
     const messages: ChatMessage[] = await this._messagesService.getAll(query);
 
     for(let i = 0; i < messages.length; i++) {
-      messages[i].senderUser = await this._usersService.getById(messages[i].senderUserId);
+      messages[i].senderUser = await this._usersService.getOneById(messages[i].senderUserId);
     }
 
     const dtos: ChatMessageDto[] = this._mapper.chatMessages.mapDtos(messages);
@@ -39,8 +39,8 @@ export class ChatMessagesController {
 
   @Post()
   public async postMessage(@Body() request: ChatMessageDto): Promise<ChatMessageDto> {
-    if(!await this._usersService.idExists(request.senderUserId)) {
-      throw new BadRequestException("A User ID with senderUserId value does not exist");
+    if(!await this._usersService.hasAnyWithId(request.senderUserId)) {
+      throw new BadRequestException("A User ID with [senderUserId] value does not exist");
     }
 
     const message: ChatMessage = this._mapper.chatMessages.mapEntity(request);

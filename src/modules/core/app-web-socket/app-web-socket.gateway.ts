@@ -50,7 +50,7 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
   }
 
   private async updateUserOnline(userId: number, isOnline: boolean): Promise<void> {
-    const userEntity: User = await this._usersService.getById(userId);
+    const userEntity: User = await this._usersService.getOneById(userId);
 
     if(userEntity != null && userEntity.isOnline !== isOnline) {
       userEntity.isOnline = isOnline;

@@ -5,11 +5,11 @@ import { Role } from "src/models/auth/role";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
 import { generateUserSecret } from "src/utils/hash-utils";
+import { DeepPartial } from "typeorm";
 import { OrganizationsService } from "../organizations/organizations.service";
 import { UserSecret } from "../user-secrets/entities/user-secret.entity";
 import { UserSecretsService } from "../user-secrets/user-secrets.service";
 import { PartialUserDto } from "./dtos/partial-user.dto";
-import { UserQuery } from "./dtos/user-query.dto";
 import { UserDto } from "./dtos/user.dto";
 import { User } from "./entities/user.entity";
 import { UsersService } from "./users.service";
@@ -26,8 +26,8 @@ export class UsersController {
   ) { }
 
   @Get()
-  public async getAllUsers(@Query() query?: UserQuery): Promise<UserDto[]> {
-    const users: User[] = await this._usersService.getAll(query);
+  public async getAllUsers(@Query() model?: DeepPartial<UserDto>): Promise<UserDto[]> {
+    const users: User[] = await this._usersService.getAllByModel(model);
     const dtos: UserDto[] = this._mapper.users.mapDtos(users);
 
     return dtos;
@@ -88,11 +88,11 @@ export class UsersController {
       throw new ForbiddenException("You do not have permission to delete this user");
     }
 
-    await this._usersService.delete(id);
+    await this._usersService.delete(entity);
   }
 
   private async tryGetUserById(id: number): Promise<User> {
-    const user: User = await this._usersService.getById(id);
+    const user: User = await this._usersService.getOneById(id);
 
     if(user == null) {
       throw new NotFoundException(`User ID does not exist: ${id}`);

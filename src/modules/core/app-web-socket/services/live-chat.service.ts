@@ -27,7 +27,7 @@ export class LiveChatService {
         const room: string = getUserRoom(user);
         broadcast(socket, SOCKET_EVENTS.message, payload, room);
 
-        if(await this._usersService.idExists(payload.senderUserId)) {
+        if(await this._usersService.hasAnyWithId(payload.senderUserId)) {
           const entity: ChatMessage = this._mapper.chatMessages.mapEntity(payload);
           await this._messagesService.add(entity);
         }

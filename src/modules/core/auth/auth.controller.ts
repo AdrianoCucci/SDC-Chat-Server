@@ -64,7 +64,7 @@ export class AuthController {
   }
 
   private async tryGetUserById(id: number): Promise<User> {
-    const user: User = await this._usersService.getById(id);
+    const user: User = await this._usersService.getOneById(id);
 
     if(user == null) {
       throw new NotFoundException(`User ID does not exist: ${id}`);
