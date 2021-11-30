@@ -3,7 +3,7 @@ import { User } from "../../users/entities/user.entity";
 
 @Entity({ name: "UserSecrets" })
 export class UserSecret {
-  @PrimaryGeneratedColumn({ type: "bigint" })
+  @PrimaryGeneratedColumn()
   public id: number;
 
   @Column()
@@ -12,9 +12,9 @@ export class UserSecret {
   @Column()
   public salt: string;
 
-  @Column({ type: "bigint" })
+  @Column()
   public userId: number;
-  
+
 
   @OneToOne(() => User, entity => entity.userSecret)
   public user?: User;

@@ -4,7 +4,7 @@ import { User } from "../../users/entities/user.entity";
 
 @Entity({ name: "ChatMessages" })
 export class ChatMessage {
-  @PrimaryGeneratedColumn({ type: "bigint" })
+  @PrimaryGeneratedColumn()
   public id: number;
 
   @Column()
@@ -13,12 +13,12 @@ export class ChatMessage {
   @Column({ type: "timestamp" })
   public datePosted: Date | string;
 
-  @Column({ type: "bigint" })
+  @Column()
   public senderUserId: number;
 
-  @Column({ type: "bigint" })
+  @Column()
   public organizationId?: number;
-  
+
 
   @ManyToOne(() => User, entity => entity.chatMessages)
   public senderUser?: User;

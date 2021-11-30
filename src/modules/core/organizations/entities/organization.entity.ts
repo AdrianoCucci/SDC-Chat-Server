@@ -5,7 +5,7 @@ import { User } from "../../users/entities/user.entity";
 
 @Entity({ name: "Organizations" })
 export class Organization {
-  @PrimaryGeneratedColumn({ type: "bigint" })
+  @PrimaryGeneratedColumn()
   public id: number;
 
   @Column()

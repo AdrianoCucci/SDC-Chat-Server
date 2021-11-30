@@ -3,7 +3,7 @@ import { Organization } from "../../organizations/entities/organization.entity";
 
 @Entity({ name: "Rooms" })
 export class Room {
-  @PrimaryGeneratedColumn({ type: "bigint" })
+  @PrimaryGeneratedColumn()
   public id: number;
 
   @Column()
@@ -18,7 +18,7 @@ export class Room {
   @Column({ nullable: true })
   public pingSound?: number;
 
-  @Column({ type: "bigint" })
+  @Column()
   public organizationId: number;
 
 

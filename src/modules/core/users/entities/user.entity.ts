@@ -6,7 +6,7 @@ import { UserSecret } from "../../user-secrets/entities/user-secret.entity";
 
 @Entity({ name: "Users" })
 export class User {
-  @PrimaryGeneratedColumn({ type: "bigint" })
+  @PrimaryGeneratedColumn()
   public id: number;
 
   @Column({ type: "enum", enum: Role })
@@ -24,12 +24,12 @@ export class User {
   @Column()
   public isOnline: boolean = false;
 
-  @Column({ type: "bigint" })
+  @Column()
   public userSecretId: number;
 
   @Column({ type: "bigint", nullable: true })
   public organizationId?: number;
-  
+
 
   @OneToOne(() => UserSecret, entity => entity.user)
   public userSecret?: UserSecret;
