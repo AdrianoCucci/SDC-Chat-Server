@@ -4,7 +4,7 @@ import { ChatMessageDto } from "../../chat-messages/dtos/chat-message.dto";
 import { OrganizationDto } from "../../organizations/dtos/organization.dto";
 
 export class UserDto {
-  id?: number;
+  public id?: number;
 
   @IsString()
   public username: string;
