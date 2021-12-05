@@ -121,7 +121,7 @@ export class UsersController {
     if(request.organizationId == null && requestUser.role !== Role.Administrator) {
       errors.push("organizationId is required");
     }
-    else if(request.organizationId != null && !await this._orgService.idExists(request.organizationId)) {
+    else if(request.organizationId != null && !await this._orgService.hasAnyWithId(request.organizationId)) {
       errors.push(`organizationId does not exist: ${request.organizationId}`);
     }
 
@@ -150,7 +150,7 @@ export class UsersController {
     if(request.organizationId == null && requestUser.role !== Role.Administrator) {
       errors.push("organizationId is required");
     }
-    else if(request.organizationId != null && !await this._orgService.idExists(request.organizationId)) {
+    else if(request.organizationId != null && !await this._orgService.hasAnyWithId(request.organizationId)) {
       errors.push(`organizationId does not exist: ${request.organizationId}`);
     }
 

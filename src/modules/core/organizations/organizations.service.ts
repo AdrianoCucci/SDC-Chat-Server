@@ -1,35 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { ServiceBase } from 'src/utils/service-base';
+import { InjectRepository } from '@nestjs/typeorm';
+import { RepositoryBase } from 'src/utils/repository-base';
+import { Repository } from 'typeorm';
 import { Organization } from './entities/organization.entity';
 
 @Injectable()
-export class OrganizationsService extends ServiceBase<Organization> {
-  constructor() {
-    super("id",
-      [
-        new Organization({
-          id: 1,
-          name: "Sorriso Dental Care",
-          email: "contact@sdc.ca",
-          phoneNumber: "555-555-5555",
-          street: "123 Test St.",
-          city: "Toronto",
-          province: "Ontario",
-          country: "Canada",
-          postalCode: "L7B 2G9"
-        }),
-        new Organization({
-          id: 2,
-          name: "Demo Organization",
-          email: "contact@demo.ca",
-          phoneNumber: "123-456-7890",
-          street: "456 Test Ave.",
-          city: "Brampton",
-          province: "Ontario",
-          country: "Canada",
-          postalCode: "L4C 1F6"
-        })
-      ]
-    );
+export class OrganizationsService extends RepositoryBase<Organization> {
+  constructor(@InjectRepository(Organization) repository: Repository<Organization>) {
+    super(repository);
   }
 }

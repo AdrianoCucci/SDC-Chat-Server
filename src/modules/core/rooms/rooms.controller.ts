@@ -99,7 +99,7 @@ export class RoomsController {
   }
 
   private async validateRequest(request: RoomDto | PartialRoomDto): Promise<void> {
-    if(!await this._orgsService.idExists(request.organizationId)) {
+    if(!await this._orgsService.hasAnyWithId(request.organizationId)) {
       throw new ConflictException(`organizationId does not exist: ${request.organizationId}`);
     }
   }

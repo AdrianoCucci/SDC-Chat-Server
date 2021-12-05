@@ -56,12 +56,12 @@ export class OrganizationsController {
   @Roles(Role.Administrator)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async deleteOrganization(@Param("id", ParseIntPipe) id: number): Promise<void> {
-    await this.tryGetOrganizationById(id);
-    await this._orgsService.delete(id);
+    const entity: Organization = await this.tryGetOrganizationById(id);
+    await this._orgsService.delete(entity);
   }
 
   private async tryGetOrganizationById(id: number): Promise<Organization> {
-    const organization: Organization = await this._orgsService.getById(id);
+    const organization: Organization = await this._orgsService.getOneById(id);
 
     if(organization == null) {
       throw new NotFoundException(`Organization ID does not exist: ${id}`);
