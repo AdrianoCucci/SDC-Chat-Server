@@ -46,8 +46,8 @@ export class UsersController {
   public async postUser(@RequestUser() user: UserDto, @Body() request: UserDto): Promise<UserDto> {
     await this.validatePostModel(user, request);
 
-    const entity: User = this._mapper.users.mapEntity(request);
-    await this._usersService.add(entity);
+    let entity: User = this._mapper.users.mapEntity(request);
+    entity = await this._usersService.add(entity);
 
     const secret: UserSecret = await generateUserSecret(entity.id, request.password);
     await this._secretsService.add(secret);
@@ -58,7 +58,7 @@ export class UsersController {
 
   @Put(":id")
   public async putUser(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: PartialUserDto): Promise<UserDto> {
-    const entity: User = await this.tryGetUserById(id);
+    let entity: User = await this.tryGetUserById(id);
 
     await this.validatePutModel(user, entity, request);
 
@@ -69,7 +69,7 @@ export class UsersController {
       delete entity.role;
     }
 
-    await this._usersService.update(entity);
+    entity = await this._usersService.update(entity);
 
     const dto: UserDto = this._mapper.users.mapDto(entity);
     return dto;

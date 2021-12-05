@@ -33,8 +33,8 @@ export class OrganizationsController {
   @Post()
   @Roles(Role.Administrator)
   public async postOrganization(@Body() request: OrganizationDto): Promise<OrganizationDto> {
-    const entity: Organization = this._mapper.organizations.mapEntity(request);
-    await this._orgsService.add(entity);
+    let entity: Organization = this._mapper.organizations.mapEntity(request);
+    entity = await this._orgsService.add(entity);
 
     const response: OrganizationDto = this._mapper.organizations.mapDto(entity);
     return response;
@@ -43,10 +43,10 @@ export class OrganizationsController {
   @Put(":id")
   @Roles(Role.Administrator)
   public async putOrganization(@Param("id", ParseIntPipe) id: number, @Body() request: PartialOrganizationDto): Promise<OrganizationDto> {
-    const entity: Organization = await this.tryGetOrganizationById(id);
+    let entity: Organization = await this.tryGetOrganizationById(id);
     this._mapper.organizations.mapEntity(request, entity);
 
-    await this._orgsService.update(entity);
+    entity = await this._orgsService.update(entity);
 
     const response: OrganizationDto = this._mapper.organizations.mapDto(entity);
     return response;

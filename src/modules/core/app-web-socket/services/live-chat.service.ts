@@ -23,14 +23,13 @@ export class LiveChatService {
     if(payload != null && payload.contents && payload.senderUserId != null) {
       const user: UserDto = this._socketUsersService.get(socket);
 
-      if(user != null) {
-        const room: string = getUserRoom(user);
-        broadcast(socket, SOCKET_EVENTS.message, payload, room);
+      if(user != null && await this._usersService.hasAnyWithId(payload.senderUserId)) {
+        let entity: ChatMessage = this._mapper.chatMessages.mapEntity(payload);
+        entity = await this._messagesService.add(entity);
 
-        if(await this._usersService.hasAnyWithId(payload.senderUserId)) {
-          const entity: ChatMessage = this._mapper.chatMessages.mapEntity(payload);
-          await this._messagesService.add(entity);
-        }
+        const dto: ChatMessageDto = this._mapper.chatMessages.mapDto(entity);
+        const room: string = getUserRoom(user);
+        broadcast(socket, SOCKET_EVENTS.message, dto, room);
       }
     }
   }
@@ -39,14 +38,13 @@ export class LiveChatService {
     if(payload?.id != null && payload.contents && payload.senderUserId != null) {
       const user: UserDto = this._socketUsersService.get(socket);
 
-      if(user != null) {
-        const room: string = getUserRoom(user);
-        broadcast(socket, SOCKET_EVENTS.messageEdit, payload, room);
+      if(user != null && await this._messagesService.hasAnyWithId(payload.id)) {
+        let entity: ChatMessage = this._mapper.chatMessages.mapEntity(payload);
+        entity = await this._messagesService.update(entity);
 
-        if(await this._messagesService.hasAnyWithId(payload.id)) {
-          const entity: ChatMessage = this._mapper.chatMessages.mapEntity(payload);
-          await this._messagesService.update(entity);
-        }
+        const dto: ChatMessageDto = this._mapper.chatMessages.mapDto(entity);
+        const room: string = getUserRoom(user);
+        broadcast(socket, SOCKET_EVENTS.messageEdit, dto, room);
       }
     }
   }
@@ -59,10 +57,10 @@ export class LiveChatService {
         const entity: ChatMessage = await this._messagesService.getOneById(payload.id);
 
         if(entity != null) {
+          await this._messagesService.delete(entity);
+
           const room: string = getUserRoom(user);
           broadcast(socket, SOCKET_EVENTS.messageDelete, payload, room);
-
-          await this._messagesService.delete(entity);
         }
       }
     }

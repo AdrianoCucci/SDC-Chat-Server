@@ -44,8 +44,8 @@ export class ChatMessagesController {
       throw new BadRequestException("A User ID with [senderUserId] value does not exist");
     }
 
-    const message: ChatMessage = this._mapper.chatMessages.mapEntity(request);
-    await this._messagesService.add(message);
+    let message: ChatMessage = this._mapper.chatMessages.mapEntity(request);
+    message = await this._messagesService.add(message);
 
     const dto: ChatMessageDto = this._mapper.chatMessages.mapDto(message);
     return dto;
@@ -53,7 +53,7 @@ export class ChatMessagesController {
 
   @Put(":id")
   public async putMessage(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: PartialChatMessageDto): Promise<ChatMessageDto> {
-    const message: ChatMessage = await this.tryGetMessageById(id);
+    let message: ChatMessage = await this.tryGetMessageById(id);
 
     if(message.senderUserId !== user.id && user.role !== Role.Administrator) {
       throw new ForbiddenException("You may not edit a different user's message");
@@ -63,7 +63,7 @@ export class ChatMessagesController {
     delete request.senderUserId;
 
     this._mapper.chatMessages.mapEntity(request, message);
-    await this._messagesService.update(message);
+    message = await this._messagesService.update(message);
 
     const dto: ChatMessageDto = this._mapper.chatMessages.mapDto(message);
     return dto;

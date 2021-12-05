@@ -44,8 +44,8 @@ export class RoomsController {
 
     await this.validateRequest(request);
 
-    const room: Room = this._mapper.rooms.mapEntity(request);
-    await this._roomsService.add(room);
+    let room: Room = this._mapper.rooms.mapEntity(request);
+    room = await this._roomsService.add(room);
 
     const response: RoomDto = this._mapper.rooms.mapDto(room);
     return response;
@@ -54,7 +54,7 @@ export class RoomsController {
   @Put(":id")
   @Roles(Role.Administrator, Role.OrganizationAdmin)
   public async putRoom(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: PartialRoomDto): Promise<RoomDto> {
-    const room: Room = await this.tryGetRoomById(id);
+    let room: Room = await this.tryGetRoomById(id);
 
     if(user.organizationId !== room.organizationId && user.role !== Role.Administrator) {
       throw new ForbiddenException("You do not have permission to update this room");
@@ -69,7 +69,7 @@ export class RoomsController {
     }
 
     this._mapper.rooms.mapEntity(request, room);
-    await this._roomsService.update(room);
+    room = await this._roomsService.update(room);
 
     const response: RoomDto = this._mapper.rooms.mapDto(room);
     return response;
