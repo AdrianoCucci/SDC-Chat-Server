@@ -3,10 +3,10 @@ import { RequestUser } from "src/decorators/request-user.decorator";
 import { Role } from "src/models/auth/role";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
+import { DeepPartial } from "typeorm";
 import { UserDto } from "../users/dtos/user.dto";
 import { UsersService } from "../users/users.service";
 import { ChatMessagesService } from "./chat-messages.service";
-import { ChatMessageQuery } from "./dtos/chat-message-query.dto";
 import { ChatMessageDto } from "./dtos/chat-message.dto";
 import { PartialChatMessageDto } from "./dtos/partial-chat-message.dto";
 import { ChatMessage } from "./entities/chat-message.entity";
@@ -18,8 +18,8 @@ export class ChatMessagesController {
   constructor(private _messagesService: ChatMessagesService, private _usersService: UsersService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllMessages(@Query() query?: ChatMessageQuery): Promise<ChatMessageDto[]> {
-    const messages: ChatMessage[] = await this._messagesService.getAll(query);
+  public async getAllMessages(@Query() model?: DeepPartial<ChatMessageDto>): Promise<ChatMessageDto[]> {
+    const messages: ChatMessage[] = await this._messagesService.getAllByModel(model);
 
     for(let i = 0; i < messages.length; i++) {
       messages[i].senderUser = await this._usersService.getOneById(messages[i].senderUserId);
@@ -77,11 +77,11 @@ export class ChatMessagesController {
       throw new ForbiddenException("You may not delete a different user's message");
     }
 
-    await this._messagesService.delete(id);
+    await this._messagesService.delete(message);
   }
 
   private async tryGetMessageById(id: number): Promise<ChatMessage> {
-    const message: ChatMessage = await this._messagesService.getById(id);
+    const message: ChatMessage = await this._messagesService.getOneById(id);
 
     if(message == null) {
       throw new NotFoundException(`Chat Message ID does not exist: ${id}`);

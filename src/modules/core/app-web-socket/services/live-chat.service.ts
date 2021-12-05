@@ -43,7 +43,7 @@ export class LiveChatService {
         const room: string = getUserRoom(user);
         broadcast(socket, SOCKET_EVENTS.messageEdit, payload, room);
 
-        if(await this._messagesService.idExists(payload.id)) {
+        if(await this._messagesService.hasAnyWithId(payload.id)) {
           const entity: ChatMessage = this._mapper.chatMessages.mapEntity(payload);
           await this._messagesService.update(entity);
         }
@@ -56,10 +56,14 @@ export class LiveChatService {
       const user: UserDto = this._socketUsersService.get(socket);
 
       if(user != null) {
-        const room: string = getUserRoom(user);
-        broadcast(socket, SOCKET_EVENTS.messageDelete, payload, room);
+        const entity: ChatMessage = await this._messagesService.getOneById(payload.id);
 
-        await this._messagesService.delete(payload.id);
+        if(entity != null) {
+          const room: string = getUserRoom(user);
+          broadcast(socket, SOCKET_EVENTS.messageDelete, payload, room);
+
+          await this._messagesService.delete(entity);
+        }
       }
     }
   }

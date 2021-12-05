@@ -1,16 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { ServiceBase } from 'src/utils/service-base';
-import { ChatMessageQuery } from './dtos/chat-message-query.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { RepositoryBase } from 'src/utils/repository-base';
+import { Repository } from 'typeorm';
 import { ChatMessage } from './entities/chat-message.entity';
 
 @Injectable()
-export class ChatMessagesService extends ServiceBase<ChatMessage> {
-  constructor() {
-    super("id");
-  }
-
-  public async getAll(query?: ChatMessageQuery): Promise<ChatMessage[]> {
-    const predicate = ChatMessageQuery.getPredicate(query);
-    return this.findEntities(predicate);
+export class ChatMessagesService extends RepositoryBase<ChatMessage> {
+  constructor(@InjectRepository(ChatMessage) repository: Repository<ChatMessage>) {
+    super(repository);
   }
 }
