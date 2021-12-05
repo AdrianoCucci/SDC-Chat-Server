@@ -10,7 +10,7 @@ export class ChatMessageDto {
 
   @IsDateString()
   @IsOptional()
-  public datePosted: Date | string = new Date().toISOString();
+  public datePosted: Date | string;
 
   @IsInt()
   @IsPositive()

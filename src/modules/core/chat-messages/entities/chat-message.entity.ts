@@ -11,7 +11,7 @@ export class ChatMessage {
   public contents: string;
 
   @Column({ type: "timestamp" })
-  public datePosted: Date | string;
+  public datePosted: Date | string = new Date().toISOString();
 
   @Column()
   public senderUserId: number;
