@@ -16,11 +16,11 @@ export abstract class RepositoryBase<T> {
   }
 
   public getOne(options: FindOneOptions<T>): Promise<T> {
-    return this._repository.findOneOrFail(options);
+    return this._repository.findOne(options);
   }
 
   public getOneById(id: EntityID, options?: FindOneOptions<T>): Promise<T> {
-    return this._repository.findOneOrFail(id, options);
+    return this._repository.findOne(id, options);
   }
 
   public getOneByModel(model: DeepPartial<T>): Promise<T> {
