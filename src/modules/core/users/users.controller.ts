@@ -62,13 +62,12 @@ export class UsersController {
 
     await this.validatePutModel(user, entity, request);
 
-    this._mapper.users.mapEntity(request, entity);
-
     //Do not change user role unless an administrator is making the request.
     if(user.role !== Role.Administrator) {
-      delete entity.role;
+      request.role = entity.role;
     }
 
+    this._mapper.users.mapEntity(request, entity);
     entity = await this._usersService.update(entity);
 
     const dto: UserDto = this._mapper.users.mapDto(entity);
