@@ -4,10 +4,10 @@ import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/models/auth/role";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
+import { DeepPartial } from "typeorm";
 import { OrganizationsService } from "../organizations/organizations.service";
 import { UserDto } from "../users/dtos/user.dto";
 import { PartialRoomDto } from "./dtos/partial-room.dto";
-import { RoomQuery } from "./dtos/room-query.dto";
 import { RoomDto } from "./dtos/room.dto";
 import { Room } from "./entities/room.entity";
 import { RoomsService } from "./rooms.service";
@@ -19,8 +19,8 @@ export class RoomsController {
   constructor(private _roomsService: RoomsService, private _orgsService: OrganizationsService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllRooms(@Query() query?: RoomQuery): Promise<RoomDto[]> {
-    const rooms: Room[] = await this._roomsService.getAll(query);
+  public async getAllRooms(@Query() model?: DeepPartial<RoomDto>): Promise<RoomDto[]> {
+    const rooms: Room[] = await this._roomsService.getAllByModel(model);
     const dtos: RoomDto[] = this._mapper.rooms.mapDtos(rooms);
 
     return dtos;
@@ -85,11 +85,11 @@ export class RoomsController {
       throw new ForbiddenException("You do not have permission to delete this room");
     }
 
-    await this._roomsService.delete(id);
+    await this._roomsService.delete(room);
   }
 
   private async tryGetRoomById(id: number): Promise<Room> {
-    const room: Room = await this._roomsService.getById(id);
+    const room: Room = await this._roomsService.getOneById(id);
 
     if(room == null) {
       throw new NotFoundException(`Room ID does not exist: ${id}`);
