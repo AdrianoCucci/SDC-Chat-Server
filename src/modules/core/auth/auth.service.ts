@@ -34,7 +34,7 @@ export class AuthService {
         throw "Your account is locked. Please speak with your administrator.";
       }
 
-      const password: UserSecret = await this._secretsService.getByUserId(user.id);
+      const password: UserSecret = await this._secretsService.getOneByUserId(user.id);
       if(password == null || !await compareHash(request.password, password.password)) {
         throw "Login credentials are invalid";
       }
@@ -56,7 +56,7 @@ export class AuthService {
   }
 
   public async resetUserPassword(request: PassResetRequest | AdminPassResetRequest): Promise<void> {
-    const secret: UserSecret = await this._secretsService.getByUserId(request.userId);
+    const secret: UserSecret = await this._secretsService.getOneByUserId(request.userId);
 
     if(secret == null) {
       throw new NotFoundException(`Failed to reset password - User ID does not exist: ${request.userId}`);
