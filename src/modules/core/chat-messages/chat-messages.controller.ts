@@ -12,7 +12,7 @@ import { ChatMessageDto } from "./dtos/chat-message.dto";
 import { PartialChatMessageDto } from "./dtos/partial-chat-message.dto";
 import { ChatMessage } from "./entities/chat-message.entity";
 
-@Controller("api/chat-messages")
+@Controller("chat-messages")
 @UseGuards(AuthorizeGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class ChatMessagesController {

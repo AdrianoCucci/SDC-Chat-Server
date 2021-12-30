@@ -8,7 +8,7 @@ import { PartialOrganizationDto } from "./dtos/partial-organization.dto";
 import { Organization } from "./entities/organization.entity";
 import { OrganizationsService } from "./organizations.service";
 
-@Controller("api/organizations")
+@Controller("organizations")
 @UseGuards(AuthorizeGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class OrganizationsController {

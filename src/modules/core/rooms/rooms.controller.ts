@@ -12,7 +12,7 @@ import { RoomDto } from "./dtos/room.dto";
 import { Room } from "./entities/room.entity";
 import { RoomsService } from "./rooms.service";
 
-@Controller("api/rooms")
+@Controller("rooms")
 @UseGuards(AuthorizeGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class RoomsController {

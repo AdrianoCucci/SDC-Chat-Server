@@ -14,7 +14,7 @@ import { UserDto } from "./dtos/user.dto";
 import { User } from "./entities/user.entity";
 import { UsersService } from "./users.service";
 
-@Controller("api/users")
+@Controller("users")
 @UseGuards(AuthorizeGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {

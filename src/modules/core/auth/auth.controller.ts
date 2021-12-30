@@ -12,7 +12,7 @@ import { AuthRequest } from "./dtos/auth-request.dto";
 import { AuthResponse } from "./dtos/auth-response.dto";
 import { PassResetRequest } from "./dtos/pass-reset-request.dto";
 
-@Controller("api/auth")
+@Controller("auth")
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
   constructor(private _authService: AuthService, private _usersService: UsersService) { }
