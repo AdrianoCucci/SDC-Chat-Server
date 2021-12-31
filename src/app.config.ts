@@ -11,12 +11,13 @@ export default {
   httpPort: Number(env.HTTP_PORT),
   jwtSecret: env.JWT_SECRET,
 
-  cors: <CorsOptions> {
+  cors: <CorsOptions>{
     origin: "*",
-    allowedHeaders: ["Authorization", "Accept", "Content-Type", "Origin"],
+    credentials: true,
+    allowedHeaders: ["Authorization", "Accept", "Cache-Control", "Content-Type", "Origin", "User-Agent"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
   },
-  
+
   typeOrm: <TypeOrmModuleOptions>{
     type: "postgres",
     host: env.DB_HOST,
