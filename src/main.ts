@@ -7,11 +7,10 @@ import appConfig from "src/app.config";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors();
+  app.enableCors(appConfig.cors);
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
-  const port: number = appConfig.httpPort;
-  await app.listen(port);
+  await app.listen(appConfig.httpPort);
 }
 
 bootstrap();
