@@ -13,7 +13,10 @@ import appConfig from './app.config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(appConfig.typeOrm),
+    TypeOrmModule.forRoot({
+      ...appConfig.typeOrm,
+      synchronize: !appConfig.production
+    }),
     JwtAuthModule,
     AuthModule,
     UsersModule,

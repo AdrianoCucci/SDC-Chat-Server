@@ -5,6 +5,7 @@ config();
 const env: NodeJS.ProcessEnv = process.env;
 
 export default {
+  production: false,
   httpPort: Number(env.HTTP_PORT),
   jwtSecret: env.JWT_SECRET,
   typeOrm: <TypeOrmModuleOptions>{
@@ -14,7 +15,6 @@ export default {
     database: env.DB_NAME,
     username: env.DB_USERNAME,
     password: env.DB_PASSWORD,
-    entities: ["dist/**/*.entity{.ts,.js}"],
-    synchronize: true
+    entities: ["dist/**/*.entity{.ts,.js}"]
   }
 };
