@@ -7,13 +7,13 @@ const env: NodeJS.ProcessEnv = process.env;
 
 export default {
   production: false,
-  
+
   httpPort: Number(env.HTTP_PORT),
   jwtSecret: env.JWT_SECRET,
 
   cors: <CorsOptions> {
     origin: "*",
-    allowedHeaders: ["Accept", "Content-Type"],
+    allowedHeaders: ["Authorization", "Accept", "Content-Type", "Origin"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
   },
   
