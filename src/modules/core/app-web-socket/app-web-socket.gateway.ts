@@ -11,7 +11,9 @@ import { SocketUsersService } from './services/socket-users.service';
 import { SOCKET_EVENTS } from './utils/socket-events';
 import { getUserRoom, broadcast } from './utils/socket-functions';
 
-@WebSocketGateway({ cors: { origin: "*" } })
+import appConfig from 'src/app.config';
+
+@WebSocketGateway({ cors: appConfig.cors, path: appConfig.socketPath })
 export class AppWebSocketGateway implements OnGatewayDisconnect {
   constructor(
     private _socketUsersService: SocketUsersService,
