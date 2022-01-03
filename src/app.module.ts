@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 import { JwtAuthModule } from './modules/shared/jwt-auth/jwt-auth.module';
 import { AuthModule } from './modules/core/auth/auth.module';
 import { UsersModule } from './modules/core/users/users.module';
@@ -14,10 +15,8 @@ import appConfig from './app.config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      ...appConfig.typeOrm,
-      synchronize: !appConfig.production
-    }),
+    TypeOrmModule.forRoot({ ...appConfig.typeOrm, synchronize: !appConfig.production }),
+    ScheduleModule.forRoot(),
     JwtAuthModule,
     AuthModule,
     UsersModule,
