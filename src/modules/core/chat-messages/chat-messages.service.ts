@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RepositoryBase } from 'src/utils/repository-base';
-import { DeepPartial, FindConditions, FindManyOptions, FindOneOptions, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import { DeepPartial, FindConditions, FindManyOptions, FindOneOptions, LessThan, MoreThan, Repository } from 'typeorm';
 import { ChatMessageQueryDto } from './dtos/chat-message-query.dto';
 import { ChatMessage } from './entities/chat-message.entity';
 
@@ -21,15 +21,18 @@ export class ChatMessagesService extends RepositoryBase<ChatMessage> {
 
   protected onGettingByModel(model: ChatMessageQueryDto): FindOneOptions<ChatMessage> | FindManyOptions<ChatMessage> {
     const { minDate, maxDate, ...rest } = model;
-    const findConditions: FindConditions<ChatMessage>[] = [rest];
+    const findConditions: FindConditions<ChatMessage>[] = [];
 
     if(model.minDate) {
-      findConditions.push({ ...rest, datePosted: MoreThanOrEqual(model.datePosted) });
+      findConditions.push({ ...rest, datePosted: MoreThan(minDate) });
     }
     if(model.maxDate) {
-      findConditions.push({ ...rest, datePosted: LessThanOrEqual(model.datePosted) });
+      findConditions.push({ ...rest, datePosted: LessThan(maxDate) });
     }
-
+    if(Object.keys(rest).length > 0) {
+      findConditions.push(rest);
+    }
+    
     return { where: findConditions };
   }
 }
