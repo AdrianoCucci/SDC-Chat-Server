@@ -5,6 +5,7 @@ import { ChatMessage } from "./entities/chat-message.entity";
 import { CronJob } from "cron";
 
 import appConfig from "src/app.config";
+import { LessThan } from "typeorm";
 
 @Injectable()
 export class ChatMessagesTasksService {
@@ -24,11 +25,11 @@ export class ChatMessagesTasksService {
   }
 
   private async deleteOldChatMessages(maxMessageHours: number): Promise<void> {
-    const maxDate = new Date();
-    maxDate.setUTCHours(maxDate.getUTCHours() * -Math.abs(maxMessageHours), 0, 0, 0);
-
     try {
       this._logger.log("Executing scheduled chat messages deletion...");
+
+      const maxDate = new Date();
+      maxDate.setHours(maxDate.getHours() - Math.abs(maxMessageHours), 0, 0, 0);
 
       const messages: ChatMessage[] = await this._chatMessagesService.getAllByModel({ maxDate });
       this.logMessagesDeleting(messages, maxDate);
@@ -42,13 +43,13 @@ export class ChatMessagesTasksService {
     }
   }
 
-  private logMessagesDeleting(messages: ChatMessage[], maxDate: Date): void {
+  private logMessagesDeleting(messages: ChatMessage[], olderThanDate: Date): void {
     const data: any[] = messages.map((m: ChatMessage) => {
       return { id: m.id, datePosted: m.datePosted };
     });
 
     const logInfo: any = {
-      maxMessagesDate: maxDate.toISOString(),
+      olderThan: olderThanDate.toISOString(),
       messagesCount: messages.length,
       messages: data
     };
