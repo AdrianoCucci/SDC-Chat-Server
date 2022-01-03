@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.interface";
+import { CronExpression } from "@nestjs/schedule";
 
 config();
 const env: NodeJS.ProcessEnv = process.env;
@@ -27,5 +28,11 @@ export default {
     username: env.DB_USERNAME,
     password: env.DB_PASSWORD,
     entities: ["dist/**/*.entity{.ts,.js}"]
+  },
+
+  chatMessageDeleteTask: {
+    enabled: true,
+    schedule: CronExpression.EVERY_WEEK,
+    maxMessageHours: 24 * 7
   }
 };
