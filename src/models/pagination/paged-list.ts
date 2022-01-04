@@ -1,12 +1,24 @@
 import { Paginatable } from "./paginatable";
 import { PaginateMeta } from "./paginate-meta";
 
-export class PagedList<T> {
-  public data: T[];
-  public meta: PaginateMeta;
+export class PagedList<T = any> {
+  public readonly data: T[];
+  public readonly meta: PaginateMeta;
 
-  public constructor(data: T[], pagination: Paginatable, totalItemsCount: number) {
-    this.data = data;
-    this.meta = new PaginateMeta(pagination, data.length, totalItemsCount);
+  public constructor(params: PagedListParams<T>) {
+    this.data = params.data;
+
+    const meta: PaginateMeta | PagedListCreateMeta = params.meta;
+    this.meta = meta instanceof PaginateMeta ? meta : new PaginateMeta(meta.pagination, params.data.length, meta.totalItemsCount);
   }
+}
+
+interface PagedListParams<T = any> {
+  data: T[];
+  meta: PaginateMeta | PagedListCreateMeta;
+}
+
+interface PagedListCreateMeta {
+  pagination: Paginatable;
+  totalItemsCount: number;
 }
