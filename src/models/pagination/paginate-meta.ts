@@ -1,4 +1,5 @@
 import { Paginatable } from "./paginatable";
+import appConfig from "src/app.config";
 
 export class PaginateMeta implements Paginatable {
   public readonly skip?: number;
@@ -15,7 +16,7 @@ export class PaginateMeta implements Paginatable {
 
   public constructor(pagination: Paginatable, itemsCount: number, totalItemsCount: number) {
     this.skip = Math.abs(Number(pagination.skip ?? 0));
-    this.take = Math.abs(Number(pagination.take ?? 100));
+    this.take = Math.abs(Number(pagination.take ?? appConfig.paginationMaxTakeCount));
     this.itemsCount = Math.abs(Number(itemsCount ?? 0));
     this.totalItemsCount = Math.abs(Number(totalItemsCount ?? 0));
 
