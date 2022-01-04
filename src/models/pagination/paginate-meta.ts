@@ -1,31 +1,28 @@
 import { Paginatable } from "./paginatable";
 
 export class PaginateMeta implements Paginatable {
-  public skip?: number;
-  public take?: number;
-  public itemsCount: number;
-  public totalItemsCount: number;
+  public readonly skip?: number;
+  public readonly take?: number;
+
+  public readonly itemsCount: number;
+  public readonly totalItemsCount: number;
+
+  public readonly currentPage: number;
+  public readonly totalPages: number;
+
+  public readonly hasNext: boolean;
+  public readonly hasPrevious: boolean;
 
   public constructor(pagination: Paginatable, itemsCount: number, totalItemsCount: number) {
-    this.skip = pagination.skip;
-    this.take = pagination.take;
-    this.itemsCount = itemsCount;
-    this.totalItemsCount = totalItemsCount;
-  }
+    this.skip = Math.abs(Number(pagination.skip ?? 0));
+    this.take = Math.abs(Number(pagination.take ?? 100));
+    this.itemsCount = Math.abs(Number(itemsCount ?? 0));
+    this.totalItemsCount = Math.abs(Number(totalItemsCount ?? 0));
 
-  public get currentPage(): number {
-    return ((this.skip ?? 0) + (this.take ?? 0)) / this.take ?? 1;
-  }
+    this.currentPage = Math.ceil((this.skip + this.take) / this.take);
+    this.totalPages = Math.ceil(this.totalItemsCount / this.take);
 
-  public get totalPages(): number {
-    return Math.ceil(this.totalItemsCount / (this.take ?? 1));
-  }
-
-  public get hasNext(): boolean {
-    return this.skip > 0 && (this.skip + (this.take ?? 1) < this.totalItemsCount || this.itemsCount < this.totalItemsCount);
-  }
-
-  public get hasPrevious(): boolean {
-    return (this.skip ?? 0) + (this.take ?? 1) < this.totalItemsCount;
+    this.hasNext = this.skip > 0 && (this.skip + this.take < this.totalItemsCount || this.itemsCount < this.totalItemsCount);
+    this.hasPrevious = this.skip + this.take < this.totalItemsCount;
   }
 }
