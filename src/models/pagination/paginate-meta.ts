@@ -1,5 +1,5 @@
 import { Paginatable } from "./paginatable";
-import appConfig from "src/app.config";
+import { PagedOptions } from "./paged-options";
 
 export class PaginateMeta implements Paginatable {
   public readonly skip?: number;
@@ -15,8 +15,10 @@ export class PaginateMeta implements Paginatable {
   public readonly hasPrevious: boolean;
 
   public constructor(pagination: Paginatable, itemsCount: number, totalItemsCount: number) {
-    this.skip = Math.abs(Number(pagination.skip ?? 0));
-    this.take = Math.abs(Number(pagination.take ?? appConfig.paginationMaxTakeCount));
+    const pagedDefaults = PagedOptions.default;
+
+    this.skip = Math.abs(Number(pagination.skip ?? pagedDefaults.skip));
+    this.take = Math.abs(Number(pagination.take ?? pagedDefaults.take));
     this.itemsCount = Math.abs(Number(itemsCount ?? 0));
     this.totalItemsCount = Math.abs(Number(totalItemsCount ?? 0));
 
