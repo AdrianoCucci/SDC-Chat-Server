@@ -1,10 +1,14 @@
 import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Query, Param, ParseIntPipe, Post, Body, BadRequestException, Put, ForbiddenException, Delete, HttpCode, HttpStatus, NotFoundException } from "@nestjs/common";
 import { RequestUser } from "src/decorators/request-user.decorator";
 import { Role } from "src/models/auth/role";
+import { PagedList } from "src/models/pagination/paged-list";
+import { PagedModel } from "src/models/pagination/paged-model";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
+import { catchEntityColumnNotFound } from "src/utils/controller-utils";
 import { DeepPartial } from "typeorm";
 import { UserDto } from "../users/dtos/user.dto";
+import { User } from "../users/entities/user.entity";
 import { UsersService } from "../users/users.service";
 import { ChatMessagesService } from "./chat-messages.service";
 import { ChatMessageQueryDto } from "./dtos/chat-message-query.dto";
@@ -13,21 +17,28 @@ import { PartialChatMessageDto } from "./dtos/partial-chat-message.dto";
 import { ChatMessage } from "./entities/chat-message.entity";
 
 @Controller("chat-messages")
-@UseGuards(AuthorizeGuard)
+// @UseGuards(AuthorizeGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class ChatMessagesController {
   constructor(private _messagesService: ChatMessagesService, private _usersService: UsersService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllMessages(@Query() model?: DeepPartial<ChatMessageQueryDto>): Promise<ChatMessageDto[]> {
-    const messages: ChatMessage[] = await this._messagesService.getAllByModel(model);
+  public async getAllMessages(@Query() model?: PagedModel<ChatMessageQueryDto>): Promise<PagedList<ChatMessageDto>> {
+    const { skip, take, include: relations, ...rest } = model;
 
-    for(let i = 0; i < messages.length; i++) {
-      messages[i].senderUser = await this._usersService.getOneById(messages[i].senderUserId);
-    }
+    const result: PagedList<ChatMessageDto> = await catchEntityColumnNotFound(async () => {
+      const messages: PagedList<ChatMessage> = await this._messagesService.getAllPaged({
+        where: rest,
+        skip,
+        take,
+        relations: relations?.split(",")
+      });
 
-    const dtos: ChatMessageDto[] = this._mapper.chatMessages.mapDtos(messages);
-    return dtos;
+      const dtos: ChatMessageDto[] = this._mapper.chatMessages.mapDtos(messages.data);
+      return new PagedList<ChatMessageDto>({ data: dtos, meta: messages.pagination });
+    });
+
+    return result;
   }
 
   @Get(":id")

@@ -1,8 +1,11 @@
-import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Param, ParseIntPipe, Post, Body, Put, Delete, HttpCode, HttpStatus, NotFoundException } from "@nestjs/common";
+import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Param, ParseIntPipe, Post, Body, Put, Delete, HttpCode, HttpStatus, NotFoundException, Query } from "@nestjs/common";
 import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/models/auth/role";
+import { PagedList } from "src/models/pagination/paged-list";
+import { PagedModel } from "src/models/pagination/paged-model";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
+import { catchEntityColumnNotFound } from "src/utils/controller-utils";
 import { OrganizationDto } from "./dtos/organization.dto";
 import { PartialOrganizationDto } from "./dtos/partial-organization.dto";
 import { Organization } from "./entities/organization.entity";
@@ -15,11 +18,17 @@ export class OrganizationsController {
   constructor(private _orgsService: OrganizationsService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllOrganizations(): Promise<OrganizationDto[]> {
-    const entities: Organization[] = await this._orgsService.getAll();
-    const dtos: OrganizationDto[] = this._mapper.organizations.mapDtos(entities);
+  public async getAllOrganizations(@Query() model?: PagedModel<PartialOrganizationDto>): Promise<PagedList<OrganizationDto>> {
+    const { skip, take, ...rest } = model;
 
-    return dtos;
+    const result: PagedList<OrganizationDto> = await catchEntityColumnNotFound(async () => {
+      const organizations: PagedList<Organization> = await this._orgsService.getAllPaged({ where: rest, skip, take });
+      const dtos: OrganizationDto[] = this._mapper.organizations.mapDtos(organizations.data);
+
+      return new PagedList<OrganizationDto>({ data: dtos, meta: organizations.pagination });
+    });
+
+    return result;
   }
 
   @Get(":id")

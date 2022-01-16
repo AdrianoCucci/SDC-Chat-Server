@@ -2,9 +2,11 @@ import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get
 import { RequestUser } from "src/decorators/request-user.decorator";
 import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/models/auth/role";
+import { PagedList } from "src/models/pagination/paged-list";
+import { PagedModel } from "src/models/pagination/paged-model";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
-import { DeepPartial } from "typeorm";
+import { catchEntityColumnNotFound } from "src/utils/controller-utils";
 import { OrganizationsService } from "../organizations/organizations.service";
 import { UserDto } from "../users/dtos/user.dto";
 import { PartialRoomDto } from "./dtos/partial-room.dto";
@@ -19,11 +21,17 @@ export class RoomsController {
   constructor(private _roomsService: RoomsService, private _orgsService: OrganizationsService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllRooms(@Query() model?: DeepPartial<RoomDto>): Promise<RoomDto[]> {
-    const rooms: Room[] = await this._roomsService.getAllByModel(model);
-    const dtos: RoomDto[] = this._mapper.rooms.mapDtos(rooms);
+  public async getAllRooms(@Query() model?: PagedModel<PartialRoomDto>): Promise<PagedList<RoomDto>> {
+    const { skip, take, ...rest } = model;
 
-    return dtos;
+    const result: PagedList<RoomDto> = await catchEntityColumnNotFound(async () => {
+      const rooms: PagedList<Room> = await this._roomsService.getAllPaged({ where: rest, skip, take });
+      const dtos: RoomDto[] = this._mapper.rooms.mapDtos(rooms.data);
+
+      return new PagedList<RoomDto>({ data: dtos, meta: rooms.pagination });
+    });
+
+    return result;
   }
 
   @Get(":id")

@@ -10,4 +10,7 @@ export class ChatMessageQueryDto extends PartialType(ChatMessageDto) {
   @IsDateString()
   @IsOptional()
   public maxDate?: Date | string;
+
+  @IsOptional()
+  public include?: string;
 }

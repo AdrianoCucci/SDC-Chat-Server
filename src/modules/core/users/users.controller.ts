@@ -2,10 +2,12 @@ import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get
 import { RequestUser } from "src/decorators/request-user.decorator";
 import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/models/auth/role";
+import { PagedList } from "src/models/pagination/paged-list";
+import { PagedModel } from "src/models/pagination/paged-model";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
+import { catchEntityColumnNotFound } from "src/utils/controller-utils";
 import { generateUserSecret } from "src/utils/hash-utils";
-import { DeepPartial } from "typeorm";
 import { OrganizationsService } from "../organizations/organizations.service";
 import { UserSecret } from "../user-secrets/entities/user-secret.entity";
 import { UserSecretsService } from "../user-secrets/user-secrets.service";
@@ -26,11 +28,17 @@ export class UsersController {
   ) { }
 
   @Get()
-  public async getAllUsers(@Query() model?: DeepPartial<UserDto>): Promise<UserDto[]> {
-    const users: User[] = await this._usersService.getAllByModel(model);
-    const dtos: UserDto[] = this._mapper.users.mapDtos(users);
+  public async getAllUsers(@Query() model?: PagedModel<PartialUserDto>): Promise<PagedList<UserDto>> {
+    const { skip, take, ...rest } = model;
 
-    return dtos;
+    const result: PagedList<UserDto> = await catchEntityColumnNotFound(async () => {
+      const users: PagedList<User> = await this._usersService.getAllPaged({ where: rest, skip, take });
+      const dtos: UserDto[] = this._mapper.users.mapDtos(users.data);
+
+      return new PagedList<UserDto>({ data: dtos, meta: users.pagination });
+    });
+
+    return result;
   }
 
   @Get(":id")

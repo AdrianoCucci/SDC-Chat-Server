@@ -1,9 +1,9 @@
 import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
 import { EntityColumnNotFound } from "typeorm";
 
-export const catchEntityColumnNotFound = async (action: () => any): Promise<void> => {
+export const catchEntityColumnNotFound = async (action: () => any): Promise<any> => {
   try {
-    await action();
+    return await action();
   }
   catch(error) {
     if(error instanceof EntityColumnNotFound) {
