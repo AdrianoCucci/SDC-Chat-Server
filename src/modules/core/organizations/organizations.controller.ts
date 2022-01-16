@@ -3,7 +3,7 @@ import { Includes } from "src/decorators/includes.decorator";
 import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/models/auth/role";
 import { PagedList } from "src/models/pagination/paged-list";
-import { PagedModel } from "src/models/pagination/paged-model";
+import { Paged } from "src/models/pagination/paged.type";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
 import { catchEntityColumnNotFound } from "src/utils/controller-utils";
@@ -20,7 +20,7 @@ export class OrganizationsController {
   constructor(private _orgsService: OrganizationsService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllOrganizations(@Query() model?: PagedModel<OrganizationQueryDto>, @Includes() includes?: string[]): Promise<PagedList<OrganizationDto>> {
+  public async getAllOrganizations(@Query() model?: Paged<OrganizationQueryDto>, @Includes() includes?: string[]): Promise<PagedList<OrganizationDto>> {
     const { skip, take, include, ...rest } = model;
 
     const result: PagedList<OrganizationDto> = await catchEntityColumnNotFound(async () => {

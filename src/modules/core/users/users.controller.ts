@@ -4,7 +4,7 @@ import { RequestUser } from "src/decorators/request-user.decorator";
 import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/models/auth/role";
 import { PagedList } from "src/models/pagination/paged-list";
-import { PagedModel } from "src/models/pagination/paged-model";
+import { Paged } from "src/models/pagination/paged.type";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
 import { catchEntityColumnNotFound } from "src/utils/controller-utils";
@@ -30,7 +30,7 @@ export class UsersController {
   ) { }
 
   @Get()
-  public async getAllUsers(@Query() model?: PagedModel<UserQueryDto>, @Includes() includes?: string[]): Promise<PagedList<UserDto>> {
+  public async getAllUsers(@Query() model?: Paged<UserQueryDto>, @Includes() includes?: string[]): Promise<PagedList<UserDto>> {
     const { skip, take, include, ...rest } = model;
 
     const result: PagedList<UserDto> = await catchEntityColumnNotFound(async () => {

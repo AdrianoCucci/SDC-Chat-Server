@@ -3,7 +3,7 @@ import { Includes } from "src/decorators/includes.decorator";
 import { RequestUser } from "src/decorators/request-user.decorator";
 import { Role } from "src/models/auth/role";
 import { PagedList } from "src/models/pagination/paged-list";
-import { PagedModel } from "src/models/pagination/paged-model";
+import { Paged } from "src/models/pagination/paged.type";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
 import { catchEntityColumnNotFound } from "src/utils/controller-utils";
@@ -23,7 +23,7 @@ export class ChatMessagesController {
   constructor(private _messagesService: ChatMessagesService, private _usersService: UsersService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllMessages(@Query() model?: PagedModel<ChatMessageQueryDto>, @Includes() includes?: string[]): Promise<PagedList<ChatMessageDto>> {
+  public async getAllMessages(@Query() model?: Paged<ChatMessageQueryDto>, @Includes() includes?: string[]): Promise<PagedList<ChatMessageDto>> {
     const { skip, take, include, ...rest } = model;
 
     const result: PagedList<ChatMessageDto> = await catchEntityColumnNotFound(async () => {
@@ -42,7 +42,7 @@ export class ChatMessagesController {
   }
 
   @Get("before")
-  public async getMessagesBeforeDate(@Query() model?: PagedModel<ChatMessageQueryDto>, @Includes() includes?: string[]): Promise<ChatMessageDto[]> {
+  public async getMessagesBeforeDate(@Query() model?: Paged<ChatMessageQueryDto>, @Includes() includes?: string[]): Promise<ChatMessageDto[]> {
     const { include, skip, take, ...rest } = model;
 
     if(!model?.datePosted) {
