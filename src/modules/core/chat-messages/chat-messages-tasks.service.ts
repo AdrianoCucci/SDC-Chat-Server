@@ -5,7 +5,6 @@ import { ChatMessage } from "./entities/chat-message.entity";
 import { CronJob } from "cron";
 
 import appConfig from "src/app.config";
-import { LessThan } from "typeorm";
 
 @Injectable()
 export class ChatMessagesTasksService {
