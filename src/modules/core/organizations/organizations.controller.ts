@@ -1,4 +1,5 @@
 import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Param, ParseIntPipe, Post, Body, Put, Delete, HttpCode, HttpStatus, NotFoundException, Query } from "@nestjs/common";
+import { Includes } from "src/decorators/includes.decorator";
 import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/models/auth/role";
 import { PagedList } from "src/models/pagination/paged-list";
@@ -6,25 +7,31 @@ import { PagedModel } from "src/models/pagination/paged-model";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
 import { catchEntityColumnNotFound } from "src/utils/controller-utils";
+import { OrganizationQueryDto } from "./dtos/organization-query.dto";
 import { OrganizationDto } from "./dtos/organization.dto";
 import { PartialOrganizationDto } from "./dtos/partial-organization.dto";
 import { Organization } from "./entities/organization.entity";
 import { OrganizationsService } from "./organizations.service";
 
 @Controller("organizations")
-@UseGuards(AuthorizeGuard)
+// @UseGuards(AuthorizeGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class OrganizationsController {
   constructor(private _orgsService: OrganizationsService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllOrganizations(@Query() model?: PagedModel<PartialOrganizationDto>): Promise<PagedList<OrganizationDto>> {
-    const { skip, take, ...rest } = model;
+  public async getAllOrganizations(@Query() model?: PagedModel<OrganizationQueryDto>, @Includes() includes?: string[]): Promise<PagedList<OrganizationDto>> {
+    const { skip, take, include, ...rest } = model;
 
     const result: PagedList<OrganizationDto> = await catchEntityColumnNotFound(async () => {
-      const organizations: PagedList<Organization> = await this._orgsService.getAllPaged({ where: rest, skip, take });
-      const dtos: OrganizationDto[] = this._mapper.organizations.mapDtos(organizations.data);
+      const organizations: PagedList<Organization> = await this._orgsService.getAllPaged({
+        where: rest,
+        skip,
+        take,
+        relations: includes
+      });
 
+      const dtos: OrganizationDto[] = this._mapper.organizations.mapDtos(organizations.data);
       return new PagedList<OrganizationDto>({ data: dtos, meta: organizations.pagination });
     });
 
@@ -32,8 +39,8 @@ export class OrganizationsController {
   }
 
   @Get(":id")
-  public async getOrganizationById(@Param("id", ParseIntPipe) id: number): Promise<OrganizationDto> {
-    const entity: Organization = await this.tryGetOrganizationById(id);
+  public async getOrganizationById(@Param("id", ParseIntPipe) id: number, @Includes() includes?: string[]): Promise<OrganizationDto> {
+    const entity: Organization = await this.tryGetOrganizationById(id, includes);
     const dto: OrganizationDto = this._mapper.organizations.mapDto(entity);
 
     return dto;
@@ -69,8 +76,8 @@ export class OrganizationsController {
     await this._orgsService.delete(entity);
   }
 
-  private async tryGetOrganizationById(id: number): Promise<Organization> {
-    const organization: Organization = await this._orgsService.getOneById(id);
+  private async tryGetOrganizationById(id: number, includes?: string[]): Promise<Organization> {
+    const organization: Organization = await this._orgsService.getOneById(id, { relations: includes });
 
     if(organization == null) {
       throw new NotFoundException(`Organization ID does not exist: ${id}`);

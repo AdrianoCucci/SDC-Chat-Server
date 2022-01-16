@@ -1,4 +1,5 @@
 import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Query, Param, ParseIntPipe, Post, Body, Put, Delete, HttpCode, HttpStatus, ForbiddenException, NotFoundException, BadRequestException } from "@nestjs/common";
+import { Includes } from "src/decorators/includes.decorator";
 import { RequestUser } from "src/decorators/request-user.decorator";
 import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/models/auth/role";
@@ -12,12 +13,13 @@ import { OrganizationsService } from "../organizations/organizations.service";
 import { UserSecret } from "../user-secrets/entities/user-secret.entity";
 import { UserSecretsService } from "../user-secrets/user-secrets.service";
 import { PartialUserDto } from "./dtos/partial-user.dto";
+import { UserQueryDto } from "./dtos/user-query.dto";
 import { UserDto } from "./dtos/user.dto";
 import { User } from "./entities/user.entity";
 import { UsersService } from "./users.service";
 
 @Controller("users")
-@UseGuards(AuthorizeGuard)
+// @UseGuards(AuthorizeGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(
@@ -28,13 +30,18 @@ export class UsersController {
   ) { }
 
   @Get()
-  public async getAllUsers(@Query() model?: PagedModel<PartialUserDto>): Promise<PagedList<UserDto>> {
-    const { skip, take, ...rest } = model;
+  public async getAllUsers(@Query() model?: PagedModel<UserQueryDto>, @Includes() includes?: string[]): Promise<PagedList<UserDto>> {
+    const { skip, take, include, ...rest } = model;
 
     const result: PagedList<UserDto> = await catchEntityColumnNotFound(async () => {
-      const users: PagedList<User> = await this._usersService.getAllPaged({ where: rest, skip, take });
-      const dtos: UserDto[] = this._mapper.users.mapDtos(users.data);
+      const users: PagedList<User> = await this._usersService.getAllPaged({
+        where: rest,
+        skip,
+        take,
+        relations: includes
+      });
 
+      const dtos: UserDto[] = this._mapper.users.mapDtos(users.data);
       return new PagedList<UserDto>({ data: dtos, meta: users.pagination });
     });
 
@@ -42,8 +49,8 @@ export class UsersController {
   }
 
   @Get(":id")
-  public async getUserById(@Param("id", ParseIntPipe) id: number): Promise<UserDto> {
-    const user: User = await this.tryGetUserById(id);
+  public async getUserById(@Param("id", ParseIntPipe) id: number, @Includes() includes?: string[]): Promise<UserDto> {
+    const user: User = await this.tryGetUserById(id, includes);
     const dto: UserDto = this._mapper.users.mapDto(user);
 
     return dto;
@@ -98,8 +105,8 @@ export class UsersController {
     await this._usersService.delete(entity);
   }
 
-  private async tryGetUserById(id: number): Promise<User> {
-    const user: User = await this._usersService.getOneById(id);
+  private async tryGetUserById(id: number, includes?: string[]): Promise<User> {
+    const user: User = await this._usersService.getOneById(id, { relations: includes });
 
     if(user == null) {
       throw new NotFoundException(`User ID does not exist: ${id}`);

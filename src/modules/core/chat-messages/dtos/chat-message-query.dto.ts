@@ -1,8 +1,8 @@
-import { PartialType } from "@nestjs/mapped-types";
 import { IsDateString, IsOptional } from "class-validator";
-import { ChatMessageDto } from "./chat-message.dto";
+import { Includable } from "src/models/includable";
+import { PartialChatMessageDto } from "./partial-chat-message.dto";
 
-export class ChatMessageQueryDto extends PartialType(ChatMessageDto) {
+export class ChatMessageQueryDto extends PartialChatMessageDto implements Includable {
   @IsDateString()
   @IsOptional()
   public minDate?: Date | string;

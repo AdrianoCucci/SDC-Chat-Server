@@ -1,4 +1,5 @@
 import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Query, Param, ParseIntPipe, Post, Body, BadRequestException, Put, ForbiddenException, Delete, HttpCode, HttpStatus, NotFoundException } from "@nestjs/common";
+import { Includes } from "src/decorators/includes.decorator";
 import { RequestUser } from "src/decorators/request-user.decorator";
 import { Role } from "src/models/auth/role";
 import { PagedList } from "src/models/pagination/paged-list";
@@ -6,9 +7,7 @@ import { PagedModel } from "src/models/pagination/paged-model";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
 import { catchEntityColumnNotFound } from "src/utils/controller-utils";
-import { DeepPartial } from "typeorm";
 import { UserDto } from "../users/dtos/user.dto";
-import { User } from "../users/entities/user.entity";
 import { UsersService } from "../users/users.service";
 import { ChatMessagesService } from "./chat-messages.service";
 import { ChatMessageQueryDto } from "./dtos/chat-message-query.dto";
@@ -17,21 +16,21 @@ import { PartialChatMessageDto } from "./dtos/partial-chat-message.dto";
 import { ChatMessage } from "./entities/chat-message.entity";
 
 @Controller("chat-messages")
-// @UseGuards(AuthorizeGuard)
+@UseGuards(AuthorizeGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class ChatMessagesController {
   constructor(private _messagesService: ChatMessagesService, private _usersService: UsersService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllMessages(@Query() model?: PagedModel<ChatMessageQueryDto>): Promise<PagedList<ChatMessageDto>> {
-    const { skip, take, include: relations, ...rest } = model;
+  public async getAllMessages(@Query() model?: PagedModel<ChatMessageQueryDto>, @Includes() includes?: string[]): Promise<PagedList<ChatMessageDto>> {
+    const { skip, take, include, ...rest } = model;
 
     const result: PagedList<ChatMessageDto> = await catchEntityColumnNotFound(async () => {
       const messages: PagedList<ChatMessage> = await this._messagesService.getAllPaged({
         where: rest,
         skip,
         take,
-        relations: relations?.split(",")
+        relations: includes
       });
 
       const dtos: ChatMessageDto[] = this._mapper.chatMessages.mapDtos(messages.data);
@@ -42,8 +41,8 @@ export class ChatMessagesController {
   }
 
   @Get(":id")
-  public async getMessage(@Param("id", ParseIntPipe) id: number): Promise<ChatMessageDto> {
-    const message: ChatMessage = await this.tryGetMessageById(id);
+  public async getMessage(@Param("id", ParseIntPipe) id: number, @Includes() includes?: string[]): Promise<ChatMessageDto> {
+    const message: ChatMessage = await this.tryGetMessageById(id, includes);
     const dto: ChatMessageDto = this._mapper.chatMessages.mapDto(message);
 
     return dto;
@@ -92,8 +91,8 @@ export class ChatMessagesController {
     await this._messagesService.delete(message);
   }
 
-  private async tryGetMessageById(id: number): Promise<ChatMessage> {
-    const message: ChatMessage = await this._messagesService.getOneById(id);
+  private async tryGetMessageById(id: number, includes?: string[]): Promise<ChatMessage> {
+    const message: ChatMessage = await this._messagesService.getOneById(id, { relations: includes });
 
     if(message == null) {
       throw new NotFoundException(`Chat Message ID does not exist: ${id}`);
