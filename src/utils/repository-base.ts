@@ -1,3 +1,4 @@
+import { PagedList } from "src/models/pagination/paged-list";
 import { DeepPartial, FindManyOptions, FindOneOptions, ObjectID, Repository } from "typeorm";
 
 export abstract class RepositoryBase<T> {
@@ -13,6 +14,19 @@ export abstract class RepositoryBase<T> {
 
   public getAllByModel(model: DeepPartial<T>): Promise<T[]> {
     return model != null ? this.getAll(this.onGettingByModel(model)) : this.getAll();
+  }
+
+  public async getAllPaged(options?: FindManyOptions<T>): Promise<PagedList<T>> {
+    const data: [T[], number] = await this._repository.findAndCount({
+      ...options,
+      skip: options?.skip ? Math.abs(options.skip) : null,
+      take: options?.take ? Math.abs(options.take) : null
+    });
+
+    return new PagedList<T>({
+      data: data[0],
+      meta: { pagination: options, totalItemsCount: data[1] }
+    });
   }
 
   public getOne(options?: FindOneOptions<T>): Promise<T> {
