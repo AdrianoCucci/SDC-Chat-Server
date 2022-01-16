@@ -7,6 +7,7 @@ import { PagedModel } from "src/models/pagination/paged-model";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
 import { catchEntityColumnNotFound } from "src/utils/controller-utils";
+import { LessThan } from "typeorm";
 import { UserDto } from "../users/dtos/user.dto";
 import { UsersService } from "../users/users.service";
 import { ChatMessagesService } from "./chat-messages.service";
@@ -35,6 +36,29 @@ export class ChatMessagesController {
 
       const dtos: ChatMessageDto[] = this._mapper.chatMessages.mapDtos(messages.data);
       return new PagedList<ChatMessageDto>({ data: dtos, meta: messages.pagination });
+    });
+
+    return result;
+  }
+
+  @Get("before")
+  public async getMessagesBeforeDate(@Query() model?: PagedModel<ChatMessageQueryDto>, @Includes() includes?: string[]): Promise<ChatMessageDto[]> {
+    const { include, skip, take, ...rest } = model;
+
+    if(!model?.datePosted) {
+      throw new BadRequestException("'datePosted' query parameter is required");
+    }
+
+    const result: ChatMessageDto[] = await catchEntityColumnNotFound(async () => {
+      const messages: ChatMessage[] = await this._messagesService.getAll({
+        where: { ...rest, datePosted: LessThan(model.datePosted) },
+        take: take,
+        order: { datePosted: "DESC" },
+        relations: includes
+      });
+
+      const dtos: ChatMessageDto[] = this._mapper.chatMessages.mapDtos(messages);
+      return dtos;
     });
 
     return result;
