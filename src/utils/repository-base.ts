@@ -13,7 +13,7 @@ export abstract class RepositoryBase<T> {
   }
 
   public getAllByModel(model: DeepPartial<T>): Promise<T[]> {
-    return model != null ? this.getAll(this.onGettingByModel(model)) : this.getAll();
+    return model != null ? this.getAll({ where: model }) : this.getAll();
   }
 
   public async getAllPaged(options?: FindManyOptions<T>): Promise<PagedList<T>> {
@@ -38,7 +38,7 @@ export abstract class RepositoryBase<T> {
   }
 
   public getOneByModel(model: DeepPartial<T>): Promise<T> {
-    return model != null ? this.getOne(this.onGettingByModel(model)) : this.getOne();
+    return model != null ? this.getOne({ where: model }) : this.getOne();
   }
 
   public async hasAnyWithId(id: EntityID): Promise<boolean> {
@@ -75,10 +75,6 @@ export abstract class RepositoryBase<T> {
 
   public deleteMany(entities: T[]): Promise<T[]> {
     return this._repository.remove(entities);
-  }
-
-  protected onGettingByModel(model: DeepPartial<T>): FindOneOptions<T> | FindManyOptions<T> {
-    return { where: model };
   }
 }
 
