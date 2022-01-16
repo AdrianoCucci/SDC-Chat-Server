@@ -66,7 +66,6 @@ export class MapperService {
 
   public readonly chatMessages = new EntityDtoMap<ChatMessage, ChatMessageDto>({
     mapEntity: (dto: Partial<ChatMessageDto>, target?: ChatMessage): ChatMessage => Object.assign(target ?? new ChatMessage(), dto),
-
     mapDto: (entity: ChatMessage): ChatMessageDto => {
       const dto: ChatMessageDto = Object.assign(new ChatMessageDto(), entity);
 
