@@ -10,7 +10,7 @@ export const catchEntityColumnNotFound = async (action: () => any): Promise<any>
       throw new BadRequestException(error.message);
     }
     else {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message ?? "An unhandled error occurred");
     }
   }
 }
