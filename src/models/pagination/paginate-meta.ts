@@ -25,7 +25,7 @@ export class PaginateMeta implements Paginatable {
     this.currentPage = Math.ceil((this.skip + this.take) / this.take);
     this.totalPages = Math.ceil(this.totalItemsCount / this.take);
 
-    this.hasNext = this.skip > 0 && (this.skip + this.take < this.totalItemsCount || this.itemsCount < this.totalItemsCount);
-    this.hasPrevious = this.skip + this.take < this.totalItemsCount;
+    this.hasNext = this.skip + this.take < this.totalItemsCount;
+    this.hasPrevious = this.skip > 0 && (this.skip + this.take < this.totalItemsCount || this.itemsCount < this.totalItemsCount);
   }
 }
