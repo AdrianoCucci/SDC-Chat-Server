@@ -3,6 +3,7 @@ import { Includes } from "src/decorators/includes.decorator";
 import { RequestUser } from "src/decorators/request-user.decorator";
 import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/models/auth/role";
+import { Includable } from "src/models/includable.type";
 import { PagedList } from "src/models/pagination/paged-list";
 import { Paged } from "src/models/pagination/paged.type";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
@@ -13,13 +14,12 @@ import { OrganizationsService } from "../organizations/organizations.service";
 import { UserSecret } from "../user-secrets/entities/user-secret.entity";
 import { UserSecretsService } from "../user-secrets/user-secrets.service";
 import { PartialUserDto } from "./dtos/partial-user.dto";
-import { UserQueryDto } from "./dtos/user-query.dto";
 import { UserDto } from "./dtos/user.dto";
 import { User } from "./entities/user.entity";
 import { UsersService } from "./users.service";
 
 @Controller("users")
-// @UseGuards(AuthorizeGuard)
+@UseGuards(AuthorizeGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(
@@ -30,7 +30,7 @@ export class UsersController {
   ) { }
 
   @Get()
-  public async getAllUsers(@Query() model?: Paged<UserQueryDto>, @Includes() includes?: string[]): Promise<PagedList<UserDto>> {
+  public async getAllUsers(@Query() model?: Paged<Includable<UserDto>>, @Includes() includes?: string[]): Promise<PagedList<UserDto>> {
     const { skip, take, include, ...rest } = model;
 
     const result: PagedList<UserDto> = await catchEntityColumnNotFound(async () => {

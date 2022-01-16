@@ -2,6 +2,7 @@ import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get
 import { Includes } from "src/decorators/includes.decorator";
 import { RequestUser } from "src/decorators/request-user.decorator";
 import { Role } from "src/models/auth/role";
+import { Includable } from "src/models/includable.type";
 import { PagedList } from "src/models/pagination/paged-list";
 import { Paged } from "src/models/pagination/paged.type";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
@@ -11,7 +12,6 @@ import { LessThan } from "typeorm";
 import { UserDto } from "../users/dtos/user.dto";
 import { UsersService } from "../users/users.service";
 import { ChatMessagesService } from "./chat-messages.service";
-import { ChatMessageQueryDto } from "./dtos/chat-message-query.dto";
 import { ChatMessageDto } from "./dtos/chat-message.dto";
 import { PartialChatMessageDto } from "./dtos/partial-chat-message.dto";
 import { ChatMessage } from "./entities/chat-message.entity";
@@ -23,7 +23,7 @@ export class ChatMessagesController {
   constructor(private _messagesService: ChatMessagesService, private _usersService: UsersService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllMessages(@Query() model?: Paged<ChatMessageQueryDto>, @Includes() includes?: string[]): Promise<PagedList<ChatMessageDto>> {
+  public async getAllMessages(@Query() model?: Paged<Includable<ChatMessageDto>>, @Includes() includes?: string[]): Promise<PagedList<ChatMessageDto>> {
     const { skip, take, include, ...rest } = model;
 
     const result: PagedList<ChatMessageDto> = await catchEntityColumnNotFound(async () => {
@@ -42,7 +42,7 @@ export class ChatMessagesController {
   }
 
   @Get("before")
-  public async getMessagesBeforeDate(@Query() model?: Paged<ChatMessageQueryDto>, @Includes() includes?: string[]): Promise<ChatMessageDto[]> {
+  public async getMessagesBeforeDate(@Query() model?: Paged<Includable<ChatMessageDto>>, @Includes() includes?: string[]): Promise<ChatMessageDto[]> {
     const { include, skip, take, ...rest } = model;
 
     if(!model?.datePosted) {
