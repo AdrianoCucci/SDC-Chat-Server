@@ -1,3 +1,3 @@
 import { Paginatable } from "./paginatable";
 
-export type PagedModel<T> = { [p in keyof T]; } & Paginatable;
+export type PagedModel<T> = { [P in keyof T]?: T[P]; } & Paginatable;
