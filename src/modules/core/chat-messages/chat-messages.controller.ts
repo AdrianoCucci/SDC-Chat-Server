@@ -51,7 +51,7 @@ export class ChatMessagesController {
 
     const result: ChatMessageDto[] = await catchEntityColumnNotFound(async () => {
       const messages: ChatMessage[] = await this._messagesService.getAll({
-        where: { ...rest, datePosted: LessThan(model.datePosted) },
+        where: { ...rest, datePosted: LessThan(new Date(model.datePosted).toISOString()) },
         take: take,
         order: { datePosted: "DESC" },
         relations: includes
