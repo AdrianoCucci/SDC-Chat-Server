@@ -61,13 +61,13 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
   }
 
   @SubscribeMessage(SOCKET_EVENTS.message)
-  public onMessage(socket: Socket, payload: ChatMessageDto): void {
-    this._liveChatService.onMessage(socket, payload);
+  public async onMessage(socket: Socket, payload: ChatMessageDto): Promise<ChatMessageDto> {
+    return await this._liveChatService.onMessage(socket, payload);
   }
 
   @SubscribeMessage(SOCKET_EVENTS.messageEdit)
-  public onMessageEdit(socket: Socket, payload: ChatMessageDto): void {
-    this._liveChatService.onMessageEdit(socket, payload);
+  public async onMessageEdit(socket: Socket, payload: ChatMessageDto): Promise<ChatMessageDto> {
+    return await this._liveChatService.onMessageEdit(socket, payload);
   }
 
   @SubscribeMessage(SOCKET_EVENTS.messageDelete)
