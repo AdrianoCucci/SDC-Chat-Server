@@ -1,8 +1,7 @@
 import { Role } from "src/models/auth/role";
-import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ChatMessage } from "../../chat-messages/entities/chat-message.entity";
 import { Organization } from "../../organizations/entities/organization.entity";
-import { UserSecret } from "../../user-secrets/entities/user-secret.entity";
 
 @Entity({ name: "Users" })
 export class User {
@@ -24,17 +23,12 @@ export class User {
   @Column()
   public isOnline: boolean = false;
 
-  @Column()
-  public userSecretId: number;
-
   @Column({ nullable: true })
   public organizationId?: number;
 
 
-  @OneToOne(() => UserSecret, entity => entity.user)
-  public userSecret?: UserSecret;
-
   @ManyToOne(() => Organization, entity => entity.users)
+  @JoinColumn()
   public organization?: Organization;
 
   @OneToMany(() => ChatMessage, entity => entity.senderUser)
