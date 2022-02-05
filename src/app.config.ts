@@ -22,13 +22,15 @@ export default {
   },
 
   typeOrm: <TypeOrmModuleOptions>{
-    type: "postgres",
+    type: "mssql",
     host: env.DB_HOST,
     port: Number(env.DB_PORT),
     database: env.DB_NAME,
     username: env.DB_USERNAME,
     password: env.DB_PASSWORD,
-    entities: ["dist/**/*.entity{.ts,.js}"]
+    entities: ["dist/**/*.entity{.ts,.js}"],
+    options: { trustServerCertificate: true },
+    synchronize: true
   },
 
   chatMessageDeleteTask: {

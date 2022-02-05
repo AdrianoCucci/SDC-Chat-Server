@@ -9,7 +9,7 @@ export class User {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Column({ type: "enum", enum: Role })
+  @Column({ enum: Role })
   public role: Role = Role.User;
 
   @Column()
@@ -27,7 +27,7 @@ export class User {
   @Column()
   public userSecretId: number;
 
-  @Column({ type: "bigint", nullable: true })
+  @Column({ nullable: true })
   public organizationId?: number;
 
 
