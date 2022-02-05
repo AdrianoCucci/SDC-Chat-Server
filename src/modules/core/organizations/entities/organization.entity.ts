@@ -33,13 +33,13 @@ export class Organization {
   public postalCode?: string;
 
 
-  @OneToMany(() => User, entity => entity.organizationId)
+  @OneToMany(() => User, entity => entity.organization)
   public users?: User[];
 
-  @OneToMany(() => Room, entity => entity.organizationId)
+  @OneToMany(() => Room, entity => entity.organization)
   public rooms?: Room[];
 
-  @OneToMany(() => ChatMessage, entity => entity.organizationId)
+  @OneToMany(() => ChatMessage, entity => entity.organization)
   public chatMessages?: ChatMessage[];
 
   public constructor(values?: Partial<Organization>) {

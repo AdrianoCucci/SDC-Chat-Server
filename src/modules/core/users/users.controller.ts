@@ -1,11 +1,15 @@
 import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Query, Param, ParseIntPipe, Post, Body, Put, Delete, HttpCode, HttpStatus, ForbiddenException, NotFoundException, BadRequestException } from "@nestjs/common";
+import { Includes } from "src/decorators/includes.decorator";
 import { RequestUser } from "src/decorators/request-user.decorator";
 import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/models/auth/role";
+import { Includable } from "src/models/includable.type";
+import { PagedList } from "src/models/pagination/paged-list";
+import { Paged } from "src/models/pagination/paged.type";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
+import { catchEntityColumnNotFound } from "src/utils/controller-utils";
 import { generateUserSecret } from "src/utils/hash-utils";
-import { DeepPartial } from "typeorm";
 import { OrganizationsService } from "../organizations/organizations.service";
 import { UserSecret } from "../user-secrets/entities/user-secret.entity";
 import { UserSecretsService } from "../user-secrets/user-secrets.service";
@@ -26,16 +30,27 @@ export class UsersController {
   ) { }
 
   @Get()
-  public async getAllUsers(@Query() model?: DeepPartial<UserDto>): Promise<UserDto[]> {
-    const users: User[] = await this._usersService.getAllByModel(model);
-    const dtos: UserDto[] = this._mapper.users.mapDtos(users);
+  public async getAllUsers(@Query() model?: Paged<Includable<UserDto>>, @Includes() includes?: string[]): Promise<PagedList<UserDto>> {
+    const { skip, take, include, ...rest } = model;
 
-    return dtos;
+    const result: PagedList<UserDto> = await catchEntityColumnNotFound(async () => {
+      const users: PagedList<User> = await this._usersService.getAllPaged({
+        where: rest,
+        skip,
+        take,
+        relations: includes
+      });
+
+      const dtos: UserDto[] = this._mapper.users.mapDtos(users.data);
+      return new PagedList<UserDto>({ data: dtos, meta: users.pagination });
+    });
+
+    return result;
   }
 
   @Get(":id")
-  public async getUserById(@Param("id", ParseIntPipe) id: number): Promise<UserDto> {
-    const user: User = await this.tryGetUserById(id);
+  public async getUserById(@Param("id", ParseIntPipe) id: number, @Includes() includes?: string[]): Promise<UserDto> {
+    const user: User = await this.tryGetUserById(id, includes);
     const dto: UserDto = this._mapper.users.mapDto(user);
 
     return dto;
@@ -90,8 +105,8 @@ export class UsersController {
     await this._usersService.delete(entity);
   }
 
-  private async tryGetUserById(id: number): Promise<User> {
-    const user: User = await this._usersService.getOneById(id);
+  private async tryGetUserById(id: number, includes?: string[]): Promise<User> {
+    const user: User = await this._usersService.getOneById(id, { relations: includes });
 
     if(user == null) {
       throw new NotFoundException(`User ID does not exist: ${id}`);

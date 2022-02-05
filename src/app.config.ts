@@ -12,6 +12,7 @@ export default {
   httpPort: Number(env.HTTP_PORT),
   jwtSecret: env.JWT_SECRET,
   socketPath: "/socket",
+  paginationMaxTakeCount: 100,
 
   cors: <CorsOptions>{
     origin: "*",

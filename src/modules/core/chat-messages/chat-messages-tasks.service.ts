@@ -3,9 +3,9 @@ import { SchedulerRegistry } from "@nestjs/schedule";
 import { ChatMessagesService } from "./chat-messages.service";
 import { ChatMessage } from "./entities/chat-message.entity";
 import { CronJob } from "cron";
+import { LessThan } from "typeorm";
 
 import appConfig from "src/app.config";
-import { LessThan } from "typeorm";
 
 @Injectable()
 export class ChatMessagesTasksService {
@@ -31,7 +31,10 @@ export class ChatMessagesTasksService {
       const maxDate = new Date();
       maxDate.setHours(maxDate.getHours() - Math.abs(maxMessageHours), 0, 0, 0);
 
-      const messages: ChatMessage[] = await this._chatMessagesService.getAllByModel({ maxDate });
+      const messages: ChatMessage[] = await this._chatMessagesService.getAll({
+        where: { datePosted: LessThan(maxDate.toISOString()) }
+      });
+
       this.logMessagesDeleting(messages, maxDate);
 
       await this._chatMessagesService.deleteMany(messages);

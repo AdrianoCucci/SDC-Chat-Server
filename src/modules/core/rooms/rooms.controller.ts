@@ -1,10 +1,14 @@
 import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Query, Param, ParseIntPipe, Post, Body, Put, ForbiddenException, Delete, HttpCode, HttpStatus, NotFoundException, ConflictException } from "@nestjs/common";
+import { Includes } from "src/decorators/includes.decorator";
 import { RequestUser } from "src/decorators/request-user.decorator";
 import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/models/auth/role";
+import { Includable } from "src/models/includable.type";
+import { PagedList } from "src/models/pagination/paged-list";
+import { Paged } from "src/models/pagination/paged.type";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
-import { DeepPartial } from "typeorm";
+import { catchEntityColumnNotFound } from "src/utils/controller-utils";
 import { OrganizationsService } from "../organizations/organizations.service";
 import { UserDto } from "../users/dtos/user.dto";
 import { PartialRoomDto } from "./dtos/partial-room.dto";
@@ -19,16 +23,27 @@ export class RoomsController {
   constructor(private _roomsService: RoomsService, private _orgsService: OrganizationsService, private _mapper: MapperService) { }
 
   @Get()
-  public async getAllRooms(@Query() model?: DeepPartial<RoomDto>): Promise<RoomDto[]> {
-    const rooms: Room[] = await this._roomsService.getAllByModel(model);
-    const dtos: RoomDto[] = this._mapper.rooms.mapDtos(rooms);
+  public async getAllRooms(@Query() model?: Paged<Includable<RoomDto>>, @Includes() includes?: string[]): Promise<PagedList<RoomDto>> {
+    const { skip, take, include, ...rest } = model;
 
-    return dtos;
+    const result: PagedList<RoomDto> = await catchEntityColumnNotFound(async () => {
+      const rooms: PagedList<Room> = await this._roomsService.getAllPaged({
+        where: rest,
+        skip,
+        take,
+        relations: includes
+      });
+
+      const dtos: RoomDto[] = this._mapper.rooms.mapDtos(rooms.data);
+      return new PagedList<RoomDto>({ data: dtos, meta: rooms.pagination });
+    });
+
+    return result;
   }
 
   @Get(":id")
-  public async getRoomById(@Param("id", ParseIntPipe) id: number): Promise<RoomDto> {
-    const room: Room = await this.tryGetRoomById(id);
+  public async getRoomById(@Param("id", ParseIntPipe) id: number, @Includes() includes?: string[]): Promise<RoomDto> {
+    const room: Room = await this.tryGetRoomById(id, includes);
     const dto: RoomDto = this._mapper.rooms.mapDto(room);
 
     return dto;
@@ -88,8 +103,8 @@ export class RoomsController {
     await this._roomsService.delete(room);
   }
 
-  private async tryGetRoomById(id: number): Promise<Room> {
-    const room: Room = await this._roomsService.getOneById(id);
+  private async tryGetRoomById(id: number, includes?: string[]): Promise<Room> {
+    const room: Room = await this._roomsService.getOneById(id, { relations: includes });
 
     if(room == null) {
       throw new NotFoundException(`Room ID does not exist: ${id}`);

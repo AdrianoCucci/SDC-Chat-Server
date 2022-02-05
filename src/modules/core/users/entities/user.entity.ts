@@ -37,7 +37,7 @@ export class User {
   @ManyToOne(() => Organization, entity => entity.users)
   public organization?: Organization;
 
-  @OneToMany(() => ChatMessage, entity => entity.senderUserId)
+  @OneToMany(() => ChatMessage, entity => entity.senderUser)
   public chatMessages?: ChatMessage[];
 
   public constructor(values?: Partial<User>) {
