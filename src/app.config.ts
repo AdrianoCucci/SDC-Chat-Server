@@ -11,6 +11,7 @@ const production: boolean = false;
 export default {
   production: production,
 
+  baseHref: "/sdc-chat-api",
   httpPort: Number(env.HTTP_PORT),
   jwtSecret: env.JWT_SECRET,
   socketPath: "/socket",
