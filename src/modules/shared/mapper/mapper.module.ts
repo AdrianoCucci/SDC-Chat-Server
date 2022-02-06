@@ -5,4 +5,4 @@ import { MapperService } from './mapper.service';
   exports: [MapperService],
   providers: [MapperService]
 })
-export class MapperModule {}
+export class MapperModule { }
