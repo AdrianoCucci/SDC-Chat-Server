@@ -26,7 +26,11 @@ export class AuthService {
     let response: AuthResponse;
 
     try {
-      const user: User = await this._usersService.getByUsername(request.username);
+      const user: User = await this._usersService.getOne({
+        where: { username: request.username },
+        relations: ["organization"]
+      });
+
       if(user == null) {
         throw "Login credentials are invalid";
       }
