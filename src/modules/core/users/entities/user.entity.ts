@@ -9,7 +9,7 @@ export class User {
   public id: number;
 
   @Column({ enum: Role })
-  public role: Role = Role.User;
+  public role: Role;
 
   @Column()
   public username: string;
