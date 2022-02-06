@@ -13,7 +13,7 @@ import { getUserRoom, broadcast } from './utils/socket-functions';
 
 import appConfig from 'src/app.config';
 
-@WebSocketGateway({ cors: appConfig.cors, path: appConfig.socketPath })
+@WebSocketGateway({ cors: appConfig.cors, path: appConfig.baseHref + appConfig.socketPath })
 export class AppWebSocketGateway implements OnGatewayDisconnect {
   constructor(
     private _socketUsersService: SocketUsersService,
