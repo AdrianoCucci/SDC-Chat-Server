@@ -10,6 +10,7 @@ import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
 import { catchEntityColumnNotFound } from "src/utils/controller-utils";
 import { generateUserSecret } from "src/utils/hash-utils";
+import { userIsInRole } from "src/utils/user-utils";
 import { OrganizationsService } from "../organizations/organizations.service";
 import { UserSecret } from "../user-secrets/entities/user-secret.entity";
 import { UserSecretsService } from "../user-secrets/user-secrets.service";
@@ -77,11 +78,6 @@ export class UsersController {
 
     await this.validatePutModel(user, entity, request);
 
-    //Do not change user role unless an administrator is making the request.
-    if(user.role !== Role.Administrator) {
-      request.role = entity.role;
-    }
-
     this._mapper.users.mapEntity(request, entity);
     entity = await this._usersService.update(entity);
 
@@ -121,12 +117,6 @@ export class UsersController {
     if(!request.password) {
       errors.push("password is required");
     }
-
-    //Make sure non-administrators can only add users within their own organization.
-    if(requestUser.role !== Role.Administrator) {
-      request.organizationId = requestUser.organizationId;
-      request.role = Role.User;
-    }
     if(await this._usersService.usernameExists(request.username)) {
       errors.push(`username already exists: ${request.username}`);
     }
@@ -142,16 +132,17 @@ export class UsersController {
     if(errors.length > 0) {
       throw new BadRequestException(errors);
     }
+
+    //Make sure non-administrators can only add users within their own organization.
+    if(requestUser.role !== Role.Administrator) {
+      request.organizationId = requestUser.organizationId;
+      request.role = request.role === Role.Administrator ? Role.User : request.role;
+    }
   }
 
   private async validatePutModel(requestUser: UserDto, entity: User, request: PartialUserDto): Promise<void> {
     const errors: string[] = [];
 
-    //Make sure non-administrators can only update users within their own organization.
-    if(requestUser.role !== Role.Administrator) {
-      request.organizationId = requestUser.organizationId;
-      request.role = Role.User;
-    }
     if(request.username) {
       const userByUsername: User = await this._usersService.getByUsername(request.username);
 
@@ -161,19 +152,23 @@ export class UsersController {
     }
 
     //Non-administrators must specify the organization of users.
-    if(request.organizationId == null && requestUser.role !== Role.Administrator) {
-      errors.push("organizationId is required");
-    }
-    else if(request.organizationId != null && !await this._orgService.hasAnyWithId(request.organizationId)) {
+    if(request.organizationId != null && !await this._orgService.hasAnyWithId(request.organizationId)) {
       errors.push(`organizationId does not exist: ${request.organizationId}`);
     }
-
-    if(requestUser.id !== entity.id && (requestUser.role !== Role.Administrator && requestUser.role !== Role.OrganizationAdmin)) {
+    if(requestUser.id !== entity.id && !userIsInRole(requestUser, [Role.Administrator, Role.OrganizationAdmin])) {
       errors.push("You may not edit a different user's information");
     }
 
     if(errors.length > 0) {
       throw new BadRequestException(errors);
+    }
+
+    //Make sure non-administrators can only update users within their own organization.
+    if(requestUser.role !== Role.Administrator) {
+      request.organizationId = requestUser.organizationId;
+
+      //Do not allow non-administrators to give other users the administrator role.
+      request.role = request.role === Role.Administrator ? entity.role : request.role;
     }
   }
 }

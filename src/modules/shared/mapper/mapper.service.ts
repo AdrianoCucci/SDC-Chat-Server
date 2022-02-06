@@ -36,15 +36,13 @@ export class MapperService {
       return Object.assign(target ?? new User(), dto);
     },
     mapDto: (entity: User): UserDto => {
-      const { userSecretId, userSecret, ...rest } = entity;
+      const dto: UserDto = Object.assign(new UserDto(), entity);
 
-      const dto: UserDto = Object.assign(new UserDto(), rest);
-
-      if(rest.organization != null) {
-        dto.organization = this.organizations.mapDto(rest.organization);
+      if(entity.organization != null) {
+        dto.organization = this.organizations.mapDto(entity.organization);
       }
-      if(rest.chatMessages?.length > 0) {
-        dto.chatMessages = this.chatMessages.mapDtos(rest.chatMessages);
+      if(entity.chatMessages?.length > 0) {
+        dto.chatMessages = this.chatMessages.mapDtos(entity.chatMessages);
       }
 
       return dto;

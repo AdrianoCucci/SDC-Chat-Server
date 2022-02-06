@@ -19,7 +19,7 @@ export class LiveChatService {
     private _mapper: MapperService
   ) { }
 
-  public async onMessage(socket: Socket, payload: ChatMessageDto): Promise<void> {
+  public async onMessage(socket: Socket, payload: ChatMessageDto): Promise<ChatMessageDto> {
     if(payload != null && payload.contents && payload.senderUserId != null) {
       const user: UserDto = this._socketUsersService.get(socket);
 
@@ -27,14 +27,16 @@ export class LiveChatService {
         let entity: ChatMessage = this._mapper.chatMessages.mapEntity(payload);
         entity = await this._messagesService.add(entity);
 
-        const dto: ChatMessageDto = this._mapper.chatMessages.mapDto(entity);
+        payload = this._mapper.chatMessages.mapDto(entity);
         const room: string = getUserRoom(user);
-        broadcast(socket, SOCKET_EVENTS.message, dto, room);
+        broadcast(socket, SOCKET_EVENTS.message, payload, room);
       }
     }
+
+    return payload;
   }
 
-  public async onMessageEdit(socket: Socket, payload: ChatMessageDto): Promise<void> {
+  public async onMessageEdit(socket: Socket, payload: ChatMessageDto): Promise<ChatMessageDto> {
     if(payload?.id != null && payload.contents && payload.senderUserId != null) {
       const user: UserDto = this._socketUsersService.get(socket);
 
@@ -42,11 +44,13 @@ export class LiveChatService {
         let entity: ChatMessage = this._mapper.chatMessages.mapEntity(payload);
         entity = await this._messagesService.update(entity);
 
-        const dto: ChatMessageDto = this._mapper.chatMessages.mapDto(entity);
+        payload = this._mapper.chatMessages.mapDto(entity);
         const room: string = getUserRoom(user);
-        broadcast(socket, SOCKET_EVENTS.messageEdit, dto, room);
+        broadcast(socket, SOCKET_EVENTS.messageEdit, payload, room);
       }
     }
+
+    return payload;
   }
 
   public async onMessageDelete(socket: Socket, payload: ChatMessageDto): Promise<void> {

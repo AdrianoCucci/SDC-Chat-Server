@@ -1,5 +1,6 @@
-import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Param, ParseIntPipe, Post, Body, Put, Delete, HttpCode, HttpStatus, NotFoundException, Query } from "@nestjs/common";
+import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Param, ParseIntPipe, Post, Body, Put, Delete, HttpCode, HttpStatus, NotFoundException, Query, ForbiddenException } from "@nestjs/common";
 import { Includes } from "src/decorators/includes.decorator";
+import { RequestUser } from "src/decorators/request-user.decorator";
 import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/models/auth/role";
 import { Includable } from "src/models/includable.type";
@@ -8,6 +9,7 @@ import { Paged } from "src/models/pagination/paged.type";
 import { AuthorizeGuard } from "src/modules/shared/jwt-auth/authorize.guard";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
 import { catchEntityColumnNotFound } from "src/utils/controller-utils";
+import { UserDto } from "../users/dtos/user.dto";
 import { OrganizationDto } from "./dtos/organization.dto";
 import { PartialOrganizationDto } from "./dtos/partial-organization.dto";
 import { Organization } from "./entities/organization.entity";
@@ -57,11 +59,16 @@ export class OrganizationsController {
   }
 
   @Put(":id")
-  @Roles(Role.Administrator)
-  public async putOrganization(@Param("id", ParseIntPipe) id: number, @Body() request: PartialOrganizationDto): Promise<OrganizationDto> {
+  @Roles(Role.Administrator, Role.OrganizationAdmin)
+  public async putOrganization(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: PartialOrganizationDto): Promise<OrganizationDto> {
     let entity: Organization = await this.tryGetOrganizationById(id);
-    this._mapper.organizations.mapEntity(request, entity);
 
+    //OrganizationAdmin users can only edit their own Organizations.
+    if(user.role !== Role.Administrator && user.organizationId !== entity.id) {
+      throw new ForbiddenException();
+    }
+
+    this._mapper.organizations.mapEntity(request, entity);
     entity = await this._orgsService.update(entity);
 
     const response: OrganizationDto = this._mapper.organizations.mapDto(entity);
