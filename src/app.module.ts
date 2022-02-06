@@ -15,7 +15,7 @@ import appConfig from './app.config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({ ...appConfig.typeOrm, synchronize: !appConfig.production }),
+    TypeOrmModule.forRoot(appConfig.typeOrm),
     ScheduleModule.forRoot(),
     JwtAuthModule,
     AuthModule,

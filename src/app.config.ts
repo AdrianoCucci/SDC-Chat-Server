@@ -6,8 +6,10 @@ import { CronExpression } from "@nestjs/schedule";
 config();
 const env: NodeJS.ProcessEnv = process.env;
 
+const production: boolean = false;
+
 export default {
-  production: false,
+  production: production,
 
   httpPort: Number(env.HTTP_PORT),
   jwtSecret: env.JWT_SECRET,
@@ -30,7 +32,7 @@ export default {
     password: env.DB_PASSWORD,
     entities: ["dist/**/*.entity{.ts,.js}"],
     options: { trustServerCertificate: true },
-    synchronize: true
+    synchronize: !production
   },
 
   chatMessageDeleteTask: {
