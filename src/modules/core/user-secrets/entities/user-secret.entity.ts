@@ -16,7 +16,7 @@ export class UserSecret {
   public userId: number;
 
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, { onDelete: "CASCADE" })
   @JoinColumn()
   public user?: User;
 
