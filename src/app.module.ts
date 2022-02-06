@@ -10,6 +10,7 @@ import { OrganizationsModule } from './modules/core/organizations/organizations.
 import { RoomsModule } from './modules/core/rooms/rooms.module';
 import { AppWebSocketModule } from './modules/core/app-web-socket/app-web-socket.module';
 import { MapperModule } from './modules/shared/mapper/mapper.module';
+import { StartupModule } from './startup/startup.module';
 
 import appConfig from './app.config';
 
@@ -25,7 +26,8 @@ import appConfig from './app.config';
     OrganizationsModule,
     RoomsModule,
     AppWebSocketModule,
-    MapperModule
+    MapperModule,
+    StartupModule
   ]
 })
 export class AppModule { }

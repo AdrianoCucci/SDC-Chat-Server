@@ -35,6 +35,13 @@ export default {
     synchronize: !production
   },
 
+  startup: {
+    rootUser: {
+      username: env.ROOT_USERNAME,
+      password: env.ROOT_PASSWORD
+    }
+  },
+
   chatMessageDeleteTask: {
     enabled: true,
     schedule: CronExpression.EVERY_WEEK,
