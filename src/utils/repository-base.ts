@@ -52,12 +52,12 @@ export abstract class RepositoryBase<T> {
   }
 
   public async add(entity: DeepPartial<T>): Promise<T> {
-    const inserted: T = this._repository.create(entity);
+    const inserted = this._repository.create(entity) as DeepPartial<T>;
     return await this._repository.save(inserted);
   }
 
   public async addMany(entities: DeepPartial<T>[]): Promise<T[]> {
-    const inserted: T[] = this._repository.create(entities);
+    const inserted = this._repository.create(entities) as DeepPartial<T>[];
     return await this._repository.save(inserted);
   }
 
