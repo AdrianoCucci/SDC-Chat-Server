@@ -163,12 +163,16 @@ export class UsersController {
       throw new BadRequestException(errors);
     }
 
-    //Make sure non-administrators can only update users within their own organization.
     if(requestUser.role !== Role.Administrator) {
-      request.organizationId = requestUser.organizationId;
+      //Make sure non-administrators can only update users within their own organization.
+      if(request.organizationId != null) {
+        request.organizationId = requestUser.organizationId;
+      }
 
       //Do not allow non-administrators to give other users the administrator role.
-      request.role = request.role === Role.Administrator ? entity.role : request.role;
+      if(request.role === Role.Administrator) {
+        delete request.role;
+      }
     }
   }
 }
