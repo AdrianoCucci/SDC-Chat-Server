@@ -32,7 +32,9 @@ export class UserDto {
   @IsOptional()
   public organizationId?: number;
 
-  public organization?: OrganizationDto;
+  @IsOptional()
+  public preferencesJson?: string;
 
+  public organization?: OrganizationDto;
   public chatMessages?: ChatMessageDto[];
 }

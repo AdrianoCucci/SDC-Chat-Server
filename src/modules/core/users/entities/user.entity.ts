@@ -26,6 +26,9 @@ export class User {
   @Column({ nullable: true })
   public organizationId?: number;
 
+  @Column({ nullable: true })
+  public preferencesJson?: string;
+
 
   @ManyToOne(() => Organization, entity => entity.users)
   @JoinColumn()
