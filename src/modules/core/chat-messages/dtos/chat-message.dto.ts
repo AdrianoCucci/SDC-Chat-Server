@@ -22,6 +22,5 @@ export class ChatMessageDto {
   public organizationId?: number;
 
   public senderUser?: UserDto;
-
   public organization?: OrganizationDto;
 }
