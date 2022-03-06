@@ -1,7 +1,6 @@
 {
   "name": "sdc-chat-server",
   "version": "1.0.0",
-  "description": "",
   "author": "Adriano Cucci",
   "private": true,
   "license": "MIT",
