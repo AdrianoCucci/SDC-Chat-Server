@@ -6,8 +6,7 @@ import { CronExpression } from "@nestjs/schedule";
 config();
 const env: NodeJS.ProcessEnv = process.env;
 
-const production: boolean = false;
-
+const production: boolean = Boolean(env.PRODUCTIOn);
 export default {
   production: production,
 
