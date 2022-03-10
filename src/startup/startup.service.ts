@@ -4,15 +4,19 @@ import { UserSecret } from 'src/modules/core/user-secrets/entities/user-secret.e
 import { User } from 'src/modules/core/users/entities/user.entity';
 import { UsersService } from 'src/modules/core/users/users.service';
 import { generateUserSecret } from 'src/utils/hash-utils';
-
-import appConfig from 'src/app.config';
 import { UserSecretsService } from 'src/modules/core/user-secrets/user-secrets.service';
+import { ChatMessagesTasksService } from 'src/modules/core/chat-messages/chat-messages-tasks.service';
+import appConfig from 'src/app.config';
 
 @Injectable()
 export class StartupService implements OnApplicationBootstrap {
   private readonly _logger = new Logger(StartupService.name);
 
-  constructor(private _usersService: UsersService, private _userSecretsService: UserSecretsService) { }
+  constructor(
+    private _usersService: UsersService,
+    private _userSecretsService: UserSecretsService,
+    private _messagesTasksService: ChatMessagesTasksService
+  ) { }
 
   public async onApplicationBootstrap(): Promise<void> {
     this._logger.log("Performing startup tasks");
@@ -20,6 +24,7 @@ export class StartupService implements OnApplicationBootstrap {
     try {
       await this.createRootUser();
       await this.setAllUsersOffline();
+      await this.deleteOldChatMessages();
     }
     catch(error) {
       this._logger.error(error.message || error);
@@ -65,5 +70,14 @@ export class StartupService implements OnApplicationBootstrap {
 
     await this._usersService.updateMany(users);
     this._logger.log("All users set to 'offline' status successfully.");
+  }
+
+  private async deleteOldChatMessages(): Promise<void> {
+    const task = appConfig.chatMessageDeleteTask;
+
+    if(task.enabled) {
+      this._logger.log("Requesting deletion of old chat messages...");
+      await this._messagesTasksService.deleteOldChatMessages();
+    }
   }
 }

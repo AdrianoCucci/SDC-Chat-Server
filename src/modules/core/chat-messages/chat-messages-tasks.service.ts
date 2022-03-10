@@ -9,40 +9,42 @@ import appConfig from "src/app.config";
 
 @Injectable()
 export class ChatMessagesTasksService {
-  private readonly _logger?: Logger;
+  private readonly _logger: Logger;
+  private get _task() {
+    return appConfig.chatMessageDeleteTask;
+  }
 
   constructor(private _chatMessagesService: ChatMessagesService, scheduler: SchedulerRegistry) {
-    const task = appConfig.chatMessageDeleteTask;
+    this._logger = new Logger(ChatMessagesTasksService.name);
 
-    if(task.enabled) {
-      this._logger = new Logger(ChatMessagesTasksService.name);
-
-      const job = new CronJob(task.schedule, () => this.deleteOldChatMessages(task.maxMessageHours));
+    if(this._task.enabled) {
+      const job = new CronJob(this._task.schedule, () => this.deleteOldChatMessages());
       scheduler.addCronJob("delete-old-chat-messages-job", job);
 
       job.start();
     }
   }
 
-  private async deleteOldChatMessages(maxMessageHours: number): Promise<void> {
+  public async deleteOldChatMessages(force: boolean = false): Promise<void> {
+    if(!this._task.enabled && !force) {
+      return;
+    }
+
     try {
-      this._logger.log("Executing scheduled chat messages deletion...");
+      this._logger.log(force ? "(FORCED) - " : "" + "Deleting old chat messages...");
 
       const maxDate = new Date();
-      maxDate.setHours(maxDate.getHours() - Math.abs(maxMessageHours), 0, 0, 0);
+      maxDate.setHours(maxDate.getHours() - Math.abs(this._task.maxMessageHours), 0, 0, 0);
 
       const messages: ChatMessage[] = await this._chatMessagesService.getAll({
         where: { datePosted: LessThan(maxDate.toISOString()) }
       });
 
       this.logMessagesDeleting(messages, maxDate);
-
       await this._chatMessagesService.deleteMany(messages);
-
-      this._logger.log("...Success!");
     }
     catch(error) {
-      this._logger.error(`...FAILED!\n${error}`);
+      this._logger.error(`Failed to delete old chat messages:\n${error}`);
     }
   }
 

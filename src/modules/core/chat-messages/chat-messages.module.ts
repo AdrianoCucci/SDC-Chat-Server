@@ -15,7 +15,10 @@ import { ChatMessage } from './entities/chat-message.entity';
     UsersModule,
     MapperModule
   ],
-  exports: [ChatMessagesService],
+  exports: [
+    ChatMessagesService,
+    ChatMessagesTasksService
+  ],
   providers: [
     ChatMessagesService,
     ChatMessagesTasksService
