@@ -14,7 +14,7 @@ export class MapperService {
   public readonly organizations = new EntityDtoMap<Organization, OrganizationDto>({
     mapEntity: (dto: Partial<OrganizationDto>, target?: Organization): Organization => Object.assign(target ?? new Organization(), dto),
     mapDto: (entity: Organization): OrganizationDto => {
-      const dto: OrganizationDto = { ...entity } as any;
+      const dto: OrganizationDto = Object.assign(new OrganizationDto(), entity);
 
       if(entity.users?.length > 0) {
         dto.users = this.users.mapDtos(entity.users);
