@@ -18,18 +18,21 @@ export class StartupService implements OnApplicationBootstrap {
     private _messagesTasksService: ChatMessagesTasksService
   ) { }
 
-  public async onApplicationBootstrap(): Promise<void> {
-    this._logger.log("Performing startup tasks");
+  public onApplicationBootstrap(): void {
+    //This timeout allows TypeORM to create a database if one does not already exist before accessing it.
+    setTimeout(async () => {
+      this._logger.log("Performing startup tasks");
 
-    try {
-      await this.createRootUser();
-      await this.setAllUsersOffline();
-      await this.deleteOldChatMessages();
-    }
-    catch(error) {
-      this._logger.error(error.message || error);
-      throw error;
-    }
+      try {
+        await this.createRootUser();
+        await this.setAllUsersOffline();
+        await this.deleteOldChatMessages();
+      }
+      catch(error) {
+        this._logger.error(error.message || error);
+        throw error;
+      }
+    }, 2000);
   }
 
   private async createRootUser(): Promise<void> {
