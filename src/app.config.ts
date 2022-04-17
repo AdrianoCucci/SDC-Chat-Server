@@ -9,6 +9,15 @@ config();
 const env: NodeJS.ProcessEnv = process.env;
 
 const production: boolean = env.production === "true";
+let httpOptions: HttpsOptions | undefined;
+
+if(production) {
+  httpOptions = {
+    cert: env.TLS_CRT_PATH ? readFileSync(env.TLS_CRT_PATH) : undefined,
+    key: env.TLS_KEY_PATH ? readFileSync(env.TLS_KEY_PATH) : undefined
+  };
+}
+
 export default {
   production: production,
 
@@ -25,10 +34,7 @@ export default {
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
   },
 
-  httpOptions: <HttpsOptions>{
-    cert: env.TLS_CRT_PATH ? readFileSync(env.TLS_CRT_PATH) : undefined,
-    key: env.TLS_KEY_PATH ? readFileSync(env.TLS_KEY_PATH) : undefined
-  },
+  httpOptions: <HttpsOptions | undefined>httpOptions,
 
   typeOrm: <TypeOrmModuleOptions>{
     type: "mssql",
