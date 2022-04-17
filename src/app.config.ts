@@ -2,6 +2,8 @@ import { config } from "dotenv";
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.interface";
 import { CronExpression } from "@nestjs/schedule";
+import { HttpsOptions } from "@nestjs/common/interfaces/external/https-options.interface";
+import { readFileSync } from 'fs';
 
 config();
 const env: NodeJS.ProcessEnv = process.env;
@@ -10,7 +12,7 @@ const production: boolean = Boolean(env.PRODUCTIOn);
 export default {
   production: production,
 
-  baseHref: "/sdc-chat-api",
+  baseHref: "",
   httpPort: Number(env.HTTP_PORT),
   jwtSecret: env.JWT_SECRET,
   socketPath: "/socket",
@@ -21,6 +23,11 @@ export default {
     credentials: true,
     allowedHeaders: ["Authorization", "Accept", "Cache-Control", "Content-Type", "Origin", "User-Agent"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+  },
+
+  httpOptions: <HttpsOptions>{
+    cert: env.TLS_CRT_PATH ? readFileSync(env.TLS_CRT_PATH) : undefined,
+    key: env.TLS_KEY_PATH ? readFileSync(env.TLS_KEY_PATH) : undefined
   },
 
   typeOrm: <TypeOrmModuleOptions>{
