@@ -8,7 +8,7 @@ import { readFileSync } from 'fs';
 config();
 const env: NodeJS.ProcessEnv = process.env;
 
-const production: boolean = Boolean(env.PRODUCTIOn);
+const production: boolean = env.production === "true";
 export default {
   production: production,
 

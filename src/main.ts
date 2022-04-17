@@ -7,7 +7,7 @@ import appConfig from "src/app.config";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: appConfig.cors,
-    httpsOptions: appConfig.httpOptions
+    httpsOptions: appConfig.production ? appConfig.httpOptions : undefined
   });
 
   app.setGlobalPrefix(appConfig.baseHref);
