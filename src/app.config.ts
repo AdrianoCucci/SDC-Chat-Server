@@ -11,10 +11,10 @@ const env: NodeJS.ProcessEnv = process.env;
 const production: boolean = env.production === "true";
 let httpOptions: HttpsOptions | undefined;
 
-if(production) {
+if(production && env.TLS_CRT_PATH && env.TLS_KEY_PATH) {
   httpOptions = {
-    cert: env.TLS_CRT_PATH ? readFileSync(env.TLS_CRT_PATH) : undefined,
-    key: env.TLS_KEY_PATH ? readFileSync(env.TLS_KEY_PATH) : undefined
+    cert: readFileSync(env.TLS_CRT_PATH),
+    key: readFileSync(env.TLS_KEY_PATH)
   };
 }
 
