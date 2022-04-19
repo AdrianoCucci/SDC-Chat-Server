@@ -45,8 +45,8 @@ export class StartupService implements OnApplicationBootstrap {
     }
 
     this._logger.log("Creating root user...");
-    const rootUsername: string = appConfig.startup.rootUser.username;
-    const rootPassword: string = appConfig.startup.rootUser.password;
+    const rootUsername: string = appConfig.database.rootUser.username;
+    const rootPassword: string = appConfig.database.rootUser.password;
 
     if(!rootUsername || !rootPassword) {
       throw new Error("Root user username and/or password has not been defined!");
