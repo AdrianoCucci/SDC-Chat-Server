@@ -70,4 +70,7 @@ export class OrganizationDto {
       .trim()
       .replace(commaTrimExp, '');
   }
+
+  //This setter is intentionally left empty to handle DTO mapping for read-only fields.
+  public set fullAddress(value: string) { }
 }
