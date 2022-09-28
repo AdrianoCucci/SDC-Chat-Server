@@ -1,4 +1,22 @@
-import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Query, Param, ParseIntPipe, Post, Body, BadRequestException, Put, ForbiddenException, Delete, HttpCode, HttpStatus, NotFoundException } from "@nestjs/common";
+import {
+  Controller,
+  UseGuards,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  Get,
+  Query,
+  Param,
+  ParseIntPipe,
+  Post,
+  Body,
+  BadRequestException,
+  Put,
+  ForbiddenException,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+} from "@nestjs/common";
 import { Includes } from "src/decorators/includes.decorator";
 import { RequestUser } from "src/decorators/request-user.decorator";
 import { Role } from "src/models/auth/role";
@@ -20,52 +38,79 @@ import { ChatMessage } from "./entities/chat-message.entity";
 @UseGuards(AuthorizeGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class ChatMessagesController {
-  constructor(private _messagesService: ChatMessagesService, private _usersService: UsersService, private _mapper: MapperService) { }
+  constructor(
+    private _messagesService: ChatMessagesService,
+    private _usersService: UsersService,
+    private _mapper: MapperService
+  ) {}
 
   @Get()
-  public async getAllMessages(@Query() model?: Paged<Includable<ChatMessageDto>>, @Includes() includes?: string[]): Promise<PagedList<ChatMessageDto>> {
+  public async getAllMessages(
+    @Query() model?: Paged<Includable<ChatMessageDto>>,
+    @Includes() includes?: string[]
+  ): Promise<PagedList<ChatMessageDto>> {
     const { skip, take, include, ...rest } = model;
 
-    const result: PagedList<ChatMessageDto> = await catchEntityColumnNotFound(async () => {
-      const messages: PagedList<ChatMessage> = await this._messagesService.getAllPaged({
-        where: rest,
-        skip,
-        take,
-        relations: includes
-      });
+    const result: PagedList<ChatMessageDto> = await catchEntityColumnNotFound(
+      async () => {
+        const messages: PagedList<ChatMessage> =
+          await this._messagesService.getAllPaged({
+            where: rest,
+            skip,
+            take,
+            relations: includes,
+          });
 
-      const dtos: ChatMessageDto[] = this._mapper.chatMessages.mapDtos(messages.data);
-      return new PagedList<ChatMessageDto>({ data: dtos, meta: messages.pagination });
-    });
+        const dtos: ChatMessageDto[] = this._mapper.chatMessages.mapDtos(
+          messages.data
+        );
+        return new PagedList<ChatMessageDto>({
+          data: dtos,
+          meta: messages.pagination,
+        });
+      }
+    );
 
     return result;
   }
 
   @Get("before")
-  public async getMessagesBeforeDate(@Query() model?: Paged<Includable<ChatMessageDto>>, @Includes() includes?: string[]): Promise<ChatMessageDto[]> {
+  public async getMessagesBeforeDate(
+    @Query() model?: Paged<Includable<ChatMessageDto>>,
+    @Includes() includes?: string[]
+  ): Promise<ChatMessageDto[]> {
     const { include, skip, take, ...rest } = model;
 
-    if(!model?.datePosted) {
+    if (!model?.datePosted) {
       throw new BadRequestException("'datePosted' query parameter is required");
     }
 
-    const result: ChatMessageDto[] = await catchEntityColumnNotFound(async () => {
-      const messages: ChatMessage[] = await this._messagesService.getAll({
-        where: { ...rest, datePosted: LessThan(new Date(model.datePosted).toISOString()) },
-        take: take,
-        order: { datePosted: "DESC" },
-        relations: includes
-      });
+    const result: ChatMessageDto[] = await catchEntityColumnNotFound(
+      async () => {
+        const messages: ChatMessage[] = await this._messagesService.getAll({
+          where: {
+            ...rest,
+            datePosted: LessThan(new Date(model.datePosted).toISOString()),
+          },
+          take: take,
+          order: { datePosted: "DESC" },
+          relations: includes,
+        });
 
-      const dtos: ChatMessageDto[] = this._mapper.chatMessages.mapDtos(messages);
-      return dtos;
-    });
+        const dtos: ChatMessageDto[] =
+          this._mapper.chatMessages.mapDtos(messages);
+        return dtos;
+      }
+    );
 
     return result;
   }
 
   @Get(":id")
-  public async getMessage(@Param("id", ParseIntPipe) id: number, @Includes() includes?: string[]): Promise<ChatMessageDto> {
+  public async getMessage(
+    @Param("id", ParseIntPipe) id: number,
+    @Includes() includes?: string[]
+  ): Promise<ChatMessageDto> {
     const message: ChatMessage = await this.tryGetMessageById(id, includes);
     const dto: ChatMessageDto = this._mapper.chatMessages.mapDto(message);
 
@@ -73,9 +118,13 @@ export class ChatMessagesController {
   }
 
   @Post()
-  public async postMessage(@Body() request: ChatMessageDto): Promise<ChatMessageDto> {
-    if(!await this._usersService.hasAnyWithId(request.senderUserId)) {
-      throw new BadRequestException("A User ID with [senderUserId] value does not exist");
+  public async postMessage(
+    @Body() request: ChatMessageDto
+  ): Promise<ChatMessageDto> {
+    if (!(await this._usersService.hasAnyWithId(request.senderUserId))) {
+      throw new BadRequestException(
+        "A User ID with [senderUserId] value does not exist"
+      );
     }
 
     let message: ChatMessage = this._mapper.chatMessages.mapEntity(request);
@@ -86,11 +135,17 @@ export class ChatMessagesController {
   }
 
   @Put(":id")
-  public async putMessage(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: PartialChatMessageDto): Promise<ChatMessageDto> {
+  public async putMessage(
+    @RequestUser() user: UserDto,
+    @Param("id", ParseIntPipe) id: number,
+    @Body() request: PartialChatMessageDto
+  ): Promise<ChatMessageDto> {
     let message: ChatMessage = await this.tryGetMessageById(id);
 
-    if(message.senderUserId !== user.id && user.role !== Role.Administrator) {
-      throw new ForbiddenException("You may not edit a different user's message");
+    if (message.senderUserId !== user.id && user.role !== Role.Administrator) {
+      throw new ForbiddenException(
+        "You may not edit a different user's message"
+      );
     }
 
     //Do not change who the sender of the message is.
@@ -105,20 +160,30 @@ export class ChatMessagesController {
 
   @Delete(":id")
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async deleteMessage(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number): Promise<void> {
+  public async deleteMessage(
+    @RequestUser() user: UserDto,
+    @Param("id", ParseIntPipe) id: number
+  ): Promise<void> {
     const message: ChatMessage = await this.tryGetMessageById(id);
 
-    if(message.senderUserId !== user.id && user.role !== Role.Administrator) {
-      throw new ForbiddenException("You may not delete a different user's message");
+    if (message.senderUserId !== user.id && user.role !== Role.Administrator) {
+      throw new ForbiddenException(
+        "You may not delete a different user's message"
+      );
     }
 
     await this._messagesService.delete(message);
   }
 
-  private async tryGetMessageById(id: number, includes?: string[]): Promise<ChatMessage> {
-    const message: ChatMessage = await this._messagesService.getOneById(id, { relations: includes });
+  private async tryGetMessageById(
+    id: number,
+    includes?: string[]
+  ): Promise<ChatMessage> {
+    const message: ChatMessage = await this._messagesService.getOneById(id, {
+      relations: includes,
+    });
 
-    if(message == null) {
+    if (message == null) {
       throw new NotFoundException(`Chat Message ID does not exist: ${id}`);
     }
 

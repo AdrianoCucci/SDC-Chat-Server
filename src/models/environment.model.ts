@@ -19,7 +19,7 @@ export interface Environment {
     rootUser: {
       username: string;
       password: string;
-    }
+    };
   };
   tls?: {
     enabled: boolean;
@@ -30,5 +30,5 @@ export interface Environment {
     enabled: boolean;
     schedule: string;
     maxMessageHours: number;
-  }
+  };
 }

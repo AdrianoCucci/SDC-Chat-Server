@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { Organization } from "../../organizations/entities/organization.entity";
 import { User } from "../../users/entities/user.entity";
 
@@ -19,17 +25,18 @@ export class ChatMessage {
   @Column()
   public organizationId?: number;
 
-
-  @ManyToOne(() => User, entity => entity.chatMessages, { onDelete: "CASCADE" })
+  @ManyToOne(() => User, (entity) => entity.chatMessages, {
+    onDelete: "CASCADE",
+  })
   @JoinColumn()
   public senderUser?: User;
 
-  @ManyToOne(() => Organization, entity => entity.chatMessages)
+  @ManyToOne(() => Organization, (entity) => entity.chatMessages)
   @JoinColumn()
   public organization?: Organization;
 
   public constructor(values?: Partial<ChatMessage>) {
-    if(values != null) {
+    if (values != null) {
       Object.assign(this, values);
     }
   }

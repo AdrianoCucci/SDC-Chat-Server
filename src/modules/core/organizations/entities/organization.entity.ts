@@ -32,18 +32,17 @@ export class Organization {
   @Column({ nullable: true })
   public postalCode?: string;
 
-
-  @OneToMany(() => User, entity => entity.organization)
+  @OneToMany(() => User, (entity) => entity.organization)
   public users?: User[];
 
-  @OneToMany(() => Room, entity => entity.organization)
+  @OneToMany(() => Room, (entity) => entity.organization)
   public rooms?: Room[];
 
-  @OneToMany(() => ChatMessage, entity => entity.organization)
+  @OneToMany(() => ChatMessage, (entity) => entity.organization)
   public chatMessages?: ChatMessage[];
 
   public constructor(values?: Partial<Organization>) {
-    if(values != null) {
+    if (values != null) {
       Object.assign(this, values);
     }
   }

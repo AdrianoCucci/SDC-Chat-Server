@@ -8,8 +8,10 @@ export abstract class ServiceBase<T> {
     this._idField = idField;
     this._entities = initialEntities ?? [];
 
-    if(this._entities.length > 0) {
-      const entityIds: number[] = this._entities.map((entity: T) => entity[this._idField]);
+    if (this._entities.length > 0) {
+      const entityIds: number[] = this._entities.map(
+        (entity: T) => entity[this._idField]
+      );
       this._nextId = Math.max(...entityIds) + 1;
     }
   }
@@ -19,12 +21,17 @@ export abstract class ServiceBase<T> {
   }
 
   public async getById(id: number): Promise<T> {
-    const entity: T = this._entities.find((entity: T) => entity[this._idField] === id);
+    const entity: T = this._entities.find(
+      (entity: T) => entity[this._idField] === id
+    );
     return entity != null ? { ...entity } : null;
   }
 
   public async idExists(id: number): Promise<boolean> {
-    return this._entities.findIndex((entity: T) => entity[this._idField] === id) !== -1;
+    return (
+      this._entities.findIndex((entity: T) => entity[this._idField] === id) !==
+      -1
+    );
   }
 
   public async add(entity: T): Promise<T> {
@@ -39,8 +46,8 @@ export abstract class ServiceBase<T> {
   public async addMany(...entities: T[]): Promise<T[]> {
     const results: T[] = [];
 
-    if(entities != null) {
-      for(let i = 0; i < entities.length; i++) {
+    if (entities != null) {
+      for (let i = 0; i < entities.length; i++) {
         const addResult: T = await this.add(entities[i]);
         results.push(addResult);
       }
@@ -51,9 +58,11 @@ export abstract class ServiceBase<T> {
 
   public async update(entity: T): Promise<T> {
     let result: T = null;
-    const index: number = this.findEntityIndex((e: T) => e[this._idField] === entity[this._idField]);
+    const index: number = this.findEntityIndex(
+      (e: T) => e[this._idField] === entity[this._idField]
+    );
 
-    if(index !== -1) {
+    if (index !== -1) {
       result = { ...Object.assign(this._entities[index], entity) };
     }
 
@@ -63,8 +72,8 @@ export abstract class ServiceBase<T> {
   public async updateMany(...entities: T[]): Promise<T[]> {
     const results: T[] = [];
 
-    if(entities != null) {
-      for(let i = 0; i < entities.length; i++) {
+    if (entities != null) {
+      for (let i = 0; i < entities.length; i++) {
         const updateResult: T = await this.update(entities[i]);
         results.push(updateResult);
       }
@@ -75,9 +84,11 @@ export abstract class ServiceBase<T> {
 
   public async delete(id: number): Promise<boolean> {
     let isSuccess: boolean = false;
-    const index: number = this.findEntityIndex((entity: T) => entity[this._idField] === id);
+    const index: number = this.findEntityIndex(
+      (entity: T) => entity[this._idField] === id
+    );
 
-    if(index !== -1) {
+    if (index !== -1) {
       this._entities.splice(index, 1);
       isSuccess = true;
     }
@@ -88,9 +99,9 @@ export abstract class ServiceBase<T> {
   public async deleteMany(...ids: number[]): Promise<number> {
     let deleteCount: number = 0;
 
-    if(ids != null) {
-      for(let i = 0; i < ids.length; i++) {
-        if(await this.delete(ids[i])) {
+    if (ids != null) {
+      for (let i = 0; i < ids.length; i++) {
+        if (await this.delete(ids[i])) {
           deleteCount++;
         }
       }
@@ -102,7 +113,7 @@ export abstract class ServiceBase<T> {
   protected findEntity(predicate: (entity: T) => boolean): T {
     let result: T = this._entities.find(predicate);
 
-    if(result != null) {
+    if (result != null) {
       result = { ...result };
     }
 
@@ -110,7 +121,9 @@ export abstract class ServiceBase<T> {
   }
 
   protected findEntities(predicate: (entity: T) => boolean): T[] {
-    return predicate != null ? [...this._entities.filter(predicate)] : [...this._entities];
+    return predicate != null
+      ? [...this._entities.filter(predicate)]
+      : [...this._entities];
   }
 
   protected findEntityIndex(predicate: (entity: T) => boolean): number {

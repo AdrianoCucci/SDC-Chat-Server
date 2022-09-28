@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { Organization } from "../../organizations/entities/organization.entity";
 
 @Entity({ name: "Rooms" })
@@ -21,13 +27,14 @@ export class Room {
   @Column()
   public organizationId: number;
 
-
-  @ManyToOne(() => Organization, entity => entity.rooms, { onDelete: "CASCADE" })
+  @ManyToOne(() => Organization, (entity) => entity.rooms, {
+    onDelete: "CASCADE",
+  })
   @JoinColumn()
   public organization?: Organization;
 
   public constructor(values?: Partial<Room>) {
-    if(values != null) {
+    if (values != null) {
       Object.assign(this, values);
     }
   }

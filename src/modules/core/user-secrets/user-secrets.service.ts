@@ -6,7 +6,9 @@ import { UserSecret } from "./entities/user-secret.entity";
 
 @Injectable()
 export class UserSecretsService extends RepositoryBase<UserSecret> {
-  constructor(@InjectRepository(UserSecret) repository: Repository<UserSecret>) {
+  constructor(
+    @InjectRepository(UserSecret) repository: Repository<UserSecret>
+  ) {
     super(repository);
   }
 

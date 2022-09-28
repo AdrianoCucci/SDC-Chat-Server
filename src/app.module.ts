@@ -1,18 +1,18 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ScheduleModule } from '@nestjs/schedule';
-import { JwtAuthModule } from './modules/shared/jwt-auth/jwt-auth.module';
-import { AuthModule } from './modules/core/auth/auth.module';
-import { UsersModule } from './modules/core/users/users.module';
-import { UserSecretsModule } from './modules/core/user-secrets/user-secrets.module';
-import { ChatMessagesModule } from './modules/core/chat-messages/chat-messages.module';
-import { OrganizationsModule } from './modules/core/organizations/organizations.module';
-import { RoomsModule } from './modules/core/rooms/rooms.module';
-import { AppWebSocketModule } from './modules/core/app-web-socket/app-web-socket.module';
-import { MapperModule } from './modules/shared/mapper/mapper.module';
-import { StartupModule } from './startup/startup.module';
+import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { ScheduleModule } from "@nestjs/schedule";
+import { JwtAuthModule } from "./modules/shared/jwt-auth/jwt-auth.module";
+import { AuthModule } from "./modules/core/auth/auth.module";
+import { UsersModule } from "./modules/core/users/users.module";
+import { UserSecretsModule } from "./modules/core/user-secrets/user-secrets.module";
+import { ChatMessagesModule } from "./modules/core/chat-messages/chat-messages.module";
+import { OrganizationsModule } from "./modules/core/organizations/organizations.module";
+import { RoomsModule } from "./modules/core/rooms/rooms.module";
+import { AppWebSocketModule } from "./modules/core/app-web-socket/app-web-socket.module";
+import { MapperModule } from "./modules/shared/mapper/mapper.module";
+import { StartupModule } from "./startup/startup.module";
 
-import appConfig from './app.config';
+import appConfig from "./app.config";
 
 @Module({
   imports: [
@@ -27,7 +27,7 @@ import appConfig from './app.config';
     RoomsModule,
     AppWebSocketModule,
     MapperModule,
-    StartupModule
-  ]
+    StartupModule,
+  ],
 })
-export class AppModule { }
+export class AppModule {}

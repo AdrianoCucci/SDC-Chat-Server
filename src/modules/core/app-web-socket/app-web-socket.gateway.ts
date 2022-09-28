@@ -1,31 +1,38 @@
-import { OnGatewayDisconnect, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
-import { Socket } from 'socket.io';
-import { ChatMessageDto } from '../chat-messages/dtos/chat-message.dto';
-import { UserDto } from '../users/dtos/user.dto';
-import { User } from '../users/entities/user.entity';
-import { UsersService } from '../users/users.service';
-import { RoomPing } from './dtos/room-ping.dto';
-import { LiveChatService } from './services/live-chat.service';
-import { RoomPingsService } from './services/room-pings.service';
-import { SocketUsersService } from './services/socket-users.service';
-import { SOCKET_EVENTS } from './utils/socket-events';
-import { getUserRoom, broadcast } from './utils/socket-functions';
+import {
+  OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway,
+} from "@nestjs/websockets";
+import { Socket } from "socket.io";
+import { ChatMessageDto } from "../chat-messages/dtos/chat-message.dto";
+import { UserDto } from "../users/dtos/user.dto";
+import { User } from "../users/entities/user.entity";
+import { UsersService } from "../users/users.service";
+import { RoomPing } from "./dtos/room-ping.dto";
+import { LiveChatService } from "./services/live-chat.service";
+import { RoomPingsService } from "./services/room-pings.service";
+import { SocketUsersService } from "./services/socket-users.service";
+import { SOCKET_EVENTS } from "./utils/socket-events";
+import { getUserRoom, broadcast } from "./utils/socket-functions";
 
-import appConfig from 'src/app.config';
+import appConfig from "src/app.config";
 
-@WebSocketGateway({ cors: appConfig.cors, path: appConfig.baseHref + appConfig.socketPath })
+@WebSocketGateway({
+  cors: appConfig.cors,
+  path: appConfig.baseHref + appConfig.socketPath,
+})
 export class AppWebSocketGateway implements OnGatewayDisconnect {
   constructor(
     private _socketUsersService: SocketUsersService,
     private _usersService: UsersService,
     private _liveChatService: LiveChatService,
     private _roomPingsService: RoomPingsService
-  ) { }
+  ) {}
 
   public handleDisconnect(socket: Socket): void {
     const user: UserDto = this._socketUsersService.get(socket);
 
-    if(user != null) {
+    if (user != null) {
       user.isOnline = false;
       socket.broadcast.emit(SOCKET_EVENTS.userLeave, user);
 
@@ -41,7 +48,7 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
     payload.isOnline = true;
 
     const room: string = getUserRoom(payload);
-    if(room) {
+    if (room) {
       socket.join(room);
     }
 
@@ -51,22 +58,31 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
     return payload;
   }
 
-  private async updateUserOnline(userId: number, isOnline: boolean): Promise<void> {
+  private async updateUserOnline(
+    userId: number,
+    isOnline: boolean
+  ): Promise<void> {
     const userEntity: User = await this._usersService.getOneById(userId);
 
-    if(userEntity != null && userEntity.isOnline !== isOnline) {
+    if (userEntity != null && userEntity.isOnline !== isOnline) {
       userEntity.isOnline = isOnline;
       await this._usersService.update(userEntity);
     }
   }
 
   @SubscribeMessage(SOCKET_EVENTS.message)
-  public async onMessage(socket: Socket, payload: ChatMessageDto): Promise<ChatMessageDto> {
+  public async onMessage(
+    socket: Socket,
+    payload: ChatMessageDto
+  ): Promise<ChatMessageDto> {
     return await this._liveChatService.onMessage(socket, payload);
   }
 
   @SubscribeMessage(SOCKET_EVENTS.messageEdit)
-  public async onMessageEdit(socket: Socket, payload: ChatMessageDto): Promise<ChatMessageDto> {
+  public async onMessageEdit(
+    socket: Socket,
+    payload: ChatMessageDto
+  ): Promise<ChatMessageDto> {
     return await this._liveChatService.onMessageEdit(socket, payload);
   }
 

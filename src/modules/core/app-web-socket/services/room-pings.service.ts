@@ -1,32 +1,32 @@
-import { Injectable } from '@nestjs/common';
-import { Socket } from 'socket.io';
-import { SOCKET_EVENTS } from '../utils/socket-events';
-import { broadcast, getUserRoom } from '../utils/socket-functions';
-import { SocketUsersService } from './socket-users.service';
-import { v4 as uuidv4 } from 'uuid';
-import { UserDto } from '../../users/dtos/user.dto';
-import { RoomPingState } from '../dtos/room-ping-state';
-import { RoomPing } from '../dtos/room-ping.dto';
+import { Injectable } from "@nestjs/common";
+import { Socket } from "socket.io";
+import { SOCKET_EVENTS } from "../utils/socket-events";
+import { broadcast, getUserRoom } from "../utils/socket-functions";
+import { SocketUsersService } from "./socket-users.service";
+import { v4 as uuidv4 } from "uuid";
+import { UserDto } from "../../users/dtos/user.dto";
+import { RoomPingState } from "../dtos/room-ping-state";
+import { RoomPing } from "../dtos/room-ping.dto";
 
 @Injectable()
 export class RoomPingsService {
   private readonly _requestingPings: RoomPing[] = [];
 
-  constructor(private _socketUsersService: SocketUsersService) { }
+  constructor(private _socketUsersService: SocketUsersService) {}
 
   public onRoomPingRequest(socket: Socket, payload: RoomPing): RoomPing {
-    if(!this.hasRequestingPing(payload?.guid)) {
+    if (!this.hasRequestingPing(payload?.guid)) {
       const requestUser: UserDto = this._socketUsersService.get(socket);
 
-      if(requestUser?.organizationId != null) {
+      if (requestUser?.organizationId != null) {
         payload.state = RoomPingState.Requesting;
         payload.organizationId = requestUser.organizationId;
         payload.requestUser = requestUser;
 
-        if(!payload.guid) {
+        if (!payload.guid) {
           payload.guid = uuidv4();
         }
-        if(!payload.requestDate) {
+        if (!payload.requestDate) {
           payload.requestDate = new Date().toISOString();
         }
 
@@ -41,10 +41,10 @@ export class RoomPingsService {
   }
 
   public onRoomPingResponse(socket: Socket, payload: RoomPing): RoomPing {
-    if(this.hasRequestingPing(payload?.guid)) {
+    if (this.hasRequestingPing(payload?.guid)) {
       const responseUser: UserDto = this._socketUsersService.get(socket);
 
-      if(responseUser?.organizationId === payload.organizationId) {
+      if (responseUser?.organizationId === payload.organizationId) {
         payload.state = RoomPingState.Responded;
         payload.responseUser = responseUser;
 
@@ -61,10 +61,10 @@ export class RoomPingsService {
   public onRoomPingCancel(socket: Socket, payload: RoomPing): void {
     const user: UserDto = this._socketUsersService.get(socket);
 
-    if(user?.organizationId != null) {
+    if (user?.organizationId != null) {
       const requestingPing: RoomPing = this.findRequestingPing(payload?.guid);
 
-      if(requestingPing?.organizationId === user.organizationId) {
+      if (requestingPing?.organizationId === user.organizationId) {
         const room: string = getUserRoom(user);
         broadcast(socket, SOCKET_EVENTS.roomPingCancel, requestingPing, room);
 
@@ -77,7 +77,7 @@ export class RoomPingsService {
     let pings: RoomPing[] = null;
 
     const user: UserDto = this._socketUsersService.get(socket);
-    if(user?.organizationId != null) {
+    if (user?.organizationId != null) {
       pings = this.getOrganizationPingRequests(user.organizationId);
     }
 
@@ -100,7 +100,7 @@ export class RoomPingsService {
     const index: number = this.findRequestingPingIndex(guid);
     const canRemove: boolean = index !== -1;
 
-    if(canRemove) {
+    if (canRemove) {
       this._requestingPings.splice(index, 1);
     }
 
@@ -108,6 +108,8 @@ export class RoomPingsService {
   }
 
   private getOrganizationPingRequests(organizationId: number): RoomPing[] {
-    return this._requestingPings.filter((r: RoomPing) => r.organizationId === organizationId);
+    return this._requestingPings.filter(
+      (r: RoomPing) => r.organizationId === organizationId
+    );
   }
 }
