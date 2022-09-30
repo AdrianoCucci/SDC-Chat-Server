@@ -1,5 +1,12 @@
 import { Role } from "src/models/auth/role";
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { ChatMessage } from "../../chat-messages/entities/chat-message.entity";
 import { Organization } from "../../organizations/entities/organization.entity";
 
@@ -29,16 +36,15 @@ export class User {
   @Column({ nullable: true })
   public preferencesJson?: string;
 
-
-  @ManyToOne(() => Organization, entity => entity.users)
+  @ManyToOne(() => Organization, (entity) => entity.users)
   @JoinColumn()
   public organization?: Organization;
 
-  @OneToMany(() => ChatMessage, entity => entity.senderUser)
+  @OneToMany(() => ChatMessage, (entity) => entity.senderUser)
   public chatMessages?: ChatMessage[];
 
   public constructor(values?: Partial<User>) {
-    if(values != null) {
+    if (values != null) {
       Object.assign(this, values);
     }
   }

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from "@nestjs/common";
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { MapperService } from "src/modules/shared/mapper/mapper.service";
 import { compareHash, generateHash } from "src/utils/hash-utils";
@@ -20,7 +25,7 @@ export class AuthService {
     private _secretsService: UserSecretsService,
     private _jwtService: JwtService,
     private _mapper: MapperService
-  ) { }
+  ) {}
 
   public async login(request: AuthRequest): Promise<AuthResponse> {
     let response: AuthResponse;
@@ -28,18 +33,22 @@ export class AuthService {
     try {
       const user: User = await this._usersService.getOne({
         where: { username: request.username },
-        relations: ["organization"]
+        relations: ["organization"],
       });
 
-      if(user == null) {
+      if (user == null) {
         throw "Login credentials are invalid";
-      }
-      else if(user.isLocked) {
+      } else if (user.isLocked) {
         throw "Your account is locked. Please speak with your administrator.";
       }
 
-      const password: UserSecret = await this._secretsService.getOneByUserId(user.id);
-      if(password == null || !await compareHash(request.password, password.password)) {
+      const password: UserSecret = await this._secretsService.getOneByUserId(
+        user.id
+      );
+      if (
+        password == null ||
+        !(await compareHash(request.password, password.password))
+      ) {
         throw "Login credentials are invalid";
       }
 
@@ -48,27 +57,38 @@ export class AuthService {
 
       const userDto: UserDto = this._mapper.users.mapDto(user);
       const jwtSecret: string = appConfig.jwtSecret;
-      const jwt: string = this._jwtService.sign({ user: userDto }, { secret: jwtSecret });
+      const jwt: string = this._jwtService.sign(
+        { user: userDto },
+        { secret: jwtSecret }
+      );
 
       response = { isSuccess: true, user: userDto, token: jwt };
-    }
-    catch(error) {
+    } catch (error) {
       response = { isSuccess: false, message: error };
     }
 
     return response;
   }
 
-  public async resetUserPassword(request: PassResetRequest | AdminPassResetRequest): Promise<void> {
-    const secret: UserSecret = await this._secretsService.getOneByUserId(request.userId);
+  public async resetUserPassword(
+    request: PassResetRequest | AdminPassResetRequest
+  ): Promise<void> {
+    const secret: UserSecret = await this._secretsService.getOneByUserId(
+      request.userId
+    );
 
-    if(secret == null) {
-      throw new NotFoundException(`Failed to reset password - User ID does not exist: ${request.userId}`);
+    if (secret == null) {
+      throw new NotFoundException(
+        `Failed to reset password - User ID does not exist: ${request.userId}`
+      );
     }
-    if(request instanceof PassResetRequest && !await compareHash(request.currentPassword, secret.password)) {
+    if (
+      request instanceof PassResetRequest &&
+      !(await compareHash(request.currentPassword, secret.password))
+    ) {
       throw new ConflictException("Current password is invalid");
     }
-    if(!request.newPassword) {
+    if (!request.newPassword) {
       throw new BadRequestException("New password must have a value");
     }
 

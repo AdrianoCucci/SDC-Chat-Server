@@ -11,23 +11,29 @@ import { EntityDtoMap } from "./entity-dto-map";
 
 @Injectable()
 export class MapperService {
-  public readonly organizations = new EntityDtoMap<Organization, OrganizationDto>({
-    mapEntity: (dto: Partial<OrganizationDto>, target?: Organization): Organization => Object.assign(target ?? new Organization(), dto),
+  public readonly organizations = new EntityDtoMap<
+    Organization,
+    OrganizationDto
+  >({
+    mapEntity: (
+      dto: Partial<OrganizationDto>,
+      target?: Organization
+    ): Organization => Object.assign(target ?? new Organization(), dto),
     mapDto: (entity: Organization): OrganizationDto => {
       const dto: OrganizationDto = Object.assign(new OrganizationDto(), entity);
 
-      if(entity.users?.length > 0) {
+      if (entity.users?.length > 0) {
         dto.users = this.users.mapDtos(entity.users);
       }
-      if(entity.rooms?.length > 0) {
+      if (entity.rooms?.length > 0) {
         dto.rooms = this.rooms.mapDtos(entity.rooms);
       }
-      if(entity.chatMessages?.length > 0) {
+      if (entity.chatMessages?.length > 0) {
         dto.chatMessages = this.chatMessages.mapDtos(entity.chatMessages);
       }
 
       return dto;
-    }
+    },
   });
 
   public readonly users = new EntityDtoMap<User, UserDto>({
@@ -38,43 +44,47 @@ export class MapperService {
     mapDto: (entity: User): UserDto => {
       const dto: UserDto = Object.assign(new UserDto(), entity);
 
-      if(entity.organization != null) {
+      if (entity.organization != null) {
         dto.organization = this.organizations.mapDto(entity.organization);
       }
-      if(entity.chatMessages?.length > 0) {
+      if (entity.chatMessages?.length > 0) {
         dto.chatMessages = this.chatMessages.mapDtos(entity.chatMessages);
       }
 
       return dto;
-    }
+    },
   });
 
   public readonly rooms = new EntityDtoMap<Room, RoomDto>({
-    mapEntity: (dto: Partial<RoomDto>, target?: Room): Room => Object.assign(target ?? new Room(), dto),
+    mapEntity: (dto: Partial<RoomDto>, target?: Room): Room =>
+      Object.assign(target ?? new Room(), dto),
     mapDto: (entity: Room): RoomDto => {
       const dto: RoomDto = Object.assign(new RoomDto(), entity);
 
-      if(entity.organization != null) {
+      if (entity.organization != null) {
         dto.organization = this.organizations.mapDto(entity.organization);
       }
 
       return dto;
-    }
+    },
   });
 
   public readonly chatMessages = new EntityDtoMap<ChatMessage, ChatMessageDto>({
-    mapEntity: (dto: Partial<ChatMessageDto>, target?: ChatMessage): ChatMessage => Object.assign(target ?? new ChatMessage(), dto),
+    mapEntity: (
+      dto: Partial<ChatMessageDto>,
+      target?: ChatMessage
+    ): ChatMessage => Object.assign(target ?? new ChatMessage(), dto),
     mapDto: (entity: ChatMessage): ChatMessageDto => {
       const dto: ChatMessageDto = Object.assign(new ChatMessageDto(), entity);
 
-      if(entity.senderUser != null) {
+      if (entity.senderUser != null) {
         dto.senderUser = this.users.mapDto(entity.senderUser);
       }
-      if(entity.organization != null) {
+      if (entity.organization != null) {
         dto.organization = this.organizations.mapDto(entity.organization);
       }
 
       return dto;
-    }
+    },
   });
 }

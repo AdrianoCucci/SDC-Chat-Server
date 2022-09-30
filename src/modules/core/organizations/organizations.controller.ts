@@ -1,4 +1,21 @@
-import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Param, ParseIntPipe, Post, Body, Put, Delete, HttpCode, HttpStatus, NotFoundException, Query, ForbiddenException } from "@nestjs/common";
+import {
+  Controller,
+  UseGuards,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Body,
+  Put,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  Query,
+  ForbiddenException,
+} from "@nestjs/common";
 import { Includes } from "src/decorators/includes.decorator";
 import { RequestUser } from "src/decorators/request-user.decorator";
 import { Roles } from "src/decorators/roles.decorator";
@@ -19,30 +36,50 @@ import { OrganizationsService } from "./organizations.service";
 @UseGuards(AuthorizeGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class OrganizationsController {
-  constructor(private _orgsService: OrganizationsService, private _mapper: MapperService) { }
+  constructor(
+    private _orgsService: OrganizationsService,
+    private _mapper: MapperService
+  ) {}
 
   @Get()
-  public async getAllOrganizations(@Query() model?: Paged<Includable<OrganizationDto>>, @Includes() includes?: string[]): Promise<PagedList<OrganizationDto>> {
+  public async getAllOrganizations(
+    @Query() model?: Paged<Includable<OrganizationDto>>,
+    @Includes() includes?: string[]
+  ): Promise<PagedList<OrganizationDto>> {
     const { skip, take, include, ...rest } = model;
 
-    const result: PagedList<OrganizationDto> = await catchEntityColumnNotFound(async () => {
-      const organizations: PagedList<Organization> = await this._orgsService.getAllPaged({
-        where: rest,
-        skip,
-        take,
-        relations: includes
-      });
+    const result: PagedList<OrganizationDto> = await catchEntityColumnNotFound(
+      async () => {
+        const organizations: PagedList<Organization> =
+          await this._orgsService.getAllPaged({
+            where: rest,
+            skip,
+            take,
+            relations: includes,
+          });
 
-      const dtos: OrganizationDto[] = this._mapper.organizations.mapDtos(organizations.data);
-      return new PagedList<OrganizationDto>({ data: dtos, meta: organizations.pagination });
-    });
+        const dtos: OrganizationDto[] = this._mapper.organizations.mapDtos(
+          organizations.data
+        );
+        return new PagedList<OrganizationDto>({
+          data: dtos,
+          meta: organizations.pagination,
+        });
+      }
+    );
 
     return result;
   }
 
   @Get(":id")
-  public async getOrganizationById(@Param("id", ParseIntPipe) id: number, @Includes() includes?: string[]): Promise<OrganizationDto> {
-    const entity: Organization = await this.tryGetOrganizationById(id, includes);
+  public async getOrganizationById(
+    @Param("id", ParseIntPipe) id: number,
+    @Includes() includes?: string[]
+  ): Promise<OrganizationDto> {
+    const entity: Organization = await this.tryGetOrganizationById(
+      id,
+      includes
+    );
     const dto: OrganizationDto = this._mapper.organizations.mapDto(entity);
 
     return dto;
@@ -50,7 +87,9 @@ export class OrganizationsController {
 
   @Post()
   @Roles(Role.Administrator)
-  public async postOrganization(@Body() request: OrganizationDto): Promise<OrganizationDto> {
+  public async postOrganization(
+    @Body() request: OrganizationDto
+  ): Promise<OrganizationDto> {
     let entity: Organization = this._mapper.organizations.mapEntity(request);
     entity = await this._orgsService.add(entity);
 
@@ -60,11 +99,15 @@ export class OrganizationsController {
 
   @Put(":id")
   @Roles(Role.Administrator, Role.OrganizationAdmin)
-  public async putOrganization(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: PartialOrganizationDto): Promise<OrganizationDto> {
+  public async putOrganization(
+    @RequestUser() user: UserDto,
+    @Param("id", ParseIntPipe) id: number,
+    @Body() request: PartialOrganizationDto
+  ): Promise<OrganizationDto> {
     let entity: Organization = await this.tryGetOrganizationById(id);
 
     //OrganizationAdmin users can only edit their own Organizations.
-    if(user.role !== Role.Administrator && user.organizationId !== entity.id) {
+    if (user.role !== Role.Administrator && user.organizationId !== entity.id) {
       throw new ForbiddenException();
     }
 
@@ -78,15 +121,22 @@ export class OrganizationsController {
   @Delete(":id")
   @Roles(Role.Administrator)
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async deleteOrganization(@Param("id", ParseIntPipe) id: number): Promise<void> {
+  public async deleteOrganization(
+    @Param("id", ParseIntPipe) id: number
+  ): Promise<void> {
     const entity: Organization = await this.tryGetOrganizationById(id);
     await this._orgsService.delete(entity);
   }
 
-  private async tryGetOrganizationById(id: number, includes?: string[]): Promise<Organization> {
-    const organization: Organization = await this._orgsService.getOneById(id, { relations: includes });
+  private async tryGetOrganizationById(
+    id: number,
+    includes?: string[]
+  ): Promise<Organization> {
+    const organization: Organization = await this._orgsService.getOneById(id, {
+      relations: includes,
+    });
 
-    if(organization == null) {
+    if (organization == null) {
       throw new NotFoundException(`Organization ID does not exist: ${id}`);
     }
 

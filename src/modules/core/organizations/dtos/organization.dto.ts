@@ -47,30 +47,28 @@ export class OrganizationDto {
   public get fullAddress(): string {
     let address: string = "";
 
-    if(this.street) {
+    if (this.street) {
       address += `${this.street}, `;
     }
-    if(this.city) {
+    if (this.city) {
       address += `${this.city}, `;
     }
-    if(this.province) {
+    if (this.province) {
       address += `${this.province}, `;
     }
-    if(this.country) {
+    if (this.country) {
       address += `${this.country} `;
     }
-    if(this.postalCode) {
+    if (this.postalCode) {
       address += `${this.postalCode}`;
     }
 
     //Remove any leading/trailing commas.
-    const commaTrimExp: RegExp = /(^,+)|(,+$)/g
+    const commaTrimExp: RegExp = /(^,+)|(,+$)/g;
 
-    return address
-      .trim()
-      .replace(commaTrimExp, '');
+    return address.trim().replace(commaTrimExp, "");
   }
 
   //This setter is intentionally left empty to handle DTO mapping for read-only fields.
-  public set fullAddress(value: string) { }
+  public set fullAddress(value: string) {}
 }

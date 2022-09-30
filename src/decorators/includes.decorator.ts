@@ -8,7 +8,7 @@ export const Includes = createParamDecorator(
     const expression = /(include=[^&]*)/;
     const occurrences: RegExpExecArray = expression.exec(request.url);
 
-    if(occurrences != null) {
+    if (occurrences != null) {
       let query: string = occurrences[0];
       query = query.substring(query.indexOf("=") + 1);
       results = query.split(",");

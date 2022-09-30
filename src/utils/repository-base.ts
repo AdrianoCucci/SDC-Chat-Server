@@ -1,7 +1,14 @@
 import { PagedList } from "src/models/pagination/paged-list";
-import { DeepPartial, FindManyOptions, FindOneOptions, ObjectID, Repository } from "typeorm";
+import {
+  DeepPartial,
+  FindManyOptions,
+  FindOneOptions,
+  FindOptionsWhere,
+  ObjectID,
+  Repository,
+} from "typeorm";
 
-export abstract class RepositoryBase<T> {
+export abstract class RepositoryBase<T extends FindOptionsWhere<T>> {
   protected readonly _repository: Repository<T>;
 
   protected constructor(repository: Repository<T>) {
@@ -13,19 +20,21 @@ export abstract class RepositoryBase<T> {
   }
 
   public getAllByModel(model: DeepPartial<T>): Promise<T[]> {
-    return model != null ? this.getAll({ where: model }) : this.getAll();
+    return model != null ? this.getAll({ where: model as T }) : this.getAll();
   }
 
-  public async getAllPaged(options?: FindManyOptions<T>): Promise<PagedList<T>> {
+  public async getAllPaged(
+    options?: FindManyOptions<T>
+  ): Promise<PagedList<T>> {
     const data: [T[], number] = await this._repository.findAndCount({
       ...options,
       skip: options?.skip ? Math.abs(options.skip) : null,
-      take: options?.take ? Math.abs(options.take) : null
+      take: options?.take ? Math.abs(options.take) : null,
     });
 
     return new PagedList<T>({
       data: data[0],
-      meta: { pagination: options, totalItemsCount: data[1] }
+      meta: { pagination: options, totalItemsCount: data[1] },
     });
   }
 
@@ -34,15 +43,18 @@ export abstract class RepositoryBase<T> {
   }
 
   public getOneById(id: EntityID, options?: FindOneOptions<T>): Promise<T> {
-    return this._repository.findOne(id, options);
+    return this.getOne({
+      ...options,
+      where: { id } as any,
+    });
   }
 
   public getOneByModel(model: DeepPartial<T>): Promise<T> {
-    return model != null ? this.getOne({ where: model }) : this.getOne();
+    return model != null ? this.getOne({ where: model as T }) : this.getOne();
   }
 
   public async hasAnyWithId(id: EntityID): Promise<boolean> {
-    const entity: T = await this._repository.findOne(id);
+    const entity: T = await this.getOneById(id);
     return entity !== undefined || entity !== null;
   }
 

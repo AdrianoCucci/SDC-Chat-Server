@@ -8,7 +8,7 @@ export class EntityDtoMap<TEntity, TDto> {
   public mapEntity(dto: Partial<TDto>, target?: TEntity): TEntity {
     let entity: TEntity = null;
 
-    if(dto != null && this._handlers.mapEntity != null) {
+    if (dto != null && this._handlers.mapEntity != null) {
       entity = this._handlers.mapEntity({ ...dto }, target);
     }
 
@@ -18,7 +18,7 @@ export class EntityDtoMap<TEntity, TDto> {
   public mapDto(entity: TEntity): TDto {
     let dto: TDto = null;
 
-    if(entity != null && this._handlers.mapDto != null) {
+    if (entity != null && this._handlers.mapDto != null) {
       dto = this._handlers.mapDto({ ...entity });
     }
 
@@ -28,13 +28,13 @@ export class EntityDtoMap<TEntity, TDto> {
   public mapEntities(dtos: TDto[]): TEntity[] {
     const entities: TEntity[] = [];
 
-    if(dtos != null) {
+    if (dtos != null) {
       const length: number = dtos.length;
 
-      for(let i = 0; i < length; i++) {
+      for (let i = 0; i < length; i++) {
         const entity: TEntity = this.mapEntity(dtos[i]);
 
-        if(entity != null) {
+        if (entity != null) {
           entities.push(entity);
         }
       }
@@ -46,13 +46,13 @@ export class EntityDtoMap<TEntity, TDto> {
   public mapDtos(entities: TEntity[]): TDto[] {
     const dtos: TDto[] = [];
 
-    if(entities != null) {
+    if (entities != null) {
       const length: number = entities.length;
 
-      for(let i = 0; i < length; i++) {
+      for (let i = 0; i < length; i++) {
         const dto: TDto = this.mapDto(entities[i]);
 
-        if(dto != null) {
+        if (dto != null) {
           dtos.push(dto);
         }
       }

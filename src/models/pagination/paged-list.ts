@@ -9,7 +9,14 @@ export class PagedList<T = any> {
     this.data = params.data;
 
     const meta: PaginateMeta | PagedListCreateMeta = params.meta;
-    this.pagination = meta instanceof PaginateMeta ? meta : new PaginateMeta(meta.pagination, params.data.length, meta.totalItemsCount);
+    this.pagination =
+      meta instanceof PaginateMeta
+        ? meta
+        : new PaginateMeta(
+            meta.pagination,
+            params.data.length,
+            meta.totalItemsCount
+          );
   }
 }
 

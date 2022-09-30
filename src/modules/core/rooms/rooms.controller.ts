@@ -1,4 +1,22 @@
-import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get, Query, Param, ParseIntPipe, Post, Body, Put, ForbiddenException, Delete, HttpCode, HttpStatus, NotFoundException, ConflictException } from "@nestjs/common";
+import {
+  Controller,
+  UseGuards,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  Get,
+  Query,
+  Param,
+  ParseIntPipe,
+  Post,
+  Body,
+  Put,
+  ForbiddenException,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  ConflictException,
+} from "@nestjs/common";
 import { Includes } from "src/decorators/includes.decorator";
 import { RequestUser } from "src/decorators/request-user.decorator";
 import { Roles } from "src/decorators/roles.decorator";
@@ -20,29 +38,41 @@ import { RoomsService } from "./rooms.service";
 @UseGuards(AuthorizeGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class RoomsController {
-  constructor(private _roomsService: RoomsService, private _orgsService: OrganizationsService, private _mapper: MapperService) { }
+  constructor(
+    private _roomsService: RoomsService,
+    private _orgsService: OrganizationsService,
+    private _mapper: MapperService
+  ) {}
 
   @Get()
-  public async getAllRooms(@Query() model?: Paged<Includable<RoomDto>>, @Includes() includes?: string[]): Promise<PagedList<RoomDto>> {
+  public async getAllRooms(
+    @Query() model?: Paged<Includable<RoomDto>>,
+    @Includes() includes?: string[]
+  ): Promise<PagedList<RoomDto>> {
     const { skip, take, include, ...rest } = model;
 
-    const result: PagedList<RoomDto> = await catchEntityColumnNotFound(async () => {
-      const rooms: PagedList<Room> = await this._roomsService.getAllPaged({
-        where: rest,
-        skip,
-        take,
-        relations: includes
-      });
+    const result: PagedList<RoomDto> = await catchEntityColumnNotFound(
+      async () => {
+        const rooms: PagedList<Room> = await this._roomsService.getAllPaged({
+          where: rest,
+          skip,
+          take,
+          relations: includes,
+        });
 
-      const dtos: RoomDto[] = this._mapper.rooms.mapDtos(rooms.data);
-      return new PagedList<RoomDto>({ data: dtos, meta: rooms.pagination });
-    });
+        const dtos: RoomDto[] = this._mapper.rooms.mapDtos(rooms.data);
+        return new PagedList<RoomDto>({ data: dtos, meta: rooms.pagination });
+      }
+    );
 
     return result;
   }
 
   @Get(":id")
-  public async getRoomById(@Param("id", ParseIntPipe) id: number, @Includes() includes?: string[]): Promise<RoomDto> {
+  public async getRoomById(
+    @Param("id", ParseIntPipe) id: number,
+    @Includes() includes?: string[]
+  ): Promise<RoomDto> {
     const room: Room = await this.tryGetRoomById(id, includes);
     const dto: RoomDto = this._mapper.rooms.mapDto(room);
 
@@ -51,9 +81,12 @@ export class RoomsController {
 
   @Post()
   @Roles(Role.Administrator, Role.OrganizationAdmin)
-  public async postRoom(@RequestUser() user: UserDto, @Body() request: RoomDto): Promise<RoomDto> {
+  public async postRoom(
+    @RequestUser() user: UserDto,
+    @Body() request: RoomDto
+  ): Promise<RoomDto> {
     //Make sure non-administrators can only post new rooms in their associated organizations.
-    if(user.role !== Role.Administrator) {
+    if (user.role !== Role.Administrator) {
       request.organizationId = user.organizationId;
     }
 
@@ -68,18 +101,26 @@ export class RoomsController {
 
   @Put(":id")
   @Roles(Role.Administrator, Role.OrganizationAdmin)
-  public async putRoom(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number, @Body() request: PartialRoomDto): Promise<RoomDto> {
+  public async putRoom(
+    @RequestUser() user: UserDto,
+    @Param("id", ParseIntPipe) id: number,
+    @Body() request: PartialRoomDto
+  ): Promise<RoomDto> {
     let room: Room = await this.tryGetRoomById(id);
 
-    if(user.organizationId !== room.organizationId && user.role !== Role.Administrator) {
-      throw new ForbiddenException("You do not have permission to update this room");
+    if (
+      user.organizationId !== room.organizationId &&
+      user.role !== Role.Administrator
+    ) {
+      throw new ForbiddenException(
+        "You do not have permission to update this room"
+      );
     }
 
     //Make sure non-administrators cannot change the organization of a room.
-    if(user.role !== Role.Administrator) {
+    if (user.role !== Role.Administrator) {
       request.organizationId = room.organizationId;
-    }
-    else if(request.organizationId != null) {
+    } else if (request.organizationId != null) {
       await this.validateRequest(request);
     }
 
@@ -93,29 +134,43 @@ export class RoomsController {
   @Delete(":id")
   @Roles(Role.Administrator, Role.OrganizationAdmin)
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async deleteRoom(@RequestUser() user: UserDto, @Param("id", ParseIntPipe) id: number): Promise<void> {
+  public async deleteRoom(
+    @RequestUser() user: UserDto,
+    @Param("id", ParseIntPipe) id: number
+  ): Promise<void> {
     const room: Room = await this.tryGetRoomById(id);
 
-    if(user.organizationId !== room.organizationId && user.role !== Role.Administrator) {
-      throw new ForbiddenException("You do not have permission to delete this room");
+    if (
+      user.organizationId !== room.organizationId &&
+      user.role !== Role.Administrator
+    ) {
+      throw new ForbiddenException(
+        "You do not have permission to delete this room"
+      );
     }
 
     await this._roomsService.delete(room);
   }
 
   private async tryGetRoomById(id: number, includes?: string[]): Promise<Room> {
-    const room: Room = await this._roomsService.getOneById(id, { relations: includes });
+    const room: Room = await this._roomsService.getOneById(id, {
+      relations: includes,
+    });
 
-    if(room == null) {
+    if (room == null) {
       throw new NotFoundException(`Room ID does not exist: ${id}`);
     }
 
     return room;
   }
 
-  private async validateRequest(request: RoomDto | PartialRoomDto): Promise<void> {
-    if(!await this._orgsService.hasAnyWithId(request.organizationId)) {
-      throw new ConflictException(`organizationId does not exist: ${request.organizationId}`);
+  private async validateRequest(
+    request: RoomDto | PartialRoomDto
+  ): Promise<void> {
+    if (!(await this._orgsService.hasAnyWithId(request.organizationId))) {
+      throw new ConflictException(
+        `organizationId does not exist: ${request.organizationId}`
+      );
     }
   }
 }
