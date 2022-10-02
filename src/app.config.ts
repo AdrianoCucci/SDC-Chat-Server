@@ -16,6 +16,7 @@ if (env.tls?.enabled) {
 
 export default {
   ...env,
+  version: env.version,
   httpOptions: <HttpsOptions | undefined>httpOptions,
   typeOrm: <TypeOrmModuleOptions>{
     type: env.database.type,
