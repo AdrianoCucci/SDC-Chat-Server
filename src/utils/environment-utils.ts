@@ -5,6 +5,7 @@ import { Environment } from "src/models/environment.model";
 export const defaultEnvironment = (): Environment =>
   <Environment>{
     production: false,
+    version: "1.0.0",
     httpPort: 3000,
     baseHref: "",
     socketPath: "/socket",

@@ -11,6 +11,7 @@ import { RoomsModule } from "./modules/core/rooms/rooms.module";
 import { AppWebSocketModule } from "./modules/core/app-web-socket/app-web-socket.module";
 import { MapperModule } from "./modules/shared/mapper/mapper.module";
 import { StartupModule } from "./startup/startup.module";
+import { VersionModule } from "./modules/core/version/version.module";
 
 import appConfig from "./app.config";
 
@@ -28,6 +29,7 @@ import appConfig from "./app.config";
     AppWebSocketModule,
     MapperModule,
     StartupModule,
+    VersionModule,
   ],
 })
 export class AppModule {}

@@ -2,6 +2,7 @@ import { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.int
 
 export interface Environment {
   production: boolean;
+  version: string;
   httpPort: number;
   baseHref: string;
   socketPath: string;
