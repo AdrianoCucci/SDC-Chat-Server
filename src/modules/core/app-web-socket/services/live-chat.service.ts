@@ -31,6 +31,8 @@ export class LiveChatService {
         (await this._usersService.hasAnyWithId(payload.senderUserId))
       ) {
         let entity: ChatMessage = this._mapper.chatMessages.mapEntity(payload);
+        entity.datePosted = new Date().toISOString();
+
         entity = await this._messagesService.add(entity);
 
         payload = this._mapper.chatMessages.mapDto(entity);
@@ -46,25 +48,29 @@ export class LiveChatService {
     socket: Socket,
     payload: ChatMessageDto
   ): Promise<ChatMessageDto> {
-    if (
-      payload?.id != null &&
-      payload.contents &&
-      payload.senderUserId != null
-    ) {
-      const user: UserDto = this._socketUsersService.get(socket);
-
-      if (
-        user != null &&
-        (await this._messagesService.hasAnyWithId(payload.id))
-      ) {
-        let entity: ChatMessage = this._mapper.chatMessages.mapEntity(payload);
-        entity = await this._messagesService.update(entity);
-
-        payload = this._mapper.chatMessages.mapDto(entity);
-        const room: string = getUserRoom(user);
-        broadcast(socket, SOCKET_EVENTS.messageEdit, payload, room);
-      }
+    if (!payload.id || !payload.contents || !payload.senderUserId) {
+      return payload;
     }
+
+    const user: UserDto = this._socketUsersService.get(socket);
+    if (!user) {
+      return payload;
+    }
+
+    const existingEntity: ChatMessage = await this._messagesService.getOneById(
+      payload.id
+    );
+    if (!existingEntity) {
+      return payload;
+    }
+
+    payload.datePosted = existingEntity.datePosted;
+    let entity: ChatMessage = this._mapper.chatMessages.mapEntity(payload);
+    entity = await this._messagesService.update(entity);
+
+    payload = this._mapper.chatMessages.mapDto(entity);
+    const room: string = getUserRoom(user);
+    broadcast(socket, SOCKET_EVENTS.messageEdit, payload, room);
 
     return payload;
   }

@@ -16,6 +16,7 @@ import { SOCKET_EVENTS } from "./utils/socket-events";
 import { getUserRoom, broadcast } from "./utils/socket-functions";
 
 import appConfig from "src/app.config";
+import { ACKNOWLEDGED, Acknowledgement } from "./dtos/acknowledgement";
 
 @WebSocketGateway({
   cors: appConfig.cors,
@@ -61,13 +62,15 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
   private async updateUserOnline(
     userId: number,
     isOnline: boolean
-  ): Promise<void> {
+  ): Promise<Acknowledgement> {
     const userEntity: User = await this._usersService.getOneById(userId);
 
     if (userEntity != null && userEntity.isOnline !== isOnline) {
       userEntity.isOnline = isOnline;
       await this._usersService.update(userEntity);
     }
+
+    return ACKNOWLEDGED;
   }
 
   @SubscribeMessage(SOCKET_EVENTS.message)
@@ -87,8 +90,12 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
   }
 
   @SubscribeMessage(SOCKET_EVENTS.messageDelete)
-  public onMessageDelete(socket: Socket, payload: ChatMessageDto): void {
+  public onMessageDelete(
+    socket: Socket,
+    payload: ChatMessageDto
+  ): Acknowledgement {
     this._liveChatService.onMessageDelete(socket, payload);
+    return ACKNOWLEDGED;
   }
 
   @SubscribeMessage(SOCKET_EVENTS.roomPingRequest)
@@ -102,8 +109,9 @@ export class AppWebSocketGateway implements OnGatewayDisconnect {
   }
 
   @SubscribeMessage(SOCKET_EVENTS.roomPingCancel)
-  public onRoomPingCancel(socket: Socket, payload: RoomPing): void {
+  public onRoomPingCancel(socket: Socket, payload: RoomPing): Acknowledgement {
     this._roomPingsService.onRoomPingCancel(socket, payload);
+    return ACKNOWLEDGED;
   }
 
   @SubscribeMessage(SOCKET_EVENTS.getRoomPings)

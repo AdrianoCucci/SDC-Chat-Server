@@ -25,7 +25,7 @@ export default {
     username: env.database.username,
     password: env.database.password,
     entities: ["dist/**/*.entity{.ts,.js}"],
-    options: { trustServerCertificate: true },
+    options: { trustServerCertificate: true, useUTC: true },
     synchronize: env.database.synchronize && !env.production,
   },
 };
