@@ -16,8 +16,8 @@ export class ChatMessage {
   @Column({ length: "4000" })
   public contents: string;
 
-  @Column({ type: "datetime" })
-  public datePosted: Date | string = new Date().toISOString();
+  @Column({ type: "datetime2" })
+  public datePosted: Date | string;
 
   @Column()
   public senderUserId: number;

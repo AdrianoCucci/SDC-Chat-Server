@@ -80,9 +80,13 @@ export class ChatMessagesController {
     @Includes() includes?: string[]
   ): Promise<ChatMessageDto[]> {
     const { include, skip, take, ...rest } = model;
+    let datePosted = model.datePosted as string;
 
-    if (!model?.datePosted) {
+    if (!datePosted) {
       throw new BadRequestException("'datePosted' query parameter is required");
+    }
+    if (!datePosted.endsWith("Z")) {
+      datePosted += "Z";
     }
 
     const result: ChatMessageDto[] = await catchEntityColumnNotFound(
@@ -90,7 +94,7 @@ export class ChatMessagesController {
         const messages: ChatMessage[] = await this._messagesService.getAll({
           where: {
             ...rest,
-            datePosted: LessThan(new Date(model.datePosted).toISOString()),
+            datePosted: LessThan(new Date(datePosted).toISOString()),
           },
           take: take,
           order: { datePosted: "DESC" },
@@ -128,6 +132,8 @@ export class ChatMessagesController {
     }
 
     let message: ChatMessage = this._mapper.chatMessages.mapEntity(request);
+    message.datePosted = new Date().toISOString();
+
     message = await this._messagesService.add(message);
 
     const dto: ChatMessageDto = this._mapper.chatMessages.mapDto(message);
